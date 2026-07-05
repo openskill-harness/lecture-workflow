@@ -45,3 +45,103 @@ def test_build_writes_notes(tmp_path):
     prs = Presentation(str(out))
     assert len(prs.slides) == 2
     assert prs.slides[0].notes_slide.notes_text_frame.text.startswith("안녕하세요.")
+
+
+MULTI_CODE_SAMPLE = textwrap.dedent("""\
+    # 1차시 원고: 테스트
+
+    ## Slide 1. 요청과 응답
+
+    **Screen**
+    - 제목: 요청과 응답 슬라이드
+
+    **Visual asset**
+    - Code block for slide:
+
+    ```http
+    GET /hello HTTP/1.1
+    Host: localhost:8080
+    ```
+
+    ```http
+    HTTP/1.1 200 OK
+    Content-Type: text/plain
+
+    Hello Spring Boot
+    ```
+
+    **Narration**
+    - 나레이션입니다.
+    """)
+
+D2_ONLY_SAMPLE = textwrap.dedent("""\
+    # 1차시 원고: 테스트
+
+    ## Slide 1. HTTP 흐름
+
+    **Screen**
+    - 제목: HTTP 요청과 응답
+
+    **Visual asset**
+    - D2 diagram: `assets/diagrams/ch01_http-request-response.d2`
+
+    ```d2
+    browser: "브라우저"
+    server: "서버"
+    browser -> server: "요청 전달"
+    ```
+
+    **Narration**
+    - 나레이션입니다.
+    """)
+
+FENCE_FALSE_POSITIVE_SAMPLE = textwrap.dedent("""\
+    # 1차시 원고: 테스트
+
+    ## Slide 1. 첫 슬라이드
+    **Screen**
+    - 제목: 첫 슬라이드
+
+    **Visual asset**
+    - Code block for slide:
+
+    ```text
+    ## Slide 99. 가짜 슬라이드처럼 보이는 코드 줄
+    **Narration**
+    이건 코드 안의 텍스트일 뿐입니다.
+    ```
+
+    **Narration**
+    - 진짜 나레이션입니다.
+
+    ## Slide 2. 두 번째 슬라이드
+    **Screen**
+    - 제목: 두 번째 슬라이드
+    **Narration**
+    - 두 번째 나레이션입니다.
+    """)
+
+
+def test_multiple_code_fences_are_preserved():
+    slides = parse_manuscript(MULTI_CODE_SAMPLE)
+    assert len(slides) == 1
+    code = slides[0]["code"]
+    assert "GET /hello HTTP/1.1" in code
+    assert "HTTP/1.1 200 OK" in code
+    assert "Hello Spring Boot" in code
+
+
+def test_d2_fence_is_not_treated_as_display_code():
+    slides = parse_manuscript(D2_ONLY_SAMPLE)
+    assert len(slides) == 1
+    assert slides[0]["code"] == ""
+
+
+def test_slide_and_field_markers_inside_code_fence_are_ignored():
+    slides = parse_manuscript(FENCE_FALSE_POSITIVE_SAMPLE)
+    assert len(slides) == 2
+    assert slides[0]["title"] == "첫 슬라이드"
+    assert slides[1]["title"] == "두 번째 슬라이드"
+    assert "## Slide 99." in slides[0]["code"]
+    assert slides[0]["narration"] == "진짜 나레이션입니다."
+    assert slides[1]["narration"] == "두 번째 나레이션입니다."

@@ -17,14 +17,24 @@ IMG_PATH_RE = re.compile(r"(assets[/\\][^\s)`\"']+\.(?:png|jpg|jpeg|webp))", re.
 def parse_manuscript(md_text):
     """슬라이드 블록을 dict 리스트로. keys: title, screen_lines, image_paths, code, narration"""
     slides, cur, field = [], None, None
-    in_code, code_lines = False, []
+    in_code, code_lines, fence_lang = False, [], ""
     for line in md_text.splitlines():
+        if in_code:
+            if line.strip().startswith("```"):
+                # d2 fence = diagram source, not display code -> discard.
+                if field == "Visual asset" and fence_lang != "d2" and code_lines:
+                    block = "\n".join(code_lines)
+                    cur["code"] = (cur["code"] + "\n\n" + block) if cur["code"] else block
+                in_code, code_lines, fence_lang = False, [], ""
+                continue
+            code_lines.append(line)
+            continue
         m = SLIDE_RE.match(line)
         if m:
             if cur:
                 slides.append(cur)
             cur = {"title": m.group(2).strip(), "screen_lines": [], "image_paths": [], "code": "", "narration": ""}
-            field, in_code, code_lines = None, False, []
+            field, in_code, code_lines, fence_lang = None, False, [], ""
             continue
         if cur is None:
             continue
@@ -33,15 +43,8 @@ def parse_manuscript(md_text):
             field = f.group(1)
             continue
         if line.strip().startswith("```"):
-            if in_code:
-                if field == "Visual asset":
-                    cur["code"] = "\n".join(code_lines)
-                in_code, code_lines = False, []
-            else:
-                in_code = True
-            continue
-        if in_code:
-            code_lines.append(line)
+            in_code = True
+            fence_lang = line.strip()[3:].strip().lower()
             continue
         text = line.strip().lstrip("-").strip()
         if not text:

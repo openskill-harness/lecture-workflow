@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spring MVC 요청 흐름 시뮬레이터 — POST /members</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --bg:#060814; --surface:rgba(255,255,255,0.04); --surface-2:rgba(255,255,255,0.07);
+    --border:rgba(255,255,255,0.08); --border-strong:rgba(255,255,255,0.15);
+    --text:#F8FAFC; --muted:#94A3B8; --dim:#475569;
+    --indigo:#818CF8; --indigo-deep:#4F46E5; --amber:#FBBF24; --rose:#F43F5E;
+    --emerald:#34D399; --cyan:#22D3EE; --lime:#A3E635; --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;} html,body{margin:0;padding:0;}
+  body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;color:var(--text);
+    background:radial-gradient(ellipse at top left,rgba(99,102,241,0.12),transparent 50%),
+      radial-gradient(ellipse at bottom right,rgba(244,63,94,0.08),transparent 50%),var(--bg);
+    min-height:100vh;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1500px;margin:0 auto;padding:30px 36px 64px;}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;
+    background:linear-gradient(135deg,rgba(129,140,248,0.18),rgba(129,140,248,0.06));color:var(--indigo);
+    font-size:0.85rem;font-weight:600;border:1px solid rgba(129,140,248,0.25);}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;}
+  h1{font-size:2.1rem;font-weight:800;letter-spacing:-0.03em;margin:14px 0 6px;}
+  .accent{background:linear-gradient(120deg,var(--indigo),var(--cyan));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sub{color:var(--muted);font-size:1.0rem;margin:0;}
+  .grid2{display:grid;grid-template-columns:1fr 420px;gap:18px;margin-top:22px;align-items:start;}
+  @media(max-width:1000px){.grid2{grid-template-columns:1fr;}}
+  .stage{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 18px;overflow:hidden;}
+  .sidecard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px;}
+  svg{display:block;width:100%;height:auto;}
+
+  /* SVG node base styles via classes toggled in JS */
+  .nlabel{font-family:'Pretendard Variable',Pretendard,sans-serif;font-weight:700;fill:var(--text);}
+  .nsub{font-family:var(--mono);fill:var(--muted);}
+  .conn{stroke:var(--border-strong);stroke-width:2;}
+
+  /* mode toggle */
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+  .mode{border:1px solid var(--border);background:var(--surface);color:var(--muted);border-radius:12px;
+    padding:11px 8px;cursor:pointer;transition:.18s;font-family:inherit;text-align:center;font-size:0.86rem;font-weight:700;line-height:1.4;}
+  .mode small{display:block;font-weight:500;font-size:0.72rem;color:var(--dim);margin-top:2px;}
+  .mode:hover{transform:translateY(-2px);color:var(--text);}
+  .mode.active{background:linear-gradient(135deg,rgba(129,140,248,0.18),rgba(34,211,238,0.08));
+    border-color:rgba(129,140,248,0.5);color:var(--text);}
+  .mode.active small{color:var(--muted);}
+  .mode.bmode.active{background:linear-gradient(135deg,rgba(52,211,153,0.18),rgba(251,191,36,0.08));border-color:rgba(52,211,153,0.5);}
+
+  .steprow{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+  .btn{border:1px solid var(--border-strong);background:var(--surface-2);color:var(--text);
+    border-radius:11px;padding:12px 16px;font-size:0.92rem;font-weight:700;cursor:pointer;transition:.15s;font-family:inherit;flex:1;}
+  .btn:hover:not(:disabled){transform:translateY(-2px);border-color:var(--indigo);}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .btn.primary{background:linear-gradient(135deg,rgba(129,140,248,0.28),rgba(129,140,248,0.1));border-color:rgba(129,140,248,0.55);}
+  .btn.ghost{flex:0 0 auto;background:transparent;border-color:var(--border);color:var(--muted);padding:12px 14px;}
+  .counter{font-family:var(--mono);font-size:0.82rem;color:var(--muted);text-align:center;margin-bottom:12px;}
+  .counter b{color:var(--cyan);}
+  .prog{height:5px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin:6px 0 14px;}
+  .progfill{height:100%;width:0;background:linear-gradient(90deg,var(--indigo),var(--cyan));transition:width .4s ease;}
+
+  .stepbox{border:1px solid var(--border);background:var(--surface-2);border-radius:14px;padding:14px 15px;min-height:120px;}
+  .stepbox .sh{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+  .chip-op{font-family:var(--mono);font-size:0.7rem;font-weight:700;padding:3px 9px;border-radius:7px;
+    background:rgba(129,140,248,0.16);color:var(--indigo);border:1px solid rgba(129,140,248,0.3);}
+  .chip-op.resp{background:rgba(52,211,153,0.16);color:var(--emerald);border-color:rgba(52,211,153,0.3);}
+  .stepbox h3{font-size:1.02rem;font-weight:700;margin:0;}
+  .stepbox p{font-size:0.9rem;line-height:1.6;color:var(--muted);margin:6px 0 0;}
+  .stepbox p b{color:var(--text);}
+  .stepbox p .k{color:var(--cyan);font-weight:600;}
+  .warnline{margin-top:10px;border-radius:10px;padding:9px 11px;font-size:0.82rem;line-height:1.5;
+    border:1px solid rgba(251,191,36,0.4);background:rgba(251,191,36,0.1);color:#fde68a;}
+
+  .code{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:#0a0e1c;padding:12px 13px;
+    font-family:var(--mono);font-size:0.76rem;line-height:1.65;color:#cbd5e1;overflow-x:auto;white-space:pre;}
+  .code .cm{color:var(--dim);} .code .an{color:var(--amber);} .code .kw{color:var(--indigo);}
+  .code .st{color:var(--emerald);}
+
+  .foot{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;}
+  .note{flex:1;min-width:260px;border:1px solid var(--border);border-radius:12px;background:var(--surface);
+    padding:11px 14px;font-size:0.82rem;line-height:1.55;color:var(--muted);}
+  .note b{color:var(--text);}
+  .note.exc{border-color:rgba(244,63,94,0.28);}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;font-size:0.78rem;color:var(--muted);margin-top:10px;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .sw{width:11px;height:11px;border-radius:3px;display:inline-block;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge"><span class="dot"></span>Spring MVC · 요청 처리 흐름 · L01 (오프라인)</div>
+  <h1><span class="accent">HTTP 요청 한 건</span>이 MVC 내부를 통과하는 흐름</h1>
+  <p class="sub">회원가입 요청 <span style="font-family:var(--mono);color:var(--amber)">POST /members</span> 하나를 끝까지 따라가며, DispatcherServlet이 각 위임 컴포넌트에 일을 넘기는 순서를 한 단계씩 봅니다.</p>
+
+  <div class="grid2">
+    <!-- 무대 -->
+    <div class="stage">
+      <svg viewBox="0 0 640 520" id="svg" aria-label="Spring MVC 요청 처리 파이프라인">
+        <defs>
+          <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+            <feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <g id="conns"></g>
+        <g id="nodes"></g>
+        <g id="fx"></g>
+        <g id="chip"></g>
+      </svg>
+      <div class="legend">
+        <span><i class="sw" style="background:var(--indigo)"></i>요청 경로(내려감)</span>
+        <span><i class="sw" style="background:var(--emerald)"></i>응답 경로(올라감)</span>
+        <span><i class="sw" style="background:var(--amber)"></i>현재 단계</span>
+        <span><i class="sw" style="background:var(--dim)"></i>이 경로 아님</span>
+      </div>
+    </div>
+
+    <!-- 조작 패널 -->
+    <div class="sidecard">
+      <div class="modes" id="modes">
+        <button class="mode active" data-mode="A">① @RestController<small>JSON 응답 (분기 A)</small></button>
+        <button class="mode bmode" data-mode="B">② @Controller<small>HTML 뷰 렌더링 (분기 B)</small></button>
+      </div>
+
+      <div class="counter">STEP <b id="cnum">0</b> / <span id="ctot">10</span></div>
+      <div class="prog"><div class="progfill" id="prog"></div></div>
+
+      <div class="steprow">
+        <button class="btn primary" id="next">다음 단계 ▶</button>
+        <button class="btn ghost" id="reset">↺ 리셋</button>
+      </div>
+
+      <div class="stepbox">
+        <div class="sh"><span class="chip-op" id="op">요청</span><h3 id="stitle">시작 대기</h3></div>
+        <p id="sdesc">위의 모드를 고르고 <b>다음 단계 ▶</b>를 눌러 요청 하나가 흐르는 과정을 따라가세요.</p>
+        <div class="warnline" id="warn" style="display:none"></div>
+      </div>
+
+      <div class="code" id="code"></div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="note"><b>프론트 컨트롤러 요약:</b> DispatcherServlet은 공통 알고리즘(순서)만 제공하고, 실제 일(매핑·호출·직렬화·뷰 해석)은 HandlerMapping·HandlerAdapter·HttpMessageConverter·ViewResolver 같은 <b>위임 컴포넌트</b>가 수행합니다.</div>
+    <div class="note exc"><b>예외 경로(이 시뮬 범위 밖):</b> 처리 도중 예외가 나면 WebApplicationContext에 등록된 <b>HandlerExceptionResolver</b>가 이를 해석해 에러 응답/뷰로 매핑합니다.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var SVG_NS="http://www.w3.org/2000/svg";
+  // ---- 고정 노드 좌표 (검증 완료: 모두 viewBox 640x520 안) ----
+  var N={
+    client:   {x:230,y:34, w:200,h:40, label:"클라이언트 (브라우저/프론트)", sub:""},
+    tomcat:   {x:230,y:98, w:200,h:40, label:"서블릿 컨테이너 (Tomcat)", sub:""},
+    dispatch: {x:230,y:172,w:200,h:64, label:"DispatcherServlet", sub:"프론트 컨트롤러"},
+    hmap:     {x:230,y:262,w:200,h:44, label:"HandlerMapping", sub:""},
+    hadapt:   {x:230,y:328,w:200,h:44, label:"HandlerAdapter", sub:""},
+    intercept:{x:230,y:392,w:200,h:38, label:"HandlerInterceptor", sub:""},
+    controller:{x:230,y:460,w:200,h:56,label:"Controller", sub:"@PostMapping(\"/members\")"},
+    viewr:    {x:512,y:172,w:196,h:64, label:"ViewResolver → View", sub:"분기 B"},
+    conv:     {x:512,y:460,w:196,h:56, label:"HttpMessageConverter", sub:"분기 A"}
+  };
+  // 연결선: [from,to]
+  var CONNS=[["client","tomcat"],["tomcat","dispatch"],["dispatch","hmap"],["hmap","hadapt"],
+    ["hadapt","intercept"],["intercept","controller"],["dispatch","viewr"],["controller","conv"]];
+
+  var conns=document.getElementById("conns"),
+      nodesG=document.getElementById("nodes"),
+      fx=document.getElementById("fx"),
+      chipG=document.getElementById("chip");
+
+  function el(tag,attrs){var e=document.createElementNS(SVG_NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+
+  // ---- 정적 연결선 (한 번만) ----
+  CONNS.forEach(function(c){
+    var a=N[c[0]],b=N[c[1]];var x1,y1,x2,y2;
+    if(a.x===b.x){ // 세로
+      var down=b.y>a.y; y1=a.y+(down?a.h/2:-a.h/2); y2=b.y+(down?-b.h/2:b.h/2); x1=a.x;x2=b.x;
+    }else{ // 가로 오프슛
+      x1=a.x+a.w/2; x2=b.x-b.w/2; y1=a.y; y2=b.y;
+    }
+    conns.appendChild(el("line",{x1:x1,y1:y1,x2:x2,y2:y2,class:"conn"}));
+  });
+
+  // ---- 노드 렌더 (한 번만; 이후 스타일만 갱신) ----
+  var nodeEls={};
+  for(var key in N){(function(k){
+    var n=N[k];
+    var g=el("g",{}); g.dataset.k=k;
+    var r=el("rect",{x:n.x-n.w/2,y:n.y-n.h/2,width:n.w,height:n.h,rx:12});
+    var t1=el("text",{x:n.x,y:n.y+(n.sub?-4:5),"text-anchor":"middle","font-size":n.label.length>16?12.5:13.5,class:"nlabel"});
+    t1.textContent=n.label;
+    g.appendChild(r); g.appendChild(t1);
+    if(n.sub){var t2=el("text",{x:n.x,y:n.y+15,"text-anchor":"middle","font-size":10.5,class:"nsub"});t2.textContent=n.sub;g.appendChild(t2);}
+    nodesG.appendChild(g);
+    nodeEls[k]={g:g,rect:r,t1:t1};
+  })(key);}
+
+  // 상태별 스타일 적용 (기존 요소 수정 — 장면 재생성 아님)
+  var STY={
+    dim:   {fill:"rgba(255,255,255,0.03)",stroke:"rgba(255,255,255,0.10)",sw:1.4,tx:"var(--dim)"},
+    done:  {fill:"rgba(129,140,248,0.08)",stroke:"rgba(129,140,248,0.30)",sw:1.4,tx:"var(--muted)"},
+    doner: {fill:"rgba(52,211,153,0.08)",stroke:"rgba(52,211,153,0.30)",sw:1.4,tx:"var(--muted)"},
+    active:{fill:"rgba(251,191,36,0.14)",stroke:"var(--amber)",sw:2.4,tx:"var(--text)"},
+    activer:{fill:"rgba(52,211,153,0.16)",stroke:"var(--emerald)",sw:2.4,tx:"var(--text)"},
+    off:   {fill:"rgba(255,255,255,0.015)",stroke:"rgba(255,255,255,0.06)",sw:1.2,tx:"var(--dim)"}
+  };
+  function setStyle(k,s){var e=nodeEls[k];var st=STY[s];
+    e.rect.setAttribute("fill",st.fill);e.rect.setAttribute("stroke",st.stroke);e.rect.setAttribute("stroke-width",st.sw);
+    e.rect.setAttribute("filter", (s==="active"||s==="activer")?"url(#glow)":"");
+    e.t1.setAttribute("fill",st.tx);
+  }
+
+  // ---- 코드 스니펫 ----
+  var CODE={
+    A:'<span class="an">@RestController</span>\n<span class="kw">class</span> MemberApiController {\n  <span class="an">@PostMapping</span>(<span class="st">"/members"</span>)\n  SignUpResponse join(<span class="an">@RequestBody</span> SignUpRequest req) {\n    Long id = memberService.save(req);\n    <span class="kw">return</span> <span class="kw">new</span> SignUpResponse(id, req.name());\n  } <span class="cm">// 반환값 → 응답 본문(JSON)</span>\n}',
+    B:'<span class="an">@Controller</span>\n<span class="kw">class</span> MemberPageController {\n  <span class="an">@PostMapping</span>(<span class="st">"/members"</span>)\n  String join(<span class="an">@ModelAttribute</span> MemberForm form, Model model) {\n    Long id = memberService.save(form);\n    model.addAttribute(<span class="st">"id"</span>, id);\n    <span class="kw">return</span> <span class="st">"members/detail"</span>; <span class="cm">// 논리적 뷰 이름</span>\n  }\n}'
+  };
+
+  // ---- STEP 정의 ----
+  // phase: req|resp, node: 강조 노드, op: 상단 칩 문구, warn: 경고문(옵션)
+  var STEPS={
+    A:[
+      {node:"client",phase:"req",op:"요청 · POST /members",title:"출발: 회원가입 요청",
+        desc:'JSON 본문 <span class="k">{ \"name\": \"kim\" }</span>을 담은 요청 한 건이 서버로 향합니다.'},
+      {node:"tomcat",phase:"req",op:"요청",title:"1. Tomcat 수신",
+        desc:'서블릿 컨테이너(<b>Tomcat</b>)가 HTTP 요청을 <b>가장 먼저</b> 수신합니다.'},
+      {node:"dispatch",phase:"req",op:"요청",title:"2. DispatcherServlet으로 라우팅",
+        desc:'컨테이너는 프론트 컨트롤러로 등록된 <b>단일 서블릿 DispatcherServlet</b>으로 요청을 넘깁니다.'},
+      {node:"dispatch",phase:"req",op:"요청",title:"3. DispatcherServlet 준비",
+        desc:'<b>WebApplicationContext</b>와 <b>LocaleResolver</b>를 request에 바인딩합니다. (MultipartResolver가 있으면 multipart 여부를 검사 — 이 JSON 요청은 <span class="k">multipart 아님</span>)'},
+      {node:"hmap",phase:"req",op:"요청",title:"4. HandlerMapping — 핸들러 탐색",
+        desc:'요청(<b>POST /members</b>)에 맞는 <b>핸들러</b>와 <b>인터셉터 실행 체인</b>을 찾습니다.'},
+      {node:"hadapt",phase:"req",op:"요청",title:"5. HandlerAdapter 선택",
+        desc:'그 핸들러를 호출할 알맞은 <b>HandlerAdapter</b>를 고릅니다. 애노테이션 컨트롤러의 애노테이션 해석을 담당해, DispatcherServlet을 호출 세부에서 <b>차단</b>합니다.'},
+      {node:"intercept",phase:"req",op:"요청 · preHandle",title:"6. 인터셉터 preHandle()",
+        desc:'핸들러 실행 <b>전</b>, 인터셉터의 <b>preHandle()</b>이 먼저 호출됩니다. <span class="k">false</span>를 반환하면 체인이 중단되고 컨트롤러는 호출되지 않습니다.'},
+      {node:"controller",phase:"req",op:"요청",title:"7. Controller 메서드 호출",lightConv:true,
+        desc:'HandlerAdapter가 컨트롤러 메서드를 호출합니다. 요청 본문의 <b>@RequestBody</b>는 <b>HttpMessageConverter</b>로 역직렬화되어 <span class="k">SignUpRequest</span>로 주입됩니다.'},
+      {node:"conv",phase:"resp",op:"응답 · 직렬화",title:"8. HttpMessageConverter 직렬화",
+        desc:'<b>@ResponseBody</b>(@RestController)이므로 반환한 <span class="k">SignUpResponse</span>가 <b>HttpMessageConverter</b>를 통해 응답 본문(JSON)으로 직렬화됩니다. <b>ViewResolver는 호출되지 않습니다.</b>',
+        warn:'⏱ 이 직렬화·응답 기록은 <b>HandlerAdapter 내부</b>에서 일어나 응답이 이미 <b>커밋</b>됩니다 — 즉 인터셉터 postHandle 보다 <b>먼저</b>입니다.'},
+      {node:"intercept",phase:"resp",op:"응답 · postHandle",title:"9. postHandle() / afterCompletion()",
+        desc:'그다음 인터셉터 <b>postHandle()</b> → <b>afterCompletion()</b>이 호출됩니다.',
+        warn:'🔒 응답은 이미 커밋된 상태 — postHandle에서 헤더 등 <b>응답을 바꿀 수 없습니다.</b>'},
+      {node:"client",phase:"resp",op:"응답",title:"10. 클라이언트로 반환",
+        desc:'완성된 <b>JSON 응답</b>이 DispatcherServlet → Tomcat → 클라이언트로 되돌아갑니다.'}
+    ],
+    B:[
+      {node:"client",phase:"req",op:"요청 · POST /members",title:"출발: 회원가입 폼 전송",
+        desc:'같은 <b>POST /members</b>지만, 이번엔 결과를 <b>HTML 페이지</b>로 보여주는 컨트롤러입니다.'},
+      {node:"tomcat",phase:"req",op:"요청",title:"1. Tomcat 수신",
+        desc:'서블릿 컨테이너(<b>Tomcat</b>)가 HTTP 요청을 가장 먼저 수신합니다.'},
+      {node:"dispatch",phase:"req",op:"요청",title:"2. DispatcherServlet으로 라우팅",
+        desc:'컨테이너는 프론트 컨트롤러 <b>DispatcherServlet</b>으로 요청을 넘깁니다.'},
+      {node:"dispatch",phase:"req",op:"요청",title:"3. DispatcherServlet 준비",
+        desc:'<b>WebApplicationContext</b>와 <b>LocaleResolver</b>를 request에 바인딩합니다. (필요 시 multipart 검사)'},
+      {node:"hmap",phase:"req",op:"요청",title:"4. HandlerMapping — 핸들러 탐색",
+        desc:'요청에 맞는 <b>핸들러</b>와 <b>인터셉터 실행 체인</b>을 찾습니다.'},
+      {node:"hadapt",phase:"req",op:"요청",title:"5. HandlerAdapter 선택",
+        desc:'그 핸들러를 호출할 알맞은 <b>HandlerAdapter</b>를 고릅니다.'},
+      {node:"intercept",phase:"req",op:"요청 · preHandle",title:"6. 인터셉터 preHandle()",
+        desc:'핸들러 실행 전, <b>preHandle()</b>이 먼저 호출됩니다.'},
+      {node:"controller",phase:"req",op:"요청",title:"7. Controller 메서드 호출",
+        desc:'폼 데이터가 <span class="k">MemberForm</span>에 바인딩되어 주입되고, 메서드는 <b>논리적 뷰 이름</b> <span class="k">"members/detail"</span>과 모델을 반환합니다.'},
+      {node:"intercept",phase:"resp",op:"응답 · postHandle",title:"8. 인터셉터 postHandle()",
+        desc:'핸들러 실행이 끝나면 <b>postHandle()</b>이 호출됩니다.',
+        warn:'⏱ 뷰 렌더링은 <b>아직입니다</b> — postHandle <b>다음</b>에 일어납니다.'},
+      {node:"dispatch",phase:"resp",op:"응답",title:"9. DispatcherServlet이 렌더링 주관",
+        desc:'제어가 DispatcherServlet으로 돌아오고, DispatcherServlet이 <b>뷰 렌더링</b>을 진행합니다.'},
+      {node:"viewr",phase:"resp",op:"응답 · 뷰 해석",title:"10. ViewResolver 해석",
+        desc:'<b>ViewResolver</b>가 논리적 뷰 이름 <span class="k">"members/detail"</span>을 실제 <b>View</b> 객체로 해석합니다.'},
+      {node:"viewr",phase:"resp",op:"응답 · 렌더링",title:"11. View 렌더링",
+        desc:'<b>View</b>가 모델 데이터를 채워 <b>HTML 응답 본문</b>을 렌더링(작성)합니다.'},
+      {node:"client",phase:"resp",op:"응답",title:"12. afterCompletion() · 반환",
+        desc:'요청이 완료되면 인터셉터 <b>afterCompletion()</b>이 호출되고, 완성된 <b>HTML 응답</b>이 DispatcherServlet → Tomcat → 클라이언트로 반환됩니다.'}
+    ]
+  };
+
+  // ---- 상태 ----
+  var mode="A", idx=-1;
+  var cnum=document.getElementById("cnum"), ctot=document.getElementById("ctot"),
+      prog=document.getElementById("prog"), op=document.getElementById("op"),
+      stitle=document.getElementById("stitle"), sdesc=document.getElementById("sdesc"),
+      warn=document.getElementById("warn"), nextBtn=document.getElementById("next"),
+      codeBox=document.getElementById("code");
+
+  function reset(){
+    idx=-1;
+    for(var k in N) setStyle(k,"dim");
+    setStyle("viewr", mode==="A"?"off":"dim");
+    setStyle("conv",  mode==="B"?"off":"dim");
+    fx.innerHTML=""; chipG.innerHTML="";
+    // 시작 칩을 클라이언트에 배치
+    drawChip("client","req","요청");
+    var last=STEPS[mode].length-1;
+    ctot.textContent=last; cnum.textContent="0"; prog.style.width="0%";
+    op.textContent="요청"; op.className="chip-op";
+    stitle.textContent="시작 대기";
+    sdesc.innerHTML='<b>다음 단계 ▶</b>를 눌러 요청 하나가 흐르는 과정을 따라가세요.';
+    warn.style.display="none";
+    nextBtn.disabled=false; nextBtn.textContent="다음 단계 ▶";
+    codeBox.innerHTML=CODE[mode];
+  }
+
+  function drawChip(nodeKey,phase,text){
+    var n=N[nodeKey];
+    var col=phase==="resp"?"#34D399":"#FBBF24";
+    var bg=phase==="resp"?"rgba(52,211,153,0.9)":"rgba(251,191,36,0.92)";
+    chipG.innerHTML="";
+    var w=text.length>3?70:52, h=22;
+    var gx=n.x, gy=n.y - n.h/2 - 15; // 노드 위쪽에 살짝 띄움
+    var g=el("g",{});
+    var r=el("rect",{x:gx-w/2,y:gy-h/2,width:w,height:h,rx:11,fill:bg,stroke:col,"stroke-width":1.5,filter:"url(#glow)"});
+    var t=el("text",{x:gx,y:gy+4,"text-anchor":"middle","font-size":11,"font-weight":800,fill:"#0a0e1c","font-family":"Pretendard Variable,sans-serif"});
+    t.textContent=text;
+    g.appendChild(r);g.appendChild(t);
+    g.style.transition="none";
+    chipG.appendChild(g);
+  }
+  function moveChip(nodeKey,phase,text){
+    var g=chipG.firstChild;
+    if(!g){drawChip(nodeKey,phase,text);return;}
+    var n=N[nodeKey];
+    var col=phase==="resp"?"#34D399":"#FBBF24";
+    var bg=phase==="resp"?"rgba(52,211,153,0.9)":"rgba(251,191,36,0.92)";
+    var w=text.length>3?70:52,h=22;
+    var gx=n.x, gy=n.y-n.h/2-15;
+    var r=g.firstChild, t=r.nextSibling;
+    // 트랜지션으로 부드럽게 이동
+    r.style.transition="all .5s cubic-bezier(.4,0,.2,1)";
+    r.setAttribute("x",gx-w/2); r.setAttribute("y",gy-h/2); r.setAttribute("width",w);
+    r.setAttribute("fill",bg); r.setAttribute("stroke",col);
+    t.setAttribute("x",gx); t.setAttribute("y",gy+4); t.textContent=text;
+  }
+
+  function render(){
+    var steps=STEPS[mode];
+    // 노드 상태: 지나온 노드 done, 현재 active, 미방문 dim, 비활성 분기 off
+    for(var k in N) setStyle(k,"dim");
+    setStyle("viewr", mode==="A"?"off":"dim");
+    setStyle("conv",  mode==="B"?"off":"dim");
+    for(var i=0;i<=idx;i++){
+      var s=steps[i];
+      var isCur=(i===idx);
+      if(isCur){
+        setStyle(s.node, s.phase==="resp"?"activer":"active");
+      }else{
+        // 이미 지나온 노드는 방향에 따라 done 표시 (현재 노드가 덮어씀)
+        setStyle(s.node, s.phase==="resp"?"doner":"done");
+      }
+      if(s.lightConv) setStyle("conv", isCur?"done":"done"); // 입력 역직렬화로 컨버터 관여 표시
+    }
+    // 현재 스텝 재확정
+    var s=steps[idx];
+    setStyle(s.node, s.phase==="resp"?"activer":"active");
+
+    // 칩 이동
+    var chipTxt=s.phase==="resp"?"응답":"요청";
+    moveChip(s.node, s.phase, chipTxt);
+
+    // 부가 하이라이트: preHandle/postHandle 등 fx 라벨
+    fx.innerHTML="";
+    if(s.node==="intercept"){
+      var lab=s.op.indexOf("preHandle")>=0?"preHandle()":(s.op.indexOf("postHandle")>=0?"postHandle()":"");
+      if(lab){
+        var n=N.intercept;
+        var g=el("text",{x:n.x+n.w/2+10,y:n.y+4,"font-size":11,"font-family":"var(--mono)",
+          fill:s.phase==="resp"?"#FBBF24":"#34D399","font-weight":700});
+        g.textContent=lab; fx.appendChild(g);
+      }
+    }
+
+    // 패널
+    op.textContent=s.op; op.className="chip-op"+(s.phase==="resp"?" resp":"");
+    stitle.textContent=s.title;
+    sdesc.innerHTML=s.desc;
+    if(s.warn){warn.style.display="block";warn.innerHTML=s.warn;}else{warn.style.display="none";}
+
+    // 카운터/진행
+    cnum.textContent=idx;
+    var last=steps.length-1;
+    prog.style.width=(idx/last*100)+"%";
+    if(idx>=last){nextBtn.disabled=true;nextBtn.textContent="완료 ✓";}
+    else{nextBtn.disabled=false;nextBtn.textContent="다음 단계 ▶";}
+  }
+
+  nextBtn.addEventListener("click",function(){
+    var last=STEPS[mode].length-1;
+    if(idx>=last)return;
+    idx++; render();
+  });
+  document.getElementById("reset").addEventListener("click",reset);
+
+  document.getElementById("modes").addEventListener("click",function(e){
+    var b=e.target.closest(".mode"); if(!b)return;
+    var m=b.dataset.mode; if(m===mode)return;
+    mode=m;
+    document.querySelectorAll(".mode").forEach(function(x){x.classList.toggle("active",x.dataset.mode===m);});
+    reset();
+  });
+
+  reset();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# 시드 ol1-d4: 요청 진입 흐름(클라이언트~컨트롤러 호출) — 시뮬레이터 STEP 0~7의 정본 순서 (brief S-01~S-09, 시퀀스)
+direction: right
+classes: {
+  start: { shape: person; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1 } }
+  container: { shape: package; style: { fill: white; stroke: black; stroke-width: 1 } }
+  front: { shape: hexagon; style: { fill: white; stroke: black; stroke-width: 2 } }
+  node: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+client: "클라이언트" { class: start }
+tomcat: "서블릿 컨테이너 (Tomcat)" { class: container }
+dispatcher: "DispatcherServlet\n(프론트 컨트롤러 구현)" { class: front }
+mapping: "HandlerMapping" { class: node }
+adapter: "HandlerAdapter" { class: node }
+controller: "Controller\n(@RestController)" { class: node }
+client -> tomcat: "HTTP 요청 전송" { style.stroke: "#222222" }
+tomcat -> dispatcher: "프론트 컨트롤러로 라우팅" { style.stroke: "#222222" }
+dispatcher -> mapping: "핸들러 + 인터셉터 체인 탐색" { style.stroke: "#222222" }
+dispatcher -> adapter: "알맞은 어댑터 선택" { style.stroke: "#222222" }
+adapter -> controller: "컨트롤러 메서드 호출" { style.stroke: "#222222" }

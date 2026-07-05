@@ -1,0 +1,99 @@
+# 루브릭 — L03 (offline, LAB 85분) — 평가 루브릭 YAML 원본
+# course: spring-mvc-offline-2026 / lesson: L03 (LAB, learning_goal_refs: [2])
+# 생성: rubric-agent (2026-07-05) — offline-lab-lesson-pipeline 산출물
+# 스키마: lecture-harness references/schemas.md 6절 / 품질기준: offline-lecture rubric-rules.md
+# 정합 대조 근거:
+#   - 정답 코드: courses/spring-mvc-offline-2026/code/L03/final/ (excellent 기준 실제 코드 대조 — 아래 verification 참조)
+#   - 실측 로그: _workspace/05_labcode_L03_validation.log (final 실기동 HTTP 201/409/201, id=2 재현 PASS)
+#   - lab 구조: _workspace/03_lab_L03.yaml (learner_task 5단계, submission, rubric_id: RUBRIC-L03)
+#
+# Manifest learning_goals 인덱스 (goal_refs 대상):
+#   [0] HTTP 요청이 Spring MVC 내부에서 처리되는 흐름을 설명할 수 있다.   (설명 목표 — L01에서 평가, 이 LAB은 '구현'이라 미연결)
+#   [1] Controller와 Service의 책임을 구분할 수 있다.                     (L02 이론 → 이 LAB Step 4에서 적용 회수)
+#   [2] 기본적인 Controller를 직접 구현하고 실행해 볼 수 있다.           (L03 배정 목표 — 이 LAB의 중심)
+
+rubric:
+  id: RUBRIC-L03
+  title: 회원 가입 API 구현·실행 평가 (요청 매핑 → 응답까지)
+  lab_ref: LAB-L03
+  lesson_goal_refs: [2]          # 레슨 배정 목표 (lesson-plan.yaml L03)
+
+  # ── 평가 방식 (G3 결정 반영: 제출 강제 아님, 순회 확인 갈음) ─────────────
+  assessment:
+    primary: 현장 강사 순회 확인 (1차 채점)
+    note: |
+      G3 결정 — 제출물(실행 캡처 2건 + 코드)은 채점 필수가 아니라 수업 후 마감 업로드로 갈음한다.
+      따라서 1차 채점은 강사가 순회하며 각 단계의 run_check(실행 확인)를 직접 관찰하는 것으로 이뤄진다.
+      각 criteria의 levels 판정 근거는 '제출물 검사'가 아니라 '순회 시점의 실행/코드 관찰'을 우선 기준으로 읽는다.
+      제출물은 순회에서 확인하지 못한 학생의 보완 확인용(2차)이다.
+    observation_points: 각 criteria의 evidence 항목 = 강사가 순회 중 무엇을 눈으로 확인하면 되는지의 목록.
+
+  criteria:                      # weight 합계 = 100  (35 + 20 + 25 + 20)
+
+    - name: 요청→응답 기능 동작 (실행 결과)
+      weight: 35
+      goal_refs: [2]
+      # 연결 근거: goal[2] "직접 구현하고 실행해 볼 수 있다"의 실행 관점 증거.
+      #   POST /members가 신규 201 + 응답 DTO, 중복 409로 '실제로 동작'하는지 — 실행 캡처/순회 관찰로 판정.
+      #   블랙박스 관점(무엇이 나오는가). 구현 방식의 정확성은 별도 criteria(예외 처리·상태코드 매핑)에서 본다.
+      evidence: 순회 시 학생 앱을 실행해 신규 가입 요청과 동일 이메일 재요청을 눌러 응답 상태/본문을 확인.
+      levels:
+        excellent: 신규 가입 요청이 201 Created와 {id, email} 응답 본문으로 응답하고, 동일 이메일 재요청이 409 Conflict로 응답한다(두 결과가 실행으로 재현된다).
+        good: 신규 가입 201은 정상 응답하나 중복 재요청이 409가 아닌 다른 상태(예: 500)로 응답한다.
+        needs_improvement: POST /members가 매핑되지 않아 404가 나거나, 신규 가입 자체가 정상 응답하지 않는다.
+
+    - name: 요청/응답 DTO 경계
+      weight: 20
+      goal_refs: [2]
+      # 연결 근거: goal[2] 구현 — 컨트롤러 입구·출구를 도메인이 아닌 전용 DTO로 구현했는지(Step 2 산출).
+      #   (요청 처리 '흐름'과 맞닿지만 goal[0]은 '설명' 목표라 미연결 — 이 LAB은 설명이 아니라 구현을 평가.)
+      evidence: 순회 시 MemberController 시그니처(@RequestBody SignUpRequest / SignUpResponse 반환)와 응답 본문에 name이 노출되지 않는지 확인.
+      levels:
+        excellent: "@RequestBody로 SignUpRequest를 받고 SignUpResponse로 응답하며, 도메인 Member를 입출력에 직접 노출하지 않는다(응답에 name이 없고, id를 클라이언트가 넣지 않는다)."
+        good: DTO를 쓰나 도메인과 일부 혼용한다(예: 응답으로 Member를 그대로 반환하거나 응답에 불필요한 필드가 섞인다).
+        needs_improvement: "요청/응답을 도메인 Member로 처리하거나, @RequestBody 누락으로 email/name이 null로 저장된다."
+
+    - name: Controller/Service 책임 분리
+      weight: 25
+      goal_refs: [1, 2]
+      # 연결 근거: goal[1] "Controller와 Service의 책임을 구분할 수 있다"의 실습 적용 회수 지점(04_plan.md §3·§4: Step 4는 L02 이론의 회수).
+      #   goal[2]와도 연결(올바른 구조로 '직접 구현'). 주: goal[1] 이론 교육은 L02가 담당, 이 LAB은 그 적용 결과를 관찰.
+      evidence: 순회 시 MemberController가 MemberRepository를 직접 참조하지 않는지, 중복 검사·저장이 MemberService로 '이동'(복제 아님)됐는지 확인.
+      levels:
+        excellent: 가입 규칙(중복 검사·저장)이 MemberService에 있고, MemberController는 MemberRepository를 직접 참조하지 않으며 요청 수신·응답 변환만 한다(로직이 복제 없이 이동됐다).
+        good: MemberService를 만들었으나 Controller에 Repository 참조나 중복 검사 호출이 일부 남아 있다.
+        needs_improvement: 가입 규칙이 Controller에 그대로 있거나(fat controller 상태), Service에 복제되어 양쪽에서 이중 검사한다.
+
+    - name: 예외 처리·상태코드 매핑 (구현 방식)
+      weight: 20
+      goal_refs: [2]
+      # 연결 근거: goal[2] 구현 — "응답까지"의 마지막 조각인 상태코드를 올바른 구현 방식으로 만들었는지(Step 5 산출).
+      #   화이트박스 관점(어떻게 409/201을 만들었는가). 실행 결과 자체는 '요청→응답 기능 동작'에서 본다.
+      evidence: 순회 시 DuplicateEmailException 존재, @ExceptionHandler(DuplicateEmailException) → CONFLICT 매핑, 성공 경로의 ResponseEntity 201(CREATED) 사용을 코드로 확인.
+      levels:
+        excellent: "중복 시 DuplicateEmailException을 던지고 @ExceptionHandler가 이를 409 Conflict로 매핑하며, 성공은 ResponseEntity로 201 Created를 반환한다."
+        good: 중복을 예외로 처리하나 예외 타입/핸들러가 어긋나 409가 아닌 500으로 나가거나, 성공 응답이 201이 아니라 200이다.
+        needs_improvement: 중복 시 예외 처리가 없거나, 성공/중복의 상태코드(201/409) 구분이 되지 않는다.
+
+  # ── 정답 코드(final/) ↔ excellent 기준 정합 검사 결과 ────────────────────
+  # 대조 파일: code/L03/final/src/.../{MemberController,MemberService,DuplicateEmailException,SignUpRequest,SignUpResponse}.java
+  #            + 05_labcode_L03_validation.log
+  verification_against_final:
+    - criteria: 요청→응답 기능 동작
+      excellent_met: true
+      evidence: validation_log TEST1 201{id:1,email} / TEST2 409 / TEST3 201{id:2} 실기동 재현 PASS.
+    - criteria: 요청/응답 DTO 경계
+      excellent_met: true
+      evidence: "MemberController가 @RequestBody SignUpRequest 수신 → SignUpResponse(id,email) 반환. SignUpResponse는 id·email만 노출(name 없음). 도메인 Member 미노출."
+    - criteria: Controller/Service 책임 분리
+      excellent_met: true
+      evidence: "MemberController는 MemberService만 주입(MemberRepository import 없음). 중복 검사(existsByEmail)+save는 MemberService.signUp에만 존재 — 이동 완료, 복제 없음."
+    - criteria: 예외 처리·상태코드 매핑
+      excellent_met: true
+      evidence: "DuplicateEmailException extends RuntimeException. MemberService가 이를 throw. MemberController @ExceptionHandler(DuplicateEmailException.class) → CONFLICT, 성공은 ResponseEntity.status(CREATED)."
+    conclusion: 4개 criteria의 excellent 기준을 final 코드가 모두 충족. 충돌 없음(병기 불필요).
+
+  # ── 미결 의존 (다음 산출물과 교차 검증 필요) ──────────────────────────────
+  open_dependencies:
+    - problem_sheet(RUBRIC-L03 대응)가 아직 없음 → rubric-rules 정합검사 2(루브릭↔문제지 1:1)는 problem_sheet 생성 후 qa-agent가 확인.
+    - goal_refs[1] 사용(Controller/Service 책임 분리 criteria): 레슨 배정 목표는 [2]지만 Step 4가 goal[1]의 적용 회수라 [1,2] 연결. 오케스트레이터/qa 인지 항목(블로커 아님).

@@ -1,0 +1,25 @@
+# step-03 → step-04 : 책임 이동 diff (코드는 그대로, 자리만 이동)
+direction: right
+
+classes: {
+  problem: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8; stroke-dash: 4 } }
+  proc: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+
+s3: "step-03  MemberController (뚱뚱)" {
+  class: problem
+  a: "요청 수신 / DTO 변환" { class: problem }
+  b: "중복 검사 (existsByEmail)" { class: problem }
+  c: "저장 (save)" { class: problem }
+}
+
+s4: "step-04  책임 분리" {
+  class: proc
+  ctrl: "MemberController\n요청 수신 / DTO 변환 / 위임 한 줄" { class: proc }
+  svc: "MemberService\n중복 검사 + 저장 (이사 온 블록)" { class: proc }
+  ctrl -> svc: "memberService.signUp(request)" { style.stroke: "#222222" }
+}
+
+s3.b -> s4.svc: "블록 이사" { style.stroke: "#222222" }
+s3.c -> s4.svc: "블록 이사" { style.stroke: "#222222" }
+s3.a -> s4.ctrl: "그대로 남음" { style.stroke: "#222222" }

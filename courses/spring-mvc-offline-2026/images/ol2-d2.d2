@@ -1,0 +1,13 @@
+# 시드: 분리 기준 = 변경 이유(출처가 다른 두 변경) (concept_model SRP / controller vs service 바뀌는 이유)
+direction: right
+classes: {
+  input: { shape: rectangle; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1; border-radius: 8 } }
+  proc: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+spec: "API 스펙 변경\n경로·상태코드·응답 포맷" { class: input }
+plan: "기획·정책 변경\n규칙·계산·트랜잭션 범위" { class: input }
+controller: "Controller\n(HTTP 표현)" { class: proc }
+service: "Service\n(업무 규칙)" { class: proc }
+spec -> controller: "이 이유로만 바뀜" { style.stroke: "#222222" }
+plan -> service: "이 이유로만 바뀜" { style.stroke: "#222222" }
+note: "두 변경을 한 모듈에 두면\n한쪽이 다른 쪽을 인질로 잡음" { shape: text }

@@ -1,0 +1,12 @@
+# 시드: 코드 이동 관찰 — 뚱뚱한 Controller → Service 분리 → 도메인 예외로 응답 매핑
+direction: right
+classes: {
+  before: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8; stroke-dash: 4 } }
+  proc: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+  input: { shape: rectangle; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+s3: "03-fat-controller\n가입 규칙이 Controller 안에" { class: before }
+s4: "04-service-extracted\n규칙을 MemberService로 이동" { class: proc }
+s5: "final\n도메인 예외 → 409 매핑" { class: input }
+s3 -> s4: "규칙을 주방으로" { style.stroke: "#222222" }
+s4 -> s5: "응답 의미 완성" { style.stroke: "#222222" }

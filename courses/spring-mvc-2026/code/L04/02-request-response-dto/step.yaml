@@ -1,0 +1,9 @@
+step:
+  id: step-02
+  title: 요청/응답 데이터 흐름 — @RequestBody 로 받고 응답 DTO로 돌려주기
+  previous_state: 컨트롤러가 요청 본문을 무시하고 고정 문자열만 반환한다.
+  change_reason: 실제 가입은 요청 데이터를 받아 결과 데이터를 돌려줘야 한다.
+  changed_files:
+    - src/main/java/com/example/member/MemberController.java
+  expected_result: JSON 본문이 SignUpRequest로 역직렬화되고, 저장 후 SignUpResponse JSON이 반환된다.
+  lecture_message: 컨트롤러의 입구와 출구는 도메인 객체가 아니라 요청/응답 전용 DTO다 — 경계에서 데이터의 모양을 바꾼다.

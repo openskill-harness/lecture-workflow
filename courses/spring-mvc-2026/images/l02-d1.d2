@@ -1,0 +1,13 @@
+# 시드: 경계 없을 때 깨지는 3가지 (concept_model service=Service Layer가 없앨 중복 / SRP 변경격리 근거)
+direction: right
+classes: {
+  input: { shape: rectangle; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1; border-radius: 8 } }
+  problem: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8; stroke-dash: 4 } }
+}
+fat: "뚱뚱한 Controller\n(HTTP + 업무규칙 혼재)" { class: input }
+b1: "① 규칙 복사\n다른 진입점마다 복붙되어 흩어짐" { class: problem }
+b2: "② 변경 충돌\n응답 포맷 ↔ 업무 규칙 서로 깨짐" { class: problem }
+b3: "③ 검증 결합\n웹 계층 통째로 띄워야 확인 가능" { class: problem }
+fat -> b1: { style.stroke: "#222222" }
+fat -> b2: { style.stroke: "#222222" }
+fat -> b3: { style.stroke: "#222222" }

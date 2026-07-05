@@ -1,0 +1,15 @@
+# 시드 ol1-d3: 유연성 — 공통 알고리즘은 고정, 위임 컴포넌트는 교체 가능한 슬롯 (concept_model: dispatcher-servlet / brief C-05·C-17·C-18)
+direction: right
+classes: {
+  front: { shape: hexagon; style: { fill: white; stroke: black; stroke-width: 2 } }
+  slot: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8; stroke-dash: 4 } }
+  note: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+dispatcher: "DispatcherServlet\n(공통 알고리즘 = 고정)" { class: front }
+slot1: "위임 슬롯: 핸들러 매핑" { class: slot }
+slot2: "위임 슬롯: 본문 변환" { class: slot }
+slot3: "위임 슬롯: 뷰 해석" { class: slot }
+dispatcher -> slot1: "교체 가능" { style.stroke: "#222222" }
+dispatcher -> slot2: "교체 가능" { style.stroke: "#222222" }
+dispatcher -> slot3: "교체 가능" { style.stroke: "#222222" }
+note: "뼈대는 그대로, 슬롯만 바꿔\n다양한 워크플로 수용" { class: note }

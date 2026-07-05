@@ -1,0 +1,159 @@
+# Artifact Registry — spring-mvc-2026
+# v1.7 마이그레이션 (2026-07-05, G2 재확정): 레슨 재편 구L01+구L02→L01 / 구L03→L02 / 구L04→L03
+#   - 코드·시뮬레이터는 승계 (lesson_id 갱신, 시뮬은 concept_model 대조검증 대기로 draft 강등)
+#   - 원고·프롬프터·슬라이드·큐시트는 superseded — 시드 블록 포함 재작성분이 supersedes로 대체
+# 이력: G6 승인(구 체계) 2026-07-05 — _workspace/08_qa_final_report.md / v1.6 재조립 기록은 harness-changelog 참조
+# G6 재확정 (2026-07-05, v1.7 신 체계): QA v2 blocker 0·warning 3(기록 표기 — 전건 추기 정정) → 전량 final 승격 (리포트: _workspace/10_qa_final_report_v2.md)
+# v1.9 (2026-07-05): 원고 d2 14개를 pub-d2-diagram 모노톤 스타일로 재생성 (구조 보존·스타일 변환, ELK 레이아웃 — 검증 ALL PASS)
+# v1.8 원고=책 개정 (2026-07-05): 원고 3건(ART-SCRIPT-101~103) 북 보강 — 발화 서사 보존(L01만 상계 압축 5개소), 시각 요소 삽입: images/에 생성 PNG 3 + 렌더 SVG 14 (원고 부속 — 별도 artifact 없음). L01 프롬프터 재동기화(3,573자 PASS). 검증: 플레이스홀더 잔존 0, d2==SVG(5/6/3), 링크 전부 실존
+
+artifacts:
+  # ── 승계 (v1.7 신 체계에서 유효) ─────────────────────────
+  - id: ART-CM-001
+    type: concept_model
+    lesson_id: ALL
+    path: courses/spring-mvc-2026/_workspace/01_concept_model.yaml
+    status: final
+    produced_by: research-agent
+    approved_gate: G2
+
+  - id: ART-AD-001
+    type: architecture_diagram
+    lesson_id: ALL
+    path: courses/spring-mvc-2026/_workspace/01_architecture_diagram.d2
+    status: final
+    produced_by: research-agent
+    approved_gate: G2
+
+  - id: ART-CODE-001
+    type: step_code
+    lesson_id: L03            # 구 L04
+    path: courses/spring-mvc-2026/code/L04/
+    status: final
+    produced_by: lab-code-agent
+    approved_gate: G3
+    origin: generated
+    # 디렉토리명은 code/L04 유지 (내용 무변경 승계 — 경로 이동은 IDE 참조·검증 로그 재생성 비용 대비 이득 없음)
+
+  - id: ART-VLOG-001
+    type: validation_log
+    lesson_id: L03            # 구 L04
+    path: courses/spring-mvc-2026/_workspace/05_labcode_L04_validation.log
+    status: final
+    produced_by: lab-code-agent
+    derived_from: ART-CODE-001
+
+  - id: ART-SIM-001
+    type: simulator_html
+    lesson_id: L01            # 구 L02 — L01의 시뮬 파트로 승계
+    path: courses/spring-mvc-2026/simulators/시뮬레이터_MVC요청흐름.html
+    status: final          # concept_model 대조검증 통과 (09_sim_conceptmodel_check.md — 4항목 완전 일치, badge L01 정정)
+    produced_by: simulator-agent
+
+  - id: ART-SCRIPT-102
+    type: script
+    lesson_id: L02
+    path: courses/spring-mvc-2026/scripts/L02.md
+    status: final
+    produced_by: script-agent
+    supersedes: ART-SCRIPT-003
+    # 본문 바이트 동일(검증 승계) + 시드 4([비유]1/d2 2/[IMG]1) + 참조 갱신
+
+  - id: ART-SCRIPT-103
+    type: script
+    lesson_id: L03
+    path: courses/spring-mvc-2026/scripts/L03.md
+    status: final
+    produced_by: script-agent
+    supersedes: ART-SCRIPT-004
+    # 4,870자(17분 예산 내) + 시드 4([비유]1/[IMG]1/d2 2) + 참조 갱신, 수치·마커 보존
+
+  - id: ART-PROMPT-102
+    type: prompter_script
+    lesson_id: L02
+    path: courses/spring-mvc-2026/scripts/L02_prompter.md
+    status: final
+    produced_by: prompter-script-agent
+    supersedes: ART-PROMPT-003
+    # 2,913자 = 10.6분 PASS (계획 10분 +5.9%), [SLIDE 01~11] 유지
+
+  - id: ART-PROMPT-103
+    type: prompter_script
+    lesson_id: L03
+    path: courses/spring-mvc-2026/scripts/L03_prompter.md
+    status: final
+    produced_by: prompter-script-agent
+    supersedes: ART-PROMPT-004
+    # 4,563자 = 268자/분 PASS (17분 대역 중앙), IDE 마커 8개 보존
+
+  - id: ART-SCRIPT-101
+    type: script
+    lesson_id: L01
+    path: courses/spring-mvc-2026/scripts/L01.md
+    status: final
+    produced_by: script-agent
+    supersedes: ART-SCRIPT-001   # + ART-SCRIPT-002 (구L01+구L02 통합)
+    # 4,200자(14분 상한 적합, 파트: 이론 1,316 + 시뮬 2,884) + 시드 5([IMG]1/d2 2/[비유]2) + SIM 마커 21
+
+  - id: ART-PROMPT-101
+    type: prompter_script
+    lesson_id: L01
+    path: courses/spring-mvc-2026/scripts/L01_prompter.md
+    status: final
+    produced_by: prompter-script-agent
+    supersedes: ART-PROMPT-001   # + ART-PROMPT-002 (통합)
+    # 3,457자 = 13.8분 PASS (14분 −1.2%), SIM 마커 21/21 보존
+
+  - id: ART-CUE-101
+    type: cue_sheet
+    lesson_id: ALL
+    path: courses/spring-mvc-2026/scripts/촬영큐시트.md
+    status: final
+    produced_by: filmed-lecture-orchestrator
+    supersedes: ART-CUE-001
+
+  - id: ART-SLIDE-102
+    type: html_slide
+    lesson_id: L02
+    path: courses/spring-mvc-2026/slides/L02.html
+    status: final
+    produced_by: slide-composer-agent
+    supersedes: ART-SLIDE-003
+    approved_gate: G4
+    # rich 프로파일 라이트 엔진, 11장, 구 라이트 조립본 STEPS 승계 + 참조 5곳 갱신
+
+  - id: ART-SLIDE-101
+    type: html_slide
+    lesson_id: L01
+    path: courses/spring-mvc-2026/slides/L01.html
+    status: final
+    produced_by: slide-composer-agent
+    supersedes: ART-SLIDE-001   # + ART-SLIDE-002 (통합 덱)
+    approved_gate: G4
+    # 13장(콘텐츠 11 + cue 2), d2 시드 SVG 반영, [IMG]는 SVG 스키매틱 대체(래스터는 후속 이미지 에셋)
+
+  - id: ART-SLIDE-103
+    type: html_slide
+    lesson_id: L03
+    path: courses/spring-mvc-2026/slides/L03.html
+    status: final
+    produced_by: slide-composer-agent
+    supersedes: ART-SLIDE-004
+    approved_gate: G4
+    # 9장, S6 시드 충실 조립(스토리보드 계약 우선), S9 노드 식별자 30px 상향, 렌더 검증 포함
+
+  # ── superseded (구 체계 산출물 — 재작성분이 대체) ─────────
+  - {id: ART-SCRIPT-001, type: script, lesson_id: 구L01, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L01.md, status: superseded, produced_by: script-agent}
+  - {id: ART-SCRIPT-002, type: script, lesson_id: 구L02, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L02.md, status: superseded, produced_by: script-agent}
+  - {id: ART-SCRIPT-003, type: script, lesson_id: 구L03, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L03.md, status: superseded, produced_by: script-agent}
+  - {id: ART-SCRIPT-004, type: script, lesson_id: 구L04, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L04.md, status: superseded, produced_by: script-agent}
+  - {id: ART-PROMPT-001, type: prompter_script, lesson_id: 구L01, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L01_prompter.md, status: superseded, produced_by: prompter-script-agent}
+  - {id: ART-PROMPT-002, type: prompter_script, lesson_id: 구L02, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L02_prompter.md, status: superseded, produced_by: prompter-script-agent}
+  - {id: ART-PROMPT-003, type: prompter_script, lesson_id: 구L03, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L03_prompter.md, status: superseded, produced_by: prompter-script-agent}
+  - {id: ART-PROMPT-004, type: prompter_script, lesson_id: 구L04, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/L04_prompter.md, status: superseded, produced_by: prompter-script-agent}
+  - {id: ART-SLIDE-001, type: html_slide, lesson_id: 구L01, path: courses/spring-mvc-2026/_workspace/superseded_v1/slides/L01.html, status: superseded, produced_by: slide-composer-agent}
+  - {id: ART-SLIDE-002, type: html_slide, lesson_id: 구L02, path: courses/spring-mvc-2026/_workspace/superseded_v1/slides/L02.html, status: superseded, produced_by: slide-composer-agent}
+  - {id: ART-SLIDE-003, type: html_slide, lesson_id: 구L03, path: courses/spring-mvc-2026/_workspace/superseded_v1/slides/L03.html, status: superseded, produced_by: slide-composer-agent}
+  - {id: ART-SLIDE-004, type: html_slide, lesson_id: 구L04, path: courses/spring-mvc-2026/_workspace/superseded_v1/slides/L04.html, status: superseded, produced_by: slide-composer-agent}
+  - {id: ART-CUE-001, type: cue_sheet, lesson_id: ALL, path: courses/spring-mvc-2026/_workspace/superseded_v1/scripts/촬영큐시트.md, status: superseded, produced_by: filmed-lecture-orchestrator}
+  # 신규 산출물은 v2 id (예: ART-SCRIPT-101)로 발급하고 supersedes: ART-SCRIPT-00x를 연결한다

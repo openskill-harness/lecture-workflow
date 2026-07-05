@@ -1,0 +1,8 @@
+# 시드: 두 경로 대조 — 컨트롤러 반환값에 따라 갈라지는 출구 (01_architecture_diagram 분기 A/B)
+direction: right
+controller: "Controller\n무엇을 반환?" { shape: diamond; style: { fill: white; stroke: black; stroke-width: 1 } }
+converter: "HttpMessageConverter\n직렬화 → 응답 커밋" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+resolver: "ViewResolver → View\n렌더링" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+controller -> converter: "[A] 객체 반환 (@ResponseBody · 뷰 없음)" { style.stroke: "#222222" }
+controller -> resolver: "[B] 논리 뷰 이름 반환" { style.stroke: "#222222" }
+note: "preHandle까지는 한 몸,\n반환값에서 출구가 갈린다" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }

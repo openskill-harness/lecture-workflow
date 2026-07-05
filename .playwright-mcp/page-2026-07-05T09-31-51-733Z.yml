@@ -1,0 +1,34 @@
+- generic [ref=e2]:
+  - generic:
+    - generic:
+      - generic: 편 2
+      - heading "기본 Controller 구현" [level=1]
+      - generic: 요청 매핑부터 응답까지
+      - paragraph: 지난 시간(L02) 말로 그린 책임 경계를, 오늘 코드가 자리를 옮기는 것으로 확인한다.
+      - generic:
+        - generic:
+          - generic: 웨이터
+          - generic: =
+          - generic: Controller
+        - generic:
+          - generic: 주방
+          - generic: =
+          - generic: Service
+      - generic:
+        - text: ▶ IDE
+        - generic: 다음 화면 → code/L04/00-starter
+    - text: ＋ ＋ ✓ ✓ ✓ ✓ ▶ IDE ▶ IDE ▶ IDE ▶ IDE ▶ IDE ▶ IDE ▶ IDE ▶ IDE
+  - text: 판서모드
+  - button "⛶" [ref=e4] [cursor=pointer]
+  - generic [ref=e15]: 1 / 9
+  - button "‹" [ref=e16] [cursor=pointer]
+  - button "›" [ref=e17] [cursor=pointer]
+  - generic [ref=e18]:
+    - button "🪧 판서모드" [ref=e19] [cursor=pointer]
+    - button "▦ 모눈" [ref=e20] [cursor=pointer]
+    - button "◇ 도형" [ref=e21] [cursor=pointer]
+    - button "✂ 선택" [ref=e37] [cursor=pointer]
+    - button "✋ 이동" [ref=e38] [cursor=pointer]
+    - button "지우개" [ref=e39] [cursor=pointer]
+    - button "되돌리기" [ref=e40] [cursor=pointer]
+    - button "전체지움" [ref=e41] [cursor=pointer]

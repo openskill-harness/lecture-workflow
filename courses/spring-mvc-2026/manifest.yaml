@@ -1,0 +1,51 @@
+# Course Manifest — G1 승인 완료 (2026-07-05), 분편안으로 G1 재확정 (2026-07-05, 길이 실측 반영)
+course:
+  id: spring-mvc-2026
+  title: Spring MVC와 웹 요청 처리 구조
+  delivery_type: filmed
+
+target_learners:
+  - Java 문법 가능
+  - Spring Boot로 CRUD API를 만들어 본 경험 있음
+  - Servlet 컨테이너와 DispatcherServlet 내부 구조는 모름
+
+duration:
+  total_minutes: 50
+  episodes:                # 1편 = 약 30분 표준. v1.7 레슨 재편(시뮬=L01 파트) 반영
+    - no: 1                # L01(이론+시뮬 파트 14분) + L02(책임 경계 10분) — 발화 ~24분 + 여유
+      minutes: 30
+    - no: 2                # L03 (코드 워크스루 17분) — + 여유
+      minutes: 20
+
+tech_stack:
+  - Java 21
+  - Spring Boot 3.4.x
+  - Gradle 8.x
+  - IntelliJ IDEA
+
+learning_goals:
+  - HTTP 요청이 Spring MVC 내부에서 처리되는 흐름을 설명할 수 있다.
+  - Controller와 Service의 책임을 구분할 수 있다.
+  - 기본적인 Controller를 구현할 수 있다.
+
+required_outputs:
+  - slides
+  - script
+  - prompter_script
+  - simulator
+  - source_code
+  - cue_sheet
+
+style:
+  tone: 실무형, 초급자 친화적
+  visual_style: 깔끔한 기술 교육용 (라이트 테마 — v1.6 사용자 결정. 슬라이드는 rich 프로파일 라이트 엔진, 시뮬레이터만 다크)
+  language: ko-KR
+
+constraints:
+  max_slide_words: 45
+  code_font_min_pt: 22
+  citation_required_for:
+    - statistics
+    - news
+    - version_specific_claims
+    - external_case_studies

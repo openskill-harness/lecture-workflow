@@ -1,0 +1,77 @@
+# Spring MVC 요청 처리 완성 구조도 — spring-mvc-2026 (v1.7)
+# 생성: research-agent / 원천: 01_concept_model.yaml relationships (S-01~S-16, L03 S4~S6)
+# 노드=개념, 화살표=관계. 응답 분기 A(@ResponseBody) / B(뷰) 구분. 라벨 한국어.
+# 소비: 시뮬레이터 STEP 대조 기준 + rich 슬라이드/원고 d2 시드.
+
+direction: right
+
+# ── 노드 (개념) ──────────────────────────────────────────
+client: 클라이언트 {shape: person}
+tomcat: "서블릿 컨테이너 (Tomcat)" {shape: package}
+
+dispatcher: "DispatcherServlet\n(프론트 컨트롤러 구현)" {shape: hexagon}
+
+context: WebApplicationContext {shape: rectangle}
+locale: "LocaleResolver\n(선택)" {shape: rectangle; style.stroke-dash: 4}
+multipart: "MultipartResolver\n(선택)" {shape: rectangle; style.stroke-dash: 4}
+
+mapping: HandlerMapping
+adapter: HandlerAdapter
+interceptor: "HandlerInterceptor\n(preHandle / postHandle / afterCompletion)" {shape: rectangle}
+
+controller: "Controller\n(@Controller / @RestController)"
+dto: DTO {shape: rectangle}
+service: "Service\n(유스케이스 · 트랜잭션 경계)"
+tx: "트랜잭션 경계\n(@Transactional)" {shape: rectangle; style.stroke-dash: 4}
+repository: "Repository\n(경계 노드 — 내부는 범위 밖)" {style.stroke-dash: 3}
+
+converter: HttpMessageConverter
+viewresolver: ViewResolver
+view: View
+exresolver: "HandlerExceptionResolver\n(예외 경로)" {style.stroke-dash: 3}
+
+# ── 요청 진입 ────────────────────────────────────────────
+client -> tomcat: HTTP 요청 전송
+tomcat -> dispatcher: 프론트 컨트롤러로 라우팅
+
+# ── DispatcherServlet 초기 바인딩 (선택 단계 점선) ──────────
+dispatcher -> context: request에 바인딩
+dispatcher -> locale: "request에 바인딩(선택)" {style.stroke-dash: 4}
+dispatcher -> multipart: "multipart 검사(선택)" {style.stroke-dash: 4}
+
+# ── 핸들러 탐색 · 어댑터 선택 ─────────────────────────────
+dispatcher -> mapping: 핸들러 + 인터셉터 체인 탐색
+mapping -> interceptor: 인터셉터 체인 제공
+dispatcher -> adapter: 알맞은 어댑터 선택
+
+# ── 핸들러 호출 (preHandle 은 컨트롤러 호출 직전) ──────────
+interceptor -> controller: "preHandle (호출 전 · false면 체인 중단)"
+adapter -> controller: 컨트롤러 메서드 호출
+
+# ── 컨트롤러 ↔ 서비스 배턴 (책임 경계) ────────────────────
+controller -> converter: "@RequestBody 역직렬화"
+controller -> dto: 요청 입력 바인딩
+controller -> service: 유스케이스 위임(입력 DTO 전달)
+service -> tx: 트랜잭션 경계 소유
+service -> repository: 도메인 / 영속 조율
+service -> controller: 처리 결과 반환
+
+# ── 응답 분기 A : @ResponseBody / @RestController ─────────
+controller -> converter: "[A] 반환값 직렬화 (@ResponseBody · 뷰 해석 없음)"
+converter -> adapter: "[A] 응답 기록·커밋 (HandlerAdapter 내부 · postHandle 이전)"
+
+# ── 응답 분기 B : 뷰 렌더링 ───────────────────────────────
+controller -> viewresolver: "[B] 논리 뷰 이름 반환"
+viewresolver -> view: "[B] 실제 View로 해석"
+view -> dispatcher: "[B] 모델을 응답으로 렌더링"
+
+# ── 인터셉터 후처리 (타이밍 구분) ─────────────────────────
+interceptor -> controller: "postHandle (핸들러 후 · 분기 B에서 응답 변경 유효)"
+interceptor -> controller: "afterCompletion (요청 완료 후 · 양 분기 공통)"
+
+# ── 예외 경로 ────────────────────────────────────────────
+dispatcher -> exresolver: 처리 중 예외 해석
+
+# ── 응답 반환 ────────────────────────────────────────────
+dispatcher -> tomcat: 완성된 응답 반환
+tomcat -> client: HTTP 응답 반환

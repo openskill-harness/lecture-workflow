@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>1차시 상세 강사용 스토리보드 - 서버 프로그램과 웹 애플리케이션 실행 환경 이해</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6875;
+      --line: #d9dee7;
+      --soft: #f5f7fa;
+      --green: #5aa05a;
+      --blue: #3d7edb;
+      --warn: #f5a524;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      color: var(--ink);
+      background: #eceff4;
+      line-height: 1.58;
+    }
+    header {
+      padding: 36px 44px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    header p { margin: 0; color: var(--muted); }
+    main {
+      width: min(1280px, calc(100% - 32px));
+      margin: 24px auto 64px;
+    }
+    .legend, .slide {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin: 18px 0;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(22, 32, 42, .05);
+    }
+    .legend { padding: 20px 24px; }
+    .slide-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--line);
+      background: #fafbfc;
+    }
+    .slide-head h2 { margin: 0; font-size: 21px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: #eaf4ea;
+      color: #245b24;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    .slide-body {
+      display: block;
+      padding: 22px;
+    }
+    .slide-preview {
+      min-height: 520px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f9fb;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+    .slide-preview img {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+    .lecture-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 12px;
+      align-content: start;
+    }
+    .lecture-block {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+    .lecture-block h3 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: #26323f;
+    }
+    .lecture-block p,
+    .lecture-block ul {
+      margin: 0 0 10px;
+    }
+    .lecture-block p:last-child,
+    .lecture-block ul:last-child {
+      margin-bottom: 0;
+    }
+    .lecture-block ul { padding-left: 20px; }
+    .lecture-script {
+      grid-column: 1 / -1;
+      border-left: 5px solid var(--blue);
+      background: #f8fbff;
+    }
+    .instructor-only {
+      border-left: 5px solid var(--warn);
+      background: #fffaf0;
+    }
+    .visual-asset { background: #fbfcfe; }
+    .source-block { background: #f8fbf8; }
+    .asset-code {
+      max-height: 260px;
+      overflow: auto;
+      font-size: 12px;
+    }
+    .block-content a {
+      color: #255ea8;
+      word-break: break-all;
+    }
+    .small { color: var(--muted); font-size: 13px; }
+    .flow {
+      width: 100%;
+      padding: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, #fff, #f7f9fb);
+    }
+    .node {
+      min-width: 120px;
+      padding: 16px 18px;
+      border: 2px solid #111;
+      border-radius: 10px;
+      background: #fff;
+      text-align: center;
+      font-weight: 700;
+      white-space: pre-line;
+    }
+    .node.input { background: #f0f0f0; }
+    .node.key {
+      border-width: 3px;
+      background: #f8f8f8;
+      clip-path: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
+      border-radius: 0;
+    }
+    .arrow {
+      font-size: 28px;
+      color: #222;
+      font-weight: 700;
+      align-self: center;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      padding: 22px;
+      align-items: stretch;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 18px;
+    }
+    .panel h4 { margin: 0 0 10px; font-size: 18px; }
+    .old { border-top: 7px solid #8b96a5; }
+    .new { border-top: 7px solid var(--green); }
+    pre {
+      margin: 0;
+      padding: 18px;
+      border-radius: 8px;
+      background: #101820;
+      color: #e8f2ff;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    code { font-family: Consolas, "Courier New", monospace; }
+    .ide {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      background: #1f252d;
+      color: #dce6f2;
+      font-family: Consolas, "Courier New", monospace;
+      min-height: 380px;
+    }
+    .tree {
+      padding: 18px;
+      border-right: 1px solid #39424e;
+      background: #252c35;
+      font-size: 13px;
+      white-space: pre-line;
+    }
+    .editor { padding: 18px; }
+    .editor .tab {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border-radius: 6px 6px 0 0;
+      background: #344052;
+      color: #fff;
+      font-size: 13px;
+    }
+    .browser {
+      width: 100%;
+      background: #fff;
+      padding: 28px;
+    }
+    .bar {
+      height: 36px;
+      border: 1px solid #cfd6df;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: #344054;
+      background: #f7f9fc;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .result {
+      margin-top: 52px;
+      text-align: center;
+      font-size: 42px;
+      font-weight: 800;
+      color: #202b38;
+    }
+    .question {
+      padding: 24px;
+      width: 100%;
+      background: #fff;
+    }
+    .question h4 { margin: 0 0 18px; font-size: 22px; }
+    .choice {
+      margin: 10px 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafafa;
+    }
+    @media (max-width: 900px) {
+      .slide-preview { min-height: 360px; }
+      .slide-preview img { min-height: 360px; }
+      .lecture-panel { grid-template-columns: 1fr; }
+      .split { grid-template-columns: 1fr; }
+      .ide { grid-template-columns: 1fr; }
+      .tree { border-right: 0; border-bottom: 1px solid #39424e; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>1차시 상세 강사용 스토리보드</h1>
+    <p>서버 프로그램과 웹 애플리케이션 실행 환경 이해 - PPT 제작 전 상세 강의 콘티</p>
+  </header>
+
+  <main>
+    <section class="legend">
+      <h2>제작 기준</h2>
+      <p>이 HTML은 최종 PPT가 아니라, 강사가 슬라이드 화면과 나레이션을 함께 검수하기 위한 상세 스토리보드입니다. 실제 PPT에서는 제공된 양식 PPTX의 표지, 학습열기, 본문, 적용하기, 평가하기, 참고자료 레이아웃에 맞춰 옮깁니다.</p>
+      <p class="small">실습 기준: JDK 21 / Spring Boot 4.1.0 / Gradle / Spring Tools for Eclipse 5.2.0 이상</p>
+      <p class="small">실습코드: <code>practice-code/ch01-hello-server</code> / D2 원본: <code>assets/diagrams</code> / GPT 이미지: <code>assets/images/ch01</code></p>
+    </section>
+
+    <section class="slide detailed" id="slide-1">
+      <div class="slide-head"><h2>Slide 1. 표지</h2><span class="tag">GPT image</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <img src="../assets/images/ch01/ch01_cover_developer_server.png" alt="개발자와 Spring Boot 서버 표지 이미지">
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 서버 프로그램과 웹 애플리케이션 실행 환경 이해</li><li>부제: Spring Boot가 웹 애플리케이션을 실행하는 방식을 처음부터 보기</li><li>화면: 템플릿 표지 레이아웃 사용. 오른쪽 또는 하단에 웹 브라우저, 서버, Spring Boot 로고 느낌의 상징 이미지를 배치.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>웹 애플리케이션은 “손님이 주문하면 주방이 음식을 만들어 다시 내보내는 식당”과 같다. 브라우저는 손님, 서버 프로그램은 주방, HTTP는 주문서다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>교육용 시나리오: 신입 개발자가 회사에 들어와 “로컬에서 서버를 켰는데 왜 브라우저에서 화면이 보이나요?”라고 묻는다. 이번 차시는 그 질문에 답하는 첫 출발점이다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>A clean educational illustration of a beginner developer looking at a laptop browser connected to a small Spring Boot server box, simple lines, bright classroom style, no text, 16:9 slide composition.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 공식 문서: 독립 실행 가능한 Spring 기반 애플리케이션을 만들고 실행할 수 있다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>안녕하세요. 이번 시간에는 스프링 부트 기초 과정의 첫 번째 주제인 서버 프로그램과 웹 애플리케이션 실행 환경을 살펴보겠습니다. 오늘은 아직 복잡한 코드를 많이 작성하지 않습니다. 대신 우리가 앞으로 만들 Spring Boot 애플리케이션이 어디에서 실행되고, 브라우저 요청을 어떻게 받고, 왜 별도의 Tomcat 설치 없이 바로 실행되는지를 큰 그림으로 이해하는 시간이 됩니다. 이 차시를 잘 잡아두면 뒤에서 Controller, REST API, JPA, 테스트를 배울 때 “내 코드가 실제 요청 흐름에서 어디에 놓이는지”가 훨씬 선명해집니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>없음. 과정 도입.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-2">
+      <div class="slide-head"><h2>Slide 2. 최신 이슈로 학습 열기: 공공 예제도 Spring Boot 기반으로 이동하고 있다</h2><span class="tag">current issue</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="split">
+            <div class="panel old"><h4>과거 방식</h4><p>JSP 화면 중심</p><p>WAR 배포</p><p>외부 서버 설정</p></div>
+            <div class="panel new"><h4>현재 흐름</h4><p>API BackEnd</p><p>FrontEnd 분리</p><p>Spring Boot 실행</p></div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 공공 예제도 API와 Spring Boot 실행 방식을 전제로 한다</li><li>짧은 문구:</li><li>Spring Boot 4.1.0은 Java 17 이상, Gradle 8.14 이상 또는 9.x를 지원한다.</li><li>이 과정 실습 기준은 JDK 21, Spring Boot 4.1.0, Gradle, Spring Tools for Eclipse 5.2.0 이상이다.</li><li>eGovFrame 심플홈페이지 BackEnd 예제도 Spring Boot 기반 BackEnd/FrontEnd 분리 흐름을 보여준다.</li><li>기존 JSP 뷰 중심에서 BackEnd와 FrontEnd를 분리한 예시를 제공한다.</li><li>화면: 좌측에는 “과거: JSP/WAR/서버 배포” 이미지, 우측에는 “현재: API BackEnd + FrontEnd 분리 + Spring Boot” 이미지.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>핵심 메시지</h3>
+            <div class="block-content"><p>이 과정은 JDK 21, Spring Boot 4.1.0, Gradle, Spring Tools for Eclipse 5.2.0 이상을 실습 기준으로 삼는다.</p></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>예전에는 식당 홀이랑 주방이 한 건물 안에 꽉 붙어 있는 느낌이었다면, 요즘은 주문 앱, 주방, 배달 시스템이 역할을 나누어 연결되는 느낌이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 공공 프로젝트에 투입된 개발자가 기존 JSP 화면 중심 프로젝트만 경험했다. 그런데 새 예제 저장소를 보니 BackEnd와 FrontEnd가 분리되어 있고, BackEnd는 Spring Boot로 실행된다. 이 개발자는 “서버 프로그램이 화면을 직접 그리는 것”과 “API로 데이터를 제공하는 것”의 차이를 먼저 이해해야 한다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>Split-screen educational illustration. Left side: old monolithic web application with JSP pages and a heavy external server rack. Right side: modern API backend built with Spring Boot connected to a separate frontend browser, clean Korean corporate training style, no readable text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>eGovFrame 심플홈페이지 BackEnd GitHub: <a href="https://github.com/eGovFramework/egovframe-template-simple-backend" target="_blank" rel="noreferrer">https://github.com/eGovFramework/egovframe-template-simple-backend</a></li><li>Spring Boot 4.1.0 시스템 요구사항: <a href="https://docs.spring.io/spring-boot/system-requirements.html" target="_blank" rel="noreferrer">https://docs.spring.io/spring-boot/system-requirements.html</a></li><li>Spring Tools 공식 페이지: <a href="https://spring.io/tools/" target="_blank" rel="noreferrer">https://spring.io/tools/</a></li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>본격적인 이론으로 들어가기 전에 최신 흐름을 하나 보겠습니다. 2026년 현재 Spring Boot 공식 문서의 4.1.0 기준을 보면 Java 17 이상에서 동작하고, Gradle은 8.14 이상 또는 9.x를 명시적으로 지원합니다. 이 과정은 장기 지원 버전으로 많이 쓰이는 JDK 21, Spring Boot 4.1.0, Gradle, Spring Tools for Eclipse 5.2.0 이상을 실습 기준으로 잡겠습니다. 동시에 전자정부 표준프레임워크의 심플홈페이지 BackEnd 예제처럼 공공 예제에서도 BackEnd와 FrontEnd를 분리하고 Spring Boot 기반 BackEnd를 제공하는 흐름을 볼 수 있습니다. 여기서 중요한 메시지는 하나입니다. 요즘 서버 프로그램은 단순히 HTML 화면만 만들어 주는 역할에 머물지 않습니다. 브라우저나 프론트엔드 앱이 요청을 보내면, 서버는 API로 데이터를 응답하고, 그 과정에서 HTTP, Controller, 내장 서버, 실행 환경이 모두 함께 작동합니다. 그래서 우리는 첫 시간에 “서버 프로그램이 무엇이고, Spring Boot는 그 서버 프로그램을 어떻게 실행시키는가”를 먼저 보려는 것입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>없음. 최신 이슈 기반 도입.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-3">
+      <div class="slide-head"><h2>Slide 3. 오늘의 학습 목표</h2><span class="tag">roadmap</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">서버 역할</div><div class="arrow">→</div><div class="node">HTTP 요청/응답</div><div class="arrow">→</div><div class="node key">Spring Boot 실행</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 오늘은 “요청이 들어와 응답이 나가기까지”를 본다</li><li>학습목표 3개:</li><li>서버 프로그램의 역할을 설명할 수 있다.</li><li>웹 서버와 웹 애플리케이션 서버의 차이를 구분할 수 있다.</li><li>Spring Boot 애플리케이션이 내장 서버와 자동 설정으로 실행되는 흐름을 설명할 수 있다.</li><li>화면: 세 개의 목표를 아이콘 중심으로 배치. 서버 아이콘, HTTP 화살표, Spring Boot 실행 버튼.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>오늘 목표는 자동차 정비사가 되기 전에 “운전자가 시동을 걸면 엔진, 변속기, 바퀴가 어떤 순서로 움직이는지”를 보는 것이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>교육용 시나리오: 실무에서 장애가 났을 때 “브라우저 문제인지, 웹 서버 문제인지, 애플리케이션 코드 문제인지”를 구분하지 못하면 원인 분석이 느려진다. 오늘 내용은 나중에 장애를 분리해서 보는 기초가 된다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>Three-step visual roadmap for a Spring Boot beginner lesson: server role, HTTP request-response, embedded server run button. Clean icons, light background, no text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li><code>[과정개요서] 스프링 부트 기초_v3(완료).hwpx</code>의 1차시 학습내용.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이번 차시의 핵심은 요청과 응답입니다. 사용자가 브라우저에서 주소를 입력하거나 버튼을 클릭하면 요청이 만들어집니다. 그 요청은 네트워크를 지나 서버 프로그램에 도착하고, 서버 프로그램은 필요한 처리를 한 뒤 응답을 돌려줍니다. 오늘은 이 흐름을 아주 쉬운 수준에서 잡아보겠습니다. 첫째, 서버 프로그램이 하는 일을 이해합니다. 둘째, 웹 서버와 웹 애플리케이션 서버가 어떤 점에서 다른지 봅니다. 셋째, Spring Boot에서는 왜 Tomcat을 따로 설치하지 않아도 애플리케이션이 실행되는지 확인합니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-4">
+      <div class="slide-head"><h2>Slide 4. 서버 프로그램은 요청을 받아 결과를 돌려주는 일꾼이다</h2><span class="tag">GPT image</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <img src="../assets/images/ch01/ch01_restaurant_request_response.png" alt="식당 주문 비유 이미지">
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 서버 프로그램의 기본 역할</li><li>짧은 문구:</li><li>요청을 받는다</li><li>필요한 처리를 한다</li><li>응답을 돌려준다</li><li>화면: 손님 -&gt; 주문서 -&gt; 주방 -&gt; 완성된 음식 흐름의 큰 일러스트.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>서버 프로그램은 식당 주방과 같다. 손님이 “김치찌개 주세요”라고 주문하면, 주방은 주문을 해석하고 음식을 만들어 다시 내보낸다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>교육용 시나리오: 회사의 사내 게시판에서 사용자가 “공지사항 목록”을 클릭한다. 서버 프로그램은 목록 요청을 받고, 데이터베이스에서 공지사항을 찾아, 브라우저가 이해할 수 있는 응답으로 돌려준다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>이미지에서 손님은 브라우저, 주문서는 HTTP 요청, 주방은 서버 프로그램, 완성된 음식은 HTTP 응답이라고 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>A friendly restaurant kitchen analogy for server program: customer sends an order ticket, kitchen processes it, waiter returns a dish. Educational, flat illustration, no text, 16:9.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview: HTTP는 웹에서 데이터를 교환하는 기반이며 클라이언트-서버 프로토콜이라고 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>서버 프로그램을 아주 단순하게 말하면, 요청을 받고 응답을 돌려주는 프로그램입니다. 여기서 요청은 사용자가 원하는 일입니다. 예를 들어 “공지사항 목록을 보여 주세요”, “회원 정보를 저장해 주세요”, “Todo 하나를 등록해 주세요” 같은 것이 요청입니다. 서버 프로그램은 이 요청을 해석하고, 필요한 로직을 실행하고, 데이터가 필요하면 데이터베이스와도 이야기한 뒤, 결과를 응답으로 돌려줍니다. 이 구조를 식당에 비유하면 쉽습니다. 손님은 브라우저입니다. 주문서는 HTTP 요청입니다. 주방은 서버 프로그램입니다. 완성된 음식은 HTTP 응답입니다. 앞으로 우리가 작성할 Controller, Service, Repository 코드는 모두 이 주방 안에서 각자 맡은 일을 하는 구성원이라고 보면 됩니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-5">
+      <div class="slide-head"><h2>Slide 5. HTTP는 브라우저와 서버가 주고받는 약속이다</h2><span class="tag">D2 fallback</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">HTTP 요청<br>GET /hello</div><div class="arrow">→</div><div class="node">Spring Boot 서버</div><div class="arrow">→</div><div class="node key">200 OK<br>Hello</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: HTTP 요청과 응답</li><li>짧은 문구:</li><li>Request: 브라우저가 서버에 보내는 메시지</li><li>Response: 서버가 브라우저에 돌려주는 메시지</li><li>화면: 브라우저 -&gt; GET /hello -&gt; 서버 -&gt; 200 OK + Hello 흐름.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>HTTP는 택배 운송장 양식과 같다. 보내는 사람, 받는 사람, 주소, 요청 내용이 일정한 규칙으로 적혀 있어야 배송이 가능하다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 개발자가 API가 안 된다고 말할 때, 실제로는 서버가 죽은 것이 아니라 요청 경로가 <code>/hello</code>가 아니라 <code>/helo</code>로 잘못 들어간 경우가 많다. HTTP 요청의 경로와 응답 상태 코드를 볼 줄 알면 이런 문제를 빨리 찾는다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>D2 diagram: <code>assets/diagrams/ch01_http-request-response.d2</code></li></ul><pre class="asset-code"><code class="language-d2">direction: right
+
+classes: {
+  input: {
+    shape: rectangle
+    style: { fill: &quot;#f0f0f0&quot;; stroke: &quot;#111111&quot;; stroke-width: 1; border-radius: 8; font-size: 24 }
+  }
+  component: {
+    shape: rectangle
+    style: { fill: white; stroke: &quot;#111111&quot;; stroke-width: 1; border-radius: 8; font-size: 24 }
+  }
+  key: {
+    shape: hexagon
+    style: { fill: &quot;#f8f8f8&quot;; stroke: &quot;#111111&quot;; stroke-width: 2; font-size: 24 }
+  }
+}
+
+browser: &quot;브라우저&quot; { class: input }
+request: &quot;HTTP 요청\nGET /hello&quot; { class: key }
+server: &quot;Spring Boot 서버&quot; { class: component }
+response: &quot;HTTP 응답\n200 OK + Hello&quot; { class: key }
+screen: &quot;화면에 결과 표시&quot; { class: input }
+
+browser -&gt; request: &quot;주소 입력&quot;
+request -&gt; server: &quot;요청 전달&quot;
+server -&gt; response: &quot;처리 결과&quot;
+response -&gt; screen: &quot;응답 표시&quot;</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview: <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview" target="_blank" rel="noreferrer">https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview</a></li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>브라우저와 서버가 아무 규칙 없이 대화하면 서로 알아들을 수 없습니다. 그래서 웹에서는 HTTP라는 약속을 사용합니다. HTTP 요청은 브라우저가 서버에 보내는 메시지입니다. 예를 들어 <code>GET /hello</code>는 <code>/hello</code>라는 자원을 가져오고 싶다는 뜻입니다. 서버는 요청을 처리한 뒤 응답을 돌려줍니다. 응답에는 성공 여부를 나타내는 상태 코드가 들어갑니다. 대표적으로 <code>200 OK</code>는 요청이 성공했다는 뜻입니다. 이 흐름을 택배 운송장으로 생각해도 좋습니다. 주소가 잘못되면 택배가 엉뚱한 곳으로 갑니다. HTTP 요청에서도 경로, 메서드, 헤더, 본문 같은 정보가 맞아야 서버가 원하는 처리를 할 수 있습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>없음. 후반 실습에서 브라우저로 <code><a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></code> 호출 예정.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-6">
+      <div class="slide-head"><h2>Slide 6. HTTP 메시지는 사람이 읽을 수 있는 구조를 가진다</h2><span class="tag">HTTP visual</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="split"><pre><code>GET /hello HTTP/1.1
+Host: localhost:8080</code></pre><pre><code>HTTP/1.1 200 OK
+Content-Type: text/plain
+
+Hello Spring Boot</code></pre></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 요청과 응답은 구조가 있다</li><li>화면:</li><li>왼쪽: 요청 예시 <code>GET /hello HTTP/1.1</code></li><li>오른쪽: 응답 예시 <code>HTTP/1.1 200 OK</code></li><li>하단: Method, Path, Status Code 라벨.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>HTTP 메시지는 회사의 결재 양식과 같다. 제목, 요청 내용, 첨부 내용, 승인 결과가 정해진 칸에 들어간다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 프론트엔드 개발자가 “서버에서 오류가 나요”라고 말한다. 백엔드 개발자는 브라우저 개발자 도구의 Network 탭을 열어 요청 경로, 메서드, 응답 상태 코드를 먼저 확인한다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>Educational split layout showing an HTTP request form and HTTP response form as simple readable documents, with highlighted method, path, and status areas, clean Korean lecture slide style, no actual readable text.</code></li><li>Code block for slide:</li></ul><pre class="asset-code"><code class="language-http">GET /hello HTTP/1.1
+Host: localhost:8080</code></pre><pre class="asset-code"><code class="language-http">HTTP/1.1 200 OK
+Content-Type: text/plain
+
+Hello Spring Boot</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview, HTTP Messages section.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>HTTP 메시지는 생각보다 사람이 읽기 쉬운 구조로 되어 있습니다. 요청에는 어떤 방식으로 요청하는지, 어느 경로를 요청하는지, 추가 정보가 무엇인지가 들어갑니다. 응답에는 요청이 성공했는지 실패했는지를 나타내는 상태 코드와 실제 응답 내용이 들어갑니다. 이 구조를 알면 나중에 REST API를 만들 때 훨씬 편합니다. 예를 들어 GET은 조회, POST는 등록처럼 역할을 나누어 생각할 수 있습니다. 오늘은 아주 깊게 들어가지는 않지만, “브라우저와 서버는 요청 메시지와 응답 메시지를 주고받는다”는 그림만은 꼭 기억해 주세요.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>브라우저 개발자 도구 Network 탭 캡처 후보. 1차시 PPT에는 개념 캡처 또는 후반 실습 캡처로 활용.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-7">
+      <div class="slide-head"><h2>Slide 7. 웹 서버는 정적 파일을 빠르게 전달하는 문지기다</h2><span class="tag">mock visual</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">웹 서버</div><div class="arrow">→</div><div class="node input">HTML<br>CSS<br>이미지</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 웹 서버의 대표 역할</li><li>짧은 문구:</li><li>HTML, CSS, JS, 이미지 전달</li><li>정적 파일 처리에 강함</li><li>필요하면 WAS로 요청 전달</li><li>화면: 웹 서버가 파일 캐비닛에서 HTML/CSS/이미지를 꺼내 브라우저로 전달하는 그림.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>웹 서버는 매장 입구의 안내 직원과 같다. 준비된 안내 책자나 메뉴판은 바로 꺼내 주고, 복잡한 상담은 담당자에게 넘긴다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 회사 홈페이지의 로고 이미지, CSS 파일, JavaScript 파일은 매번 복잡한 비즈니스 로직을 거칠 필요가 없다. 이런 정적 리소스는 웹 서버가 빠르게 전달하는 것이 효율적이다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>A web server as a front desk clerk handing static files like HTML, CSS, JavaScript, and images to a browser, simple technical metaphor, flat vector, no readable text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview: 클라이언트가 서버에 요청하고 서버가 문서나 리소스를 제공한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 웹 서버와 웹 애플리케이션 서버의 차이를 보겠습니다. 먼저 웹 서버는 정적 파일을 전달하는 역할에 강합니다. 정적 파일은 이미 만들어져 있는 파일입니다. HTML, CSS, JavaScript, 이미지 파일처럼 요청이 들어올 때마다 복잡한 계산을 하지 않아도 되는 리소스입니다. 웹 서버를 매장 입구 안내 직원으로 생각하면 쉽습니다. 손님이 메뉴판을 달라고 하면 바로 꺼내 줍니다. 하지만 손님이 “내 주문 상태를 확인해 주세요”처럼 개인별 처리가 필요한 요청을 하면, 안내 직원은 담당 부서나 주방으로 요청을 넘겨야 합니다. 그때 등장하는 것이 웹 애플리케이션 서버입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-8">
+      <div class="slide-head"><h2>Slide 8. WAS는 실행 중인 애플리케이션 로직을 처리한다</h2><span class="tag">D2 fallback</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">WAS<br>애플리케이션 로직</div><div class="arrow">→</div><div class="node input">DB</div><div class="arrow">→</div><div class="node">동적 응답</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: WAS는 동적인 요청을 처리한다</li><li>짧은 문구:</li><li>로그인</li><li>게시글 등록</li><li>주문 처리</li><li>데이터베이스 연동</li><li>화면: WAS 안에 Controller, Service, Repository, DB 연결이 있는 그림.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>WAS는 식당 주방장과 조리팀이다. 손님마다 다른 주문을 받고, 상황에 맞게 요리해서 결과를 만든다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: “내 장바구니 보기” 요청은 사용자마다 결과가 다르다. 단순 파일 전달이 아니라 로그인 사용자 확인, 장바구니 데이터 조회, 응답 생성이 필요하므로 애플리케이션 로직이 실행되어야 한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>D2 diagram: <code>assets/diagrams/ch01_webserver-was-role.d2</code></li></ul><pre class="asset-code"><code class="language-d2">direction: right
+
+classes: {
+  input: { shape: rectangle; style: { fill: &quot;#f0f0f0&quot;; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  component: { shape: rectangle; style: { fill: white; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  key: { shape: hexagon; style: { fill: &quot;#f8f8f8&quot;; stroke: &quot;#111111&quot;; stroke-width: 2; font-size: 23 } }
+  db: { shape: cylinder; style: { fill: &quot;#eeeeee&quot;; stroke: &quot;#111111&quot;; font-size: 23 } }
+}
+
+browser: &quot;브라우저&quot; { class: input }
+web: &quot;웹 서버\n정적 파일&quot; { class: component }
+was: &quot;WAS\n애플리케이션 로직&quot; { class: key }
+db: &quot;DB&quot; { class: db }
+
+browser -&gt; web: &quot;이미지/CSS 요청&quot;
+browser -&gt; was: &quot;로그인/등록 요청&quot;
+was -&gt; db: &quot;데이터 조회/저장&quot;
+db -&gt; was: &quot;결과&quot;
+was -&gt; browser: &quot;동적 응답&quot;
+web -&gt; browser: &quot;정적 응답&quot;</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview, Spring Boot 공식 문서.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>WAS는 Web Application Server의 줄임말입니다. 이름 그대로 웹 애플리케이션이 실행되는 서버입니다. 여기서는 단순히 파일을 전달하는 수준을 넘어 애플리케이션 코드가 실제로 동작합니다. 로그인, 게시글 등록, 주문 처리, 데이터베이스 조회처럼 요청마다 결과가 달라지는 일을 처리합니다. Spring Boot로 만든 웹 애플리케이션도 결국 이런 애플리케이션 로직을 실행합니다. 다만 Spring Boot에서는 내장 Tomcat 같은 서버가 애플리케이션 안에 함께 들어와 실행되기 때문에, 초보자 입장에서는 “서버 설치”보다 “애플리케이션 실행”으로 시작할 수 있습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-9">
+      <div class="slide-head"><h2>Slide 9. 과거 방식: 서버를 따로 설치하고 애플리케이션을 올렸다</h2><span class="tag">scenario</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">개발 코드</div><div class="arrow">→</div><div class="node">배포 파일</div><div class="arrow">→</div><div class="node key">외부 Tomcat</div><div class="arrow">→</div><div class="node">실행</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 전통적인 배포 흐름</li><li>짧은 문구:</li><li>Tomcat 설치</li><li>WAR 파일 배포</li><li>서버 설정 관리</li><li>화면: 개발자가 WAR 박스를 외부 Tomcat 서버 랙에 올리는 장면.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>예전 방식은 공연장을 먼저 빌리고, 그 무대 위에 공연팀을 올리는 방식과 비슷하다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 예전 프로젝트에서는 개발자가 로컬 Tomcat 버전, 서버 설정, 배포 경로가 달라 실행 오류를 겪는 일이 잦았다. 같은 코드라도 누구의 PC에서는 되고, 누구의 PC에서는 안 되는 문제가 생겼다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>A developer carrying a WAR package box to a separate large Tomcat server rack, old-style deployment metaphor, slightly humorous but professional, no readable text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 공식 문서: Spring Boot는 <code>java -jar</code> 실행 또는 전통적인 WAR 배포를 모두 언급한다.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>Spring Boot를 제대로 이해하려면 과거 방식도 잠깐 볼 필요가 있습니다. 전통적인 Java 웹 애플리케이션에서는 Tomcat 같은 서버를 따로 설치하고, 우리가 만든 애플리케이션을 WAR 파일로 만들어 그 서버에 배포하는 흐름이 많았습니다. 이 방식은 여전히 사용할 수 있지만, 초보자가 처음 배우기에는 설정할 것이 많습니다. Tomcat 버전, 포트, 배포 경로, 서버 설정이 맞아야 합니다. 그래서 개발 환경이 조금만 달라도 “내 PC에서는 되는데 다른 PC에서는 안 된다”는 문제가 생기기 쉽습니다. Spring Boot는 이런 시작 장벽을 크게 낮춰 줍니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-10">
+      <div class="slide-head"><h2>Slide 10. Spring Boot 방식: 애플리케이션이 서버를 품고 실행된다</h2><span class="tag">GPT image + D2</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <img src="../assets/images/ch01/ch01_foodtruck_embedded_server.png" alt="푸드트럭 내장 서버 비유 이미지">
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: Spring Boot는 내장 서버로 바로 실행된다</li><li>짧은 문구:</li><li>애플리케이션 실행</li><li>내장 Tomcat 시작</li><li>요청 처리 준비 완료</li><li>화면: 하나의 Spring Boot 상자 안에 Java 코드와 Tomcat 엔진이 함께 들어 있는 그림.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>Spring Boot 방식은 푸드트럭과 같다. 주방을 따로 빌리지 않고, 주방을 차 안에 싣고 바로 영업을 시작한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 팀원이 새 프로젝트를 받아서 <code>Run As &gt; Spring Boot App</code>을 눌렀더니 바로 8080 포트로 서버가 뜬다. 별도 Tomcat 설치 없이 API 확인이 가능해져 온보딩 시간이 줄어든다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>D2 diagram: <code>assets/diagrams/ch01_springboot-embedded-server.d2</code></li></ul><pre class="asset-code"><code class="language-d2">direction: right
+
+classes: {
+  input: { shape: rectangle; style: { fill: &quot;#f0f0f0&quot;; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  component: { shape: rectangle; style: { fill: white; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  key: { shape: hexagon; style: { fill: &quot;#f8f8f8&quot;; stroke: &quot;#111111&quot;; stroke-width: 2; font-size: 23 } }
+}
+
+developer: &quot;개발자&quot; { class: input }
+main: &quot;main()\nSpringApplication.run&quot; { class: key }
+spring: &quot;Spring 컨테이너 시작&quot; { class: component }
+tomcat: &quot;내장 Tomcat 시작&quot; { class: key }
+ready: &quot;localhost:8080\n요청 대기&quot; { class: input }
+
+developer -&gt; main: &quot;실행&quot;
+main -&gt; spring: &quot;애플리케이션 부트스트랩&quot;
+spring -&gt; tomcat: &quot;웹 서버 자동 시작&quot;
+tomcat -&gt; ready: &quot;서버 준비 완료&quot;</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>SpringApplication.run</code>이 Spring을 시작하고 자동 설정된 Tomcat 웹 서버를 시작한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>Spring Boot의 매우 중요한 특징은 내장 서버입니다. Spring Boot 애플리케이션을 실행하면, 우리가 만든 코드만 실행되는 것이 아닙니다. <code>main()</code> 메서드가 <code>SpringApplication.run()</code>을 호출하고, 이 과정에서 Spring 애플리케이션이 시작됩니다. 웹 애플리케이션에 필요한 의존성이 들어 있으면 Spring Boot가 웹 애플리케이션이라고 판단하고 내장 Tomcat을 함께 시작합니다. 그래서 개발자는 외부 Tomcat을 따로 설치하지 않아도 <code>localhost:8080</code>으로 접속해서 결과를 확인할 수 있습니다. 방금 비유한 것처럼, 공연장을 따로 빌리는 방식이 아니라 푸드트럭처럼 실행에 필요한 환경을 함께 가지고 움직이는 느낌입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>후반 실습에서 STS4에서 애플리케이션을 실행하고 콘솔 로그의 Tomcat started 메시지를 캡처한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-11">
+      <div class="slide-head"><h2>Slide 11. 자동 설정은 “상황을 보고 기본 준비를 해주는 도우미”다</h2><span class="tag">D2 fallback</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">Web MVC<br>스타터</div><div class="arrow">→</div><div class="node key">Spring Boot<br>자동 설정</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node">내장 Tomcat</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: Auto-configuration은 기본 설정을 자동으로 잡아준다</li><li>짧은 문구:</li><li>Web MVC starter 있음</li><li>Spring MVC/Tomcat 설정 추정</li><li>개발자는 핵심 코드에 집중</li><li>화면: Spring Boot가 프로젝트 가방 안의 의존성을 보고 필요한 장비를 자동으로 꺼내는 그림.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>자동 설정은 캠핑 초보를 돕는 캠핑 매니저와 같다. 텐트가 있으면 팩과 망치를 챙기고, 버너가 있으면 가스도 챙겨 준다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 과거에는 XML 설정이나 서버 설정을 많이 만져야 했지만, Spring Boot 4 프로젝트에서는 <code>spring-boot-starter-webmvc</code>를 추가하면 웹 애플리케이션에 필요한 기본 구성이 자동으로 잡힌다. 덕분에 신입 개발자가 처음부터 복잡한 설정 파일에 파묻히지 않는다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>Spring Boot as a helpful setup assistant looking inside a project backpack and automatically preparing web server, MVC routing, and default configuration tools, clean technical cartoon, no text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>@EnableAutoConfiguration</code>은 추가된 jar 의존성을 기준으로 Spring 구성을 추정하고, <code>spring-boot-starter-webmvc</code>가 Tomcat과 Spring MVC를 추가하면 웹 애플리케이션으로 설정한다고 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>Spring Boot를 쓰면 설정이 완전히 사라지는 것은 아닙니다. 하지만 기본 설정의 부담이 크게 줄어듭니다. 자동 설정은 프로젝트의 의존성과 상황을 보고 “이 프로젝트는 웹 애플리케이션이겠구나”, “그러면 Spring MVC와 Tomcat 구성이 필요하겠구나”처럼 기본 구성을 잡아주는 기능입니다. 이것은 초보자에게 특히 중요합니다. 처음부터 모든 설정을 직접 작성하려고 하면, 서버 프로그램을 만들기도 전에 설정 파일에서 길을 잃을 수 있습니다. Spring Boot는 일단 동작하는 기본값을 제공하고, 개발자가 필요할 때 그 기본값을 바꿀 수 있게 해줍니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>후반 실습에서 <code>spring-boot-starter-webmvc</code>가 들어가면 웹 서버가 실행되는 흐름을 설명한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-12">
+      <div class="slide-head"><h2>Slide 12. 실무 중간 사례: “서버 설치부터 하라”는 말이 줄어든다</h2><span class="tag">comic mock</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="split">
+            <div class="panel old"><h4>설정 먼저</h4><p>서버 설치</p><p>런타임 등록</p><p>배포 경로 확인</p></div>
+            <div class="panel new"><h4>실행 먼저</h4><p>Gradle 프로젝트 import</p><p>Run As Spring Boot App</p><p>localhost 확인</p></div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 실무에서는 실행 환경 단순화가 큰 장점이다</li><li>화면: 두 개발자 비교.</li><li>A: 외부 서버 설치, 포트 설정, 배포 오류로 지친 모습</li><li>B: Spring Boot App 실행 후 브라우저 확인</li><li>화면 글자는 최소화: “설정 먼저” vs “실행 먼저”</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>조립식 가구를 살 때, 나사와 공구를 따로 찾는 것보다 필요한 공구가 함께 들어 있으면 시작이 훨씬 쉽다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>교육용 시나리오: 신입 개발자 민수는 기존 Java 웹 프로젝트를 처음 실행하면서 Tomcat 설치, 서버 런타임 등록, WAR 배포 경로 때문에 반나절을 보냈다. 옆자리 개발자 지연은 Spring Boot 프로젝트를 열고 <code>Run As &gt; Spring Boot App</code>으로 바로 실행해 보라고 알려준다. 민수는 먼저 서버가 뜨는 경험을 하고, 이후에 요청 흐름과 코드를 차근차근 배운다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Comic panel prompt: <code>Two-panel comic for a programming lecture. Panel 1: beginner developer overwhelmed by external server setup dialogs and configuration papers. Panel 2: teammate points to a simple Run Spring Boot App button and browser shows localhost running. Warm office style, no readable text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Tools 공식 페이지: Spring Initializr와 Spring Guides 통합으로 빠르게 실행 가능한 Spring Boot 앱을 시작할 수 있다는 설명.</li><li>Spring Boot 공식 문서: Spring Boot 애플리케이션은 <code>java -jar</code>로 시작할 수 있다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>여기서 실무적인 장점을 하나 짚고 넘어가겠습니다. Spring Boot를 쓰면 개발자가 서버 설치와 배포 설정부터 배우지 않아도, 먼저 애플리케이션을 실행해 볼 수 있습니다. 물론 운영 환경에서는 여전히 배포와 설정이 중요합니다. 하지만 학습과 개발 초기 단계에서는 “일단 실행된다”는 경험이 매우 중요합니다. 실행이 되어야 요청을 보내 보고, 로그를 보고, Controller 코드를 고쳐 보고, 다시 결과를 확인할 수 있습니다. Spring Tools와 Spring Boot는 이 시작 경험을 단순하게 만들어 줍니다. 그래서 우리는 오늘 STS4에서 직접 애플리케이션을 실행해 보고, 브라우저에서 응답을 확인할 예정입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>없음. 실습 전 동기 부여.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-13">
+      <div class="slide-head"><h2>Slide 13. 실습 준비: 오늘 만들 가장 작은 서버 프로그램</h2><span class="tag">practice goal</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: <code>/hello</code>에 응답하는 가장 작은 서버</li><li>화면:</li><li>프로젝트명: <code>ch01-hello-server</code></li><li>주소: <code><a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></code></li><li>응답: <code>Hello Spring Boot</code></li><li>하단에는 STS4 실행 화면 캡처 자리 표시.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>처음 식당을 열 때 모든 메뉴를 만들 필요는 없다. 먼저 “물 한 잔 주세요”라는 주문에 응답해 보는 것부터 시작한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 새 서버 프로젝트를 만들면 가장 먼저 하는 일 중 하나가 health check나 hello endpoint를 만들어 “서버가 살아 있는지” 확인하는 것이다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Screenshot plan:</li><li>STS4 시작 화면 또는 workspace 화면.</li><li>Spring Starter Project 생성 화면.</li><li>프로젝트 구조.</li><li><code>HelloController.java</code>.</li><li>Console의 Started 로그.</li><li>브라우저 <code>localhost:8080/hello</code> 응답.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Tools 공식 페이지: Spring Tools for Eclipse, Spring Initializr 통합.</li><li>Spring Boot 첫 애플리케이션 튜토리얼: 작은 Hello World 웹 애플리케이션 예시.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 실습으로 넘어가겠습니다. 오늘 만들 코드는 아주 작습니다. <code>/hello</code>라는 주소로 요청이 들어오면 <code>Hello Spring Boot</code>라는 문자열을 응답하는 서버 프로그램입니다. 이 작은 예제가 중요한 이유는, 앞으로 만들 모든 API가 같은 구조를 확장하기 때문입니다. 주소를 정하고, 요청을 받고, 메서드를 실행하고, 응답을 돌려주는 흐름은 동일합니다. 오늘은 복잡한 데이터베이스나 화면은 사용하지 않습니다. 대신 서버가 켜지고, 브라우저 요청이 들어오고, 응답이 나가는 전체 흐름을 눈으로 확인하는 데 집중합니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>STS4에서 Spring Starter Project 생성.</li><li>Dependencies: Spring Web MVC starter.</li><li>실습 기준: JDK 21, Spring Boot 4.1.0, Gradle, Spring Tools for Eclipse 5.2.0 이상.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-14">
+      <div class="slide-head"><h2>Slide 14. 실습 1: Spring Starter Project 만들기</h2><span class="tag">Spring Tools mock</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="ide">
+            <div class="tree">Spring Starter Project
+
+Name: ch01-hello-server
+Type: Gradle
+Spring Boot: 4.1.0
+Java: 21
+Packaging: Jar
+Package: com.example.ch01</div>
+            <div class="editor"><div class="tab">New Spring Starter Project</div><pre><code>Group     com.example
+Artifact  ch01-hello-server
+Package   com.example.ch01
+Dependency: Spring Web MVC</code></pre></div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: Spring Starter Project 생성</li><li>화면:</li><li>STS4 New &gt; Spring Starter Project 화면 캡처</li><li>Group: <code>com.example</code></li><li>Artifact: <code>ch01-hello-server</code></li><li>Name: <code>ch01-hello-server</code></li><li>Package: <code>com.example.ch01</code></li><li>짧은 문구: “웹 의존성을 추가하면 서버 실행 준비가 쉬워진다”</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>프로젝트 생성은 빈 가게를 계약하는 단계다. 어떤 업종인지 정하면 필요한 기본 설비를 함께 준비한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 팀에서 새 API 서버를 만들 때 처음부터 폴더와 빌드 파일을 손으로 모두 만들기보다, Spring Initializr로 기본 구조를 만들고 팀 규칙에 맞게 조정하는 경우가 많다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Screenshot plan: STS4 Spring Starter Project wizard.</li><li>GPT support image prompt: <code>A simple visual metaphor of choosing project options like selecting ingredients before starting a small server shop, clean educational style, no text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Tools 공식 페이지: Spring Initializr 통합으로 빠르게 Spring Boot 앱을 시작할 수 있다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>STS4에서 Spring Starter Project를 만들어 보겠습니다. 여기서 Group, Artifact, Name, Package 같은 항목을 입력합니다. 지금은 이름 자체보다 “프로젝트 기본 구조를 자동으로 만든다”는 점이 중요합니다. 우리가 MVC 웹 애플리케이션을 만들 것이기 때문에 Web MVC 스타터를 추가합니다. 이 스타터가 들어가면 Spring Boot는 이 프로젝트가 웹 요청을 받을 애플리케이션이라고 판단할 수 있습니다. 나중에 자동 설정과 내장 서버가 이 정보를 활용합니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>STS4 메뉴: <code>File &gt; New &gt; Spring Starter Project</code></li><li>입력 예:</li><li>Name: <code>ch01-hello-server</code></li><li>Type: Gradle - Groovy</li><li>Spring Boot: 4.1.0</li><li>Java: 21</li><li>Packaging: Jar</li><li>Package: <code>com.example.ch01</code></li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-15">
+      <div class="slide-head"><h2>Slide 15. 실습 2: Web MVC 스타터 추가하기</h2><span class="tag">Gradle code</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <pre><code>plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.1.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+description = 'Lesson 1 Spring Boot hello server practice code'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}</code></pre>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: Web MVC 스타터는 웹 서버 실행의 힌트가 된다</li><li>화면:</li><li>Dependencies 선택 화면 캡처</li><li>Spring Web MVC 선택 표시</li><li>오른쪽에는 “Tomcat + Spring MVC 자동 구성” 미니 아이콘</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>“라면 가게”라고 업종을 정하면 냄비, 버너, 물, 그릇 같은 기본 도구가 준비되는 것과 같다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 신입 개발자가 “왜 아무 설정도 안 했는데 8080 포트가 열리나요?”라고 묻는다. 선배 개발자는 “Web MVC 스타터가 들어가 있어서 Boot가 웹 애플리케이션으로 보고 내장 서버를 준비한 것”이라고 설명한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>먼저 제목으로 이 코드가 왜 필요한지 말하고, 어노테이션, 메서드, 반환값 순서로 코드를 읽는다. 마지막에는 이 코드가 요청-응답 흐름에서 맡는 위치를 연결한다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>D2 mini diagram:</li></ul><pre class="asset-code"><code class="language-d2">direction: right
+
+classes: {
+  input: { shape: rectangle; style: { fill: &quot;#f0f0f0&quot;; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  component: { shape: rectangle; style: { fill: white; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 23 } }
+  key: { shape: hexagon; style: { fill: &quot;#f8f8f8&quot;; stroke: &quot;#111111&quot;; stroke-width: 2; font-size: 23 } }
+}
+
+dep: &quot;Web MVC\n스타터&quot; { class: input }
+boot: &quot;Spring Boot\n자동 설정&quot; { class: key }
+mvc: &quot;Spring MVC&quot; { class: component }
+tomcat: &quot;내장 Tomcat&quot; { class: component }
+
+dep -&gt; boot: &quot;클래스패스 확인&quot;
+boot -&gt; mvc: &quot;요청 처리 구성&quot;
+boot -&gt; tomcat: &quot;서버 실행 구성&quot;</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>spring-boot-starter-webmvc</code>가 Tomcat과 Spring MVC를 추가하고, 자동 설정이 웹 애플리케이션으로 설정한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>의존성은 Spring Boot에게 중요한 힌트를 줍니다. Spring Boot 4.1.0 기준의 MVC 웹 실습에서는 <code>spring-boot-starter-webmvc</code>를 사용합니다. 이 스타터가 들어가면 프로젝트 안에 웹 요청을 처리하는 데 필요한 Spring MVC와 내장 Tomcat 관련 라이브러리들이 들어옵니다. Spring Boot는 클래스패스에 어떤 라이브러리가 있는지 보고 기본 설정을 추정합니다. 그래서 Web MVC 스타터가 있으면 “이 프로젝트는 MVC 웹 애플리케이션이겠구나”라고 판단하고 Spring MVC와 내장 Tomcat 구성을 준비합니다. 이 지점이 Spring Boot의 시작 경험을 편하게 만드는 핵심입니다. 개발자는 처음부터 서버 설정 파일을 모두 작성하지 않고, Controller 코드부터 작성해 볼 수 있습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>Dependencies에서 <code>Spring Web MVC</code> 선택.</li><li>프로젝트 생성 완료 후 <code>build.gradle</code>에 <code>spring-boot-starter-webmvc</code>가 들어갔는지 확인하는 캡처를 추가한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-16">
+      <div class="slide-head"><h2>Slide 16. 실습 3: HelloController 작성하기</h2><span class="tag">Java code</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <pre><code>package com.example.ch01;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping(&quot;/hello&quot;)
+    public String hello() {
+        return &quot;Hello Spring Boot&quot;;
+    }
+}</code></pre>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 요청을 받을 Controller 만들기</li><li>화면:</li><li><code>HelloController.java</code> 코드 크게 표시</li><li>핵심 강조: <code>@RestController</code>, <code>@GetMapping(&quot;/hello&quot;)</code></li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>Controller는 식당의 주문 접수 담당자다. “/hello 주문”이 들어오면 정해진 응답을 준비한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: API 서버에서 Controller는 외부 요청이 처음 들어오는 창구다. 팀에서는 URL 규칙을 정하고, 각 Controller가 어떤 요청을 받을지 명확히 관리한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>먼저 제목으로 이 코드가 왜 필요한지 말하고, 어노테이션, 메서드, 반환값 순서로 코드를 읽는다. 마지막에는 이 코드가 요청-응답 흐름에서 맡는 위치를 연결한다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Code block for PPT:</li></ul><pre class="asset-code"><code class="language-java">package com.example.ch01;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloController {
+
+    @GetMapping(&quot;/hello&quot;)
+    public String hello() {
+        return &quot;Hello Spring Boot&quot;;
+    }
+}</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>@RestController</code>, <code>@RequestMapping</code>이 웹 요청 처리와 라우팅 정보를 제공한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 Controller를 작성합니다. <code>@RestController</code>는 이 클래스가 웹 요청을 처리하는 Controller 역할을 한다는 표시입니다. <code>@GetMapping(&quot;/hello&quot;)</code>는 <code>/hello</code> 경로로 들어오는 GET 요청을 이 메서드가 처리한다는 뜻입니다. 메서드는 문자열을 반환합니다. <code>@RestController</code>를 사용하면 이 문자열은 별도 화면 템플릿으로 가지 않고, 응답 본문에 바로 담겨 브라우저로 전달됩니다. 지금은 코드가 아주 짧지만, 이 구조가 뒤에서 REST API를 만들 때 계속 반복됩니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>STS4에서 <code>src/main/java/com/example/ch01/HelloController.java</code> 생성.</li><li>위 코드 입력.</li><li>저장.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-17">
+      <div class="slide-head"><h2>Slide 17. 실습 4: main 메서드가 애플리케이션을 시작한다</h2><span class="tag">Java code</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <pre><code>package com.example.ch01;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Ch01HelloServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Ch01HelloServerApplication.class, args);
+    }
+}</code></pre>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 시작점은 <code>main()</code>이다</li><li>화면:</li><li><code>Ch01HelloServerApplication.java</code> 코드</li><li><code>SpringApplication.run(...)</code> 강조</li><li>오른쪽에 실행 버튼 아이콘</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li><code>main()</code>은 가게의 전원 스위치다. 스위치를 켜면 조명, 냉장고, 주방 장비가 차례로 켜진다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 운영 장애 분석 중 서버가 시작되지 않는다면, 개발자는 먼저 애플리케이션 시작 로그와 <code>main()</code>에서 어떤 설정이 로딩되는지 확인한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>먼저 제목으로 이 코드가 왜 필요한지 말하고, 어노테이션, 메서드, 반환값 순서로 코드를 읽는다. 마지막에는 이 코드가 요청-응답 흐름에서 맡는 위치를 연결한다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Code block:</li></ul><pre class="asset-code"><code class="language-java">package com.example.ch01;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class Ch01HelloServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Ch01HelloServerApplication.class, args);
+    }
+}</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>main</code> 메서드가 <code>SpringApplication.run</code>을 호출하고, Spring과 자동 설정된 Tomcat 웹 서버를 시작한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>Java 애플리케이션의 시작점은 <code>main()</code> 메서드입니다. Spring Boot 애플리케이션도 마찬가지입니다. 다만 <code>main()</code> 안에서 직접 서버를 하나하나 만드는 것이 아니라 <code>SpringApplication.run()</code>을 호출합니다. 이 호출이 Spring Boot 애플리케이션 시작의 핵심입니다. Spring 컨테이너가 시작되고, 필요한 Bean이 준비되고, 웹 애플리케이션이면 내장 Tomcat도 시작됩니다. 그래서 이 코드는 짧지만 매우 많은 일이 뒤에서 일어나게 만드는 출발점입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>생성된 <code>Ch01HelloServerApplication.java</code> 확인.</li><li><code>@SpringBootApplication</code>과 <code>SpringApplication.run</code> 위치를 강조한 캡처.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-18">
+      <div class="slide-head"><h2>Slide 18. 실습 5: Spring Boot App으로 실행하기</h2><span class="tag">Spring Tools mock</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="ide">
+            <div class="tree">ch01-hello-server
+  src/main/java
+    com.example.ch01
+      Ch01HelloServerApplication.java
+      HelloController.java
+  build.gradle</div>
+            <div class="editor"><div class="tab">Console</div><pre><code>:: Spring Boot :: (v4.1.0)
+Tomcat initialized with port 8080
+Tomcat started on port 8080
+Started Ch01HelloServerApplication</code></pre></div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 실행하면 내장 서버가 열린다</li><li>화면:</li><li>STS4 <code>Run As &gt; Spring Boot App</code> 캡처</li><li>Console의 Started 로그 캡처</li><li><code>Tomcat started on port 8080</code>에 하이라이트</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>푸드트럭 시동을 걸면 주방이 열리고 주문 받을 준비가 되는 것과 같다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 팀원이 “서버 실행했어요?”라고 물으면, 단순히 IDE 실행 버튼을 눌렀다는 뜻이 아니라 포트가 열리고 요청을 받을 준비가 되었는지 확인했다는 뜻이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>콘솔 또는 브라우저 화면에서 확인해야 할 한 줄을 먼저 짚고, 오류가 났을 때 확인할 포트, URL, Java 버전, 매핑 경로를 차례로 연결한다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Screenshot plan:</li><li>Project 우클릭 &gt; Run As &gt; Spring Boot App.</li><li>Console 로그.</li><li>포트 8080 표시.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Tools 공식 페이지: Spring Tools for Eclipse 제공.</li><li>Spring Boot 실행 예시와 STS4의 Spring Boot App 실행 흐름.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 애플리케이션을 실행해 보겠습니다. STS4에서는 프로젝트를 우클릭하고 <code>Run As &gt; Spring Boot App</code>을 선택할 수 있습니다. 실행하면 콘솔에 Spring Boot 배너와 여러 로그가 출력됩니다. 여기서 꼭 확인할 것은 애플리케이션이 시작되었다는 메시지와 포트 번호입니다. 기본적으로 8080 포트를 사용합니다. 포트가 열렸다는 것은 브라우저나 API 도구가 이 애플리케이션에 요청을 보낼 수 있다는 뜻입니다. 즉, 지금 우리 PC 안에서 작은 서버 프로그램이 실행 중인 상태입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>STS4에서 실행.</li><li>Console 로그 캡처.</li><li>오류 발생 시 체크:</li><li>이미 8080 포트를 쓰는 프로그램이 있는지 확인.</li><li>Java 버전이 프로젝트 설정과 맞는지 확인.</li><li>Controller 패키지가 애플리케이션 패키지 하위인지 확인.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-19">
+      <div class="slide-head"><h2>Slide 19. 실습 6: 브라우저에서 `/hello` 호출하기</h2><span class="tag">browser mock</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 브라우저가 요청하고 서버가 응답한다</li><li>화면:</li><li>주소창: <code><a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></code></li><li>화면 결과: <code>Hello Spring Boot</code></li><li>옆에 요청-응답 미니 화살표</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>손님이 “물 주세요”라고 말하자, 주방이 “여기 있습니다”라고 바로 응답한 상황이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 개발자는 새 API를 만들면 브라우저, curl, Postman 같은 도구로 요청을 보내 실제 응답이 오는지 확인한다. 이 작은 확인이 배포 전 문제를 줄인다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>콘솔 또는 브라우저 화면에서 확인해야 할 한 줄을 먼저 짚고, 오류가 났을 때 확인할 포트, URL, Java 버전, 매핑 경로를 차례로 연결한다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Screenshot plan:</li><li>Chrome/Edge 주소창에 <code>localhost:8080/hello</code>.</li><li>결과 화면 캡처.</li><li>선택 사항: 개발자 도구 Network 탭에서 Status 200 확인.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview: 클라이언트가 요청을 보내고 서버가 응답을 제공한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 브라우저에서 <code><a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></code>로 접속합니다. 브라우저는 이 주소를 바탕으로 HTTP 요청을 만듭니다. 요청은 우리 PC에서 실행 중인 Spring Boot 애플리케이션으로 전달됩니다. Spring Boot는 <code>/hello</code> 경로를 처리할 Controller 메서드를 찾고, 우리가 작성한 <code>hello()</code> 메서드를 실행합니다. 그 결과 문자열인 <code>Hello Spring Boot</code>가 응답으로 돌아옵니다. 화면에 이 문장이 보이면 오늘의 가장 작은 서버 프로그램은 성공적으로 동작한 것입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>브라우저에서 URL 입력.</li><li>결과 캡처.</li><li>Network 탭에서 request URL, status code 확인 캡처 후보.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-20">
+      <div class="slide-head"><h2>Slide 20. 요청이 코드까지 도착하는 전체 그림</h2><span class="tag">D2 fallback</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">브라우저<br>/hello</div><div class="arrow">→</div><div class="node key">내장 Tomcat</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node key">HelloController</div><div class="arrow">→</div><div class="node input">응답</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: <code>/hello</code> 요청은 어디로 흘러갈까?</li><li>화면: Browser -&gt; Embedded Tomcat -&gt; Spring MVC -&gt; HelloController -&gt; Response 흐름도.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>택배가 아파트 경비실, 동, 층, 집 주소를 거쳐 정확한 사람에게 도착하는 흐름과 같다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: API가 404로 실패하면 개발자는 “서버는 켜졌는가?”, “경로가 맞는가?”, “Controller 매핑이 있는가?”를 순서대로 확인한다. 흐름을 알면 어디서 끊겼는지 찾기 쉽다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>D2 diagram: <code>assets/diagrams/ch01_request-to-controller.d2</code></li></ul><pre class="asset-code"><code class="language-d2">direction: right
+
+classes: {
+  input: { shape: rectangle; style: { fill: &quot;#f0f0f0&quot;; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 22 } }
+  component: { shape: rectangle; style: { fill: white; stroke: &quot;#111111&quot;; border-radius: 8; font-size: 22 } }
+  key: { shape: hexagon; style: { fill: &quot;#f8f8f8&quot;; stroke: &quot;#111111&quot;; stroke-width: 2; font-size: 22 } }
+}
+
+browser: &quot;브라우저\n/hello 요청&quot; { class: input }
+tomcat: &quot;내장 Tomcat&quot; { class: key }
+springmvc: &quot;Spring MVC\n요청 매핑&quot; { class: component }
+controller: &quot;HelloController\nhello()&quot; { class: key }
+response: &quot;응답\nHello Spring Boot&quot; { class: input }
+
+browser -&gt; tomcat: &quot;HTTP 요청&quot;
+tomcat -&gt; springmvc: &quot;요청 전달&quot;
+springmvc -&gt; controller: &quot;경로에 맞는 메서드 찾기&quot;
+controller -&gt; response: &quot;문자열 반환&quot;
+response -&gt; browser: &quot;HTTP 응답&quot;</code></pre></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼: <code>@RequestMapping</code>은 HTTP 요청 경로를 메서드에 매핑하고, <code>@RestController</code>는 결과 문자열을 호출자에게 직접 렌더링한다는 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>방금 실행한 결과를 전체 흐름으로 다시 정리해 보겠습니다. 브라우저에서 <code>/hello</code> 요청이 만들어집니다. 이 요청은 내장 Tomcat이 받습니다. Tomcat은 웹 서버 역할을 하면서 요청을 Spring MVC 쪽으로 넘깁니다. Spring MVC는 등록된 Controller와 매핑 정보를 보고 <code>/hello</code>를 처리할 메서드를 찾습니다. 우리가 만든 <code>HelloController</code>의 <code>hello()</code> 메서드가 실행되고, 반환된 문자열이 HTTP 응답으로 브라우저에 돌아갑니다. 이 그림은 앞으로 계속 확장됩니다. 나중에는 Controller 뒤에 Service가 붙고, Repository와 데이터베이스가 붙습니다. 하지만 출발점은 오늘 본 이 흐름입니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>없음. 실습 결과 정리.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>실습 슬라이드는 실제 클릭 전체를 담기보다 목표, 핵심 코드, 실행 확인 기준을 보여주고, 세부 조작은 강사가 실습 화면에서 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-21">
+      <div class="slide-head"><h2>Slide 21. 적용하기: 어디에서 문제가 났는지 찾아보기</h2><span class="tag">checklist</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="split">
+            <div class="panel"><h4>1. 실행 로그</h4><p>Started 메시지 확인</p></div>
+            <div class="panel"><h4>2. URL</h4><p>/hello 오타 확인</p></div>
+            <div class="panel"><h4>3. 코드</h4><p>@GetMapping 경로 확인</p></div>
+            <div class="panel"><h4>4. 포트</h4><p>8080 사용 여부 확인</p></div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 서버가 안 보일 때 어디부터 볼까?</li><li>화면: 세 가지 상황 카드</li><li>서버 실행 실패</li><li>404 Not Found</li><li>응답 문자열이 예상과 다름</li><li>하단: “실행 로그 -&gt; URL -&gt; Controller 코드” 순서.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>택배가 안 왔을 때 물류센터 출발 여부, 주소, 수령인을 차례대로 확인하는 것과 같다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 신입 개발자가 <code>/hello</code>가 안 된다고 말한다. 선배는 먼저 콘솔에서 서버가 Started 되었는지 보고, 다음으로 주소가 <code>localhost:8080/hello</code>인지 확인하고, 마지막으로 Controller의 매핑 경로가 <code>/hello</code>인지 확인한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>일부러 /helo처럼 잘못된 주소를 입력해 보고, 서버 실행 여부, URL, Controller 매핑 순서로 문제를 좁혀가는 장면을 보여준다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>GPT image prompt: <code>Troubleshooting checklist illustration for a beginner backend developer: server log, browser URL, controller code, three checkpoints connected by arrows, clean lecture slide style, no text.</code></li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview, Spring Boot 첫 애플리케이션 튜토리얼.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>이제 적용 문제를 하나 생각해 보겠습니다. 브라우저에서 <code>/hello</code>를 입력했는데 결과가 나오지 않는다면 어디부터 봐야 할까요? 첫째, 서버가 실제로 실행되었는지 봅니다. 콘솔에 Started 메시지가 없거나 오류가 있다면 요청을 받을 수 없습니다. 둘째, URL이 맞는지 봅니다. 포트가 다르거나 경로가 틀리면 원하는 Controller까지 요청이 가지 않습니다. 셋째, Controller 코드의 매핑이 맞는지 봅니다. <code>@GetMapping(&quot;/hello&quot;)</code>가 아니라 다른 경로로 되어 있으면 404가 날 수 있습니다. 이렇게 흐름을 알고 있으면 문제를 감으로 찾지 않고 순서대로 좁혀갈 수 있습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실습/진행</h3>
+            <div class="block-content"><ul><li>실습 중 일부러 URL을 <code>/helo</code>로 잘못 입력해 404 또는 오류 화면을 확인하고, 다시 <code>/hello</code>로 수정해 정상 응답을 확인하는 캡처를 추가할 수 있다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>적용과 정리는 화면에는 체크포인트만 남기고, 문제 해결 순서와 연결 설명은 나레이션으로 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-22">
+      <div class="slide-head"><h2>Slide 22. 정리: 오늘 배운 핵심 흐름</h2><span class="tag">summary</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">HTTP</div><div class="arrow">→</div><div class="node key">Spring Boot</div><div class="arrow">→</div><div class="node">Controller</div><div class="arrow">→</div><div class="node input">응답</div></div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 브라우저 요청은 서버 프로그램의 코드로 이어진다</li><li>화면:</li><li>브라우저</li><li>HTTP 요청</li><li>내장 Tomcat</li><li>Spring MVC</li><li>Controller</li><li>HTTP 응답</li><li>하단 짧은 문장: “Spring Boot는 이 실행 환경을 빠르게 시작하게 해준다.”</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>오늘 배운 것은 식당 전체 운영 동선이다. 손님, 주문서, 안내 직원, 주방, 완성된 음식의 관계를 본 것이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 앞으로 API 개발을 맡으면 단순히 메서드 하나를 작성하는 것이 아니라, 그 메서드가 HTTP 요청 흐름에서 어떤 위치에 있는지 이해하고 작성해야 한다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>그림 읽는 순서</h3>
+            <div class="block-content"><p>화살표를 왼쪽에서 오른쪽으로 따라가며, 요청이 어디서 시작되고 어떤 구성요소를 거쳐 응답으로 돌아오는지 순서대로 짚는다.</p></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>Reuse D2: <code>ch01_request-to-controller.d2</code>를 단순화하거나 정리용 아이콘 흐름도로 재사용.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>본 차시 전체 출처 종합.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>오늘 내용을 정리하겠습니다. 서버 프로그램은 요청을 받아 처리하고 응답을 돌려주는 프로그램입니다. HTTP는 브라우저와 서버가 메시지를 주고받기 위한 약속입니다. 웹 서버는 정적 리소스 전달에 강하고, WAS는 동적인 애플리케이션 로직을 처리합니다. Spring Boot는 내장 서버와 자동 설정을 통해 웹 애플리케이션을 빠르게 실행할 수 있게 해줍니다. 그리고 우리는 <code>/hello</code> 요청을 받아 문자열을 응답하는 가장 작은 서버 프로그램을 실행해 보았습니다. 다음 차시부터는 이 흐름이 어떤 원리로 Controller 메서드까지 연결되는지 더 깊게 들어가겠습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>적용과 정리는 화면에는 체크포인트만 남기고, 문제 해결 순서와 연결 설명은 나레이션으로 진행한다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-23">
+      <div class="slide-head"><h2>Slide 23. 평가하기 1: 사지선다형</h2><span class="tag">assessment</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="question">
+            <h4>내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</h4>
+            <div class="choice">1. 브라우저가 자동으로 Tomcat을 설치한다.</div>
+            <div class="choice">2. Web MVC 스타터와 자동 설정으로 실행 환경을 구성한다.</div>
+            <div class="choice">3. 모든 Java 프로그램은 8080 포트를 연다.</div>
+            <div class="choice">4. Controller가 데이터베이스를 자동 생성한다.</div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 평가하기</li><li>문제: Spring Boot 웹 애플리케이션을 실행했을 때 내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</li><li>보기:</li><li>브라우저가 자동으로 Tomcat을 설치하기 때문이다.</li><li>Web MVC 스타터와 자동 설정을 바탕으로 Spring Boot가 웹 애플리케이션 실행 환경을 구성하기 때문이다.</li><li>모든 Java 프로그램은 기본적으로 8080 포트를 열기 때문이다.</li><li>Controller 클래스가 데이터베이스를 자동으로 생성하기 때문이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>의존성이 “이 프로젝트는 웹 가게입니다”라고 알려 주면, Spring Boot가 기본 주방 장비를 준비하는 상황이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 새 프로젝트가 실행되자마자 8080 포트가 열렸다면, 개발자는 Web MVC 스타터와 자동 설정을 먼저 떠올릴 수 있어야 한다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>화면은 문제 중심. 우측에 작은 아이콘: 의존성 -&gt; 자동 설정 -&gt; Tomcat.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>Spring Boot 첫 애플리케이션 튜토리얼의 auto-configuration 및 Tomcat 시작 설명.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>첫 번째 평가는 Spring Boot의 내장 서버 실행 이유를 확인하는 문제입니다. 정답은 2번입니다. Spring Boot는 프로젝트의 의존성과 자동 설정을 바탕으로 필요한 실행 환경을 구성합니다. Web MVC 스타터가 있으면 웹 애플리케이션으로 판단하고, 내장 Tomcat과 Spring MVC 구성을 준비할 수 있습니다. 1번처럼 브라우저가 Tomcat을 설치하는 것이 아니고, 3번처럼 모든 Java 프로그램이 8080 포트를 여는 것도 아닙니다. 4번은 데이터베이스와 관련된 내용이라 이번 질문의 핵심과 다릅니다.</li></ul></div>
+          </section>
+          <section class="lecture-block instructor-only">
+            <h3>평가 문항</h3>
+            <div class="block-content"><ul><li>유형: 사지선다형</li><li>정답: 2</li><li>난이도: 보통</li><li>해설: Web MVC 스타터와 자동 설정을 기반으로 Spring Boot가 웹 실행 환경과 내장 서버를 구성한다.</li><li>관련학습보기: Slide 10, Slide 11, Slide 15</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>수강자 화면에는 문제와 선택지만 보이게 하고, 정답과 해설은 강사용 패널 또는 발표자 노트에만 둔다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-24">
+      <div class="slide-head"><h2>Slide 24. 평가하기 2: 진위형</h2><span class="tag">assessment</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="question">
+            <h4>HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다.</h4>
+            <div class="choice">O</div><div class="choice">X</div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 평가하기</li><li>문제: HTTP에서 브라우저가 서버에 보내는 메시지를 요청(Request), 서버가 브라우저로 돌려주는 메시지를 응답(Response)이라고 한다. O/X</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>손님의 주문서가 요청이고, 주방에서 나온 음식이 응답이다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: API 오류 분석의 첫 단계는 “어떤 요청을 보냈고 어떤 응답을 받았는가”를 확인하는 것이다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>간단한 요청/응답 화살표 이미지.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>두 번째 문제는 HTTP의 기본 구조를 확인합니다. 정답은 O입니다. HTTP에서 클라이언트, 보통은 브라우저가 서버에 보내는 메시지를 요청이라고 합니다. 서버가 그 요청에 대해 돌려주는 메시지를 응답이라고 합니다. 앞으로 REST API를 만들 때 우리는 계속 요청과 응답을 설계하게 됩니다.</li></ul></div>
+          </section>
+          <section class="lecture-block instructor-only">
+            <h3>평가 문항</h3>
+            <div class="block-content"><ul><li>유형: 진위형</li><li>정답: O</li><li>난이도: 쉬움</li><li>해설: HTTP는 클라이언트가 요청을 보내고 서버가 응답을 제공하는 클라이언트-서버 구조를 가진다.</li><li>관련학습보기: Slide 5, Slide 6</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>수강자 화면에는 문제와 선택지만 보이게 하고, 정답과 해설은 강사용 패널 또는 발표자 노트에만 둔다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-25">
+      <div class="slide-head"><h2>Slide 25. 평가하기 3: 진위형</h2><span class="tag">assessment</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="question">
+            <h4>웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다.</h4>
+            <div class="choice">O</div><div class="choice">X</div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 평가하기</li><li>문제: 웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다. O/X</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>안내 직원이 모든 요리를 직접 만드는 것이 아니라, 복잡한 주문은 주방으로 넘긴다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 정적 파일 전달과 동적 비즈니스 처리를 구분하면 장애나 성능 문제를 분석할 때 어느 계층을 먼저 봐야 하는지 판단하기 쉽다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>웹 서버와 WAS 역할 비교 미니 다이어그램.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li>MDN HTTP Overview, Spring Boot 공식 문서.</li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>세 번째 문제의 정답은 X입니다. 일반적으로 웹 서버는 정적 리소스 전달에 강하고, WAS는 애플리케이션 로직을 실행하는 역할을 담당합니다. 실제 시스템에서는 구성 방식에 따라 역할이 섞일 수 있지만, 기초 개념을 배울 때는 정적 리소스 중심의 웹 서버와 동적 로직 중심의 WAS를 구분해서 이해하는 것이 좋습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block instructor-only">
+            <h3>평가 문항</h3>
+            <div class="block-content"><ul><li>유형: 진위형</li><li>정답: X</li><li>난이도: 보통</li><li>해설: 웹 서버는 정적 리소스 처리에 강하고, WAS는 동적 애플리케이션 로직 처리에 초점을 둔다.</li><li>관련학습보기: Slide 7, Slide 8</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>수강자 화면에는 문제와 선택지만 보이게 하고, 정답과 해설은 강사용 패널 또는 발표자 노트에만 둔다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+
+    <section class="slide detailed" id="slide-26">
+      <div class="slide-head"><h2>Slide 26. 참고자료</h2><span class="tag">sources</span></div>
+      <div class="slide-body">
+        <div class="slide-preview">
+          <div class="question">
+            <h4>참고자료</h4>
+            <div class="choice">Spring Boot 공식 문서</div>
+            <div class="choice">Spring Boot 4.1.0 시스템 요구사항</div>
+            <div class="choice">Spring Boot 첫 애플리케이션 튜토리얼</div>
+            <div class="choice">Spring Tools 공식 페이지</div>
+            <div class="choice">MDN HTTP Overview</div>
+            <div class="choice">eGovFrame 심플홈페이지 BackEnd GitHub</div>
+          </div>
+        </div>
+        <aside class="lecture-panel">
+          <section class="lecture-block">
+            <h3>화면 구성</h3>
+            <div class="block-content"><ul><li>제목: 참고자료</li><li>목록:</li><li>Spring Boot 공식 문서</li><li>Spring Boot 첫 애플리케이션 튜토리얼</li><li>Spring Tools 공식 페이지</li><li>MDN HTTP Overview</li><li>eGovFrame 심플홈페이지 BackEnd GitHub</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>쉬운 비유</h3>
+            <div class="block-content"><ul><li>참고자료는 수업 뒤에 다시 찾아볼 수 있는 지도와 같다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>실무사례</h3>
+            <div class="block-content"><ul><li>실무사례형 시나리오: 실무 개발자는 기억에만 의존하지 않고 공식 문서를 확인하며 버전과 설정을 검증한다.</li></ul></div>
+          </section>
+          <section class="lecture-block visual-asset">
+            <h3>시각 자료</h3>
+            <div class="block-content"><ul><li>문서, GitHub, 브라우저 아이콘을 단정하게 배치.</li></ul></div>
+          </section>
+          <section class="lecture-block source-block">
+            <h3>출처</h3>
+            <div class="block-content"><ul><li><a href="https://docs.spring.io/spring-boot/index.html" target="_blank" rel="noreferrer">https://docs.spring.io/spring-boot/index.html</a></li><li><a href="https://docs.spring.io/spring-boot/tutorial/first-application/index.html" target="_blank" rel="noreferrer">https://docs.spring.io/spring-boot/tutorial/first-application/index.html</a></li><li><a href="https://spring.io/tools/" target="_blank" rel="noreferrer">https://spring.io/tools/</a></li><li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview" target="_blank" rel="noreferrer">https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview</a></li><li><a href="https://github.com/eGovFramework/egovframe-template-simple-backend" target="_blank" rel="noreferrer">https://github.com/eGovFramework/egovframe-template-simple-backend</a></li></ul></div>
+          </section>
+          <section class="lecture-block lecture-script">
+            <h3>나레이션</h3>
+            <div class="block-content"><ul><li>마지막으로 이번 차시에서 활용한 참고자료입니다. Spring Boot 공식 문서는 Spring Boot가 어떤 목표와 특징을 가지는지 확인하는 데 사용했습니다. Spring Boot 4.1.0 시스템 요구사항 문서는 JDK 21과 Gradle 기준을 정하는 근거로 사용했습니다. 첫 애플리케이션 튜토리얼은 <code>spring-boot-starter-webmvc</code>, <code>@RestController</code>, 요청 매핑, <code>SpringApplication.run</code>, 내장 Tomcat 시작 흐름을 설명하는 근거로 사용했습니다. Spring Tools 공식 페이지는 Spring Tools for Eclipse와 Spring Initializr 기반 실습 환경을 설명하는 데 사용했습니다. MDN HTTP Overview는 HTTP 요청과 응답의 기본 구조를 설명하는 근거로 사용했습니다. eGovFrame GitHub 예제는 공공 예제에서도 Spring Boot 기반 BackEnd 흐름을 확인할 수 있는 최신 실무 연결 자료로 활용했습니다.</li></ul></div>
+          </section>
+          <section class="lecture-block">
+            <h3>PPT 반영 메모</h3>
+            <div class="block-content"><p>참고자료는 URL과 활용 목적을 함께 남겨 이후 PPT 참고자료 슬라이드로 옮긴다.</p></div>
+          </section>
+        </aside>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

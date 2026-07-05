@@ -1,0 +1,10 @@
+# 시드: 문제 상황 — 공통 관심사가 서블릿마다 복제됨 (concept_model front-controller-pattern 이 해결하는 문제)
+direction: right
+client: "클라이언트" { shape: person; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1 } }
+login: "LoginServlet\n(인증·로깅 코드)" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+order: "OrderServlet\n(인증·로깅 코드)" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+pay: "PayServlet\n(인증·로깅 코드)" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+client -> login: "/login" { style.stroke: "#222222" }
+client -> order: "/order" { style.stroke: "#222222" }
+client -> pay: "/pay" { style.stroke: "#222222" }
+note: "공통 관심사(인증·로깅)가\n서블릿마다 복제 → 변경 어려움" { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8; stroke-dash: 4 } }

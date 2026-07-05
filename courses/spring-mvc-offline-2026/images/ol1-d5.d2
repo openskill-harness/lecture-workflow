@@ -1,0 +1,13 @@
+# 시드 ol1-d5: 두 경로 대조 — 컨트롤러 반환값에 따라 갈라지는 출구 (brief S-10·S-12, 분기 A/B)
+direction: right
+classes: {
+  branch: { shape: diamond; style: { fill: white; stroke: black; stroke-width: 1 } }
+  node: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+  note: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+}
+controller: "Controller\n무엇을 반환?" { class: branch }
+converter: "HttpMessageConverter\n직렬화 → 응답 커밋" { class: node }
+resolver: "ViewResolver → View\n렌더링" { class: node }
+controller -> converter: "[A] 객체 반환 (@ResponseBody · 뷰 없음)" { style.stroke: "#222222" }
+controller -> resolver: "[B] 논리 뷰 이름 반환" { style.stroke: "#222222" }
+note: "preHandle까지는 한 몸,\n반환값에서 출구가 갈린다" { class: note }

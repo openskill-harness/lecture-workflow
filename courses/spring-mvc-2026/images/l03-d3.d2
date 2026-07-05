@@ -1,0 +1,21 @@
+# 최종 구조 — Controller → Service → Repository (concept_model 관계 발췌:
+#   controller -delegates_use_case-> service, service -coordinates-> repository, service -returns_result-> controller)
+direction: right
+
+classes: {
+  input: { shape: rectangle; style: { fill: "#f0f0f0"; stroke: black; stroke-width: 1; border-radius: 8 } }
+  proc: { shape: rectangle; style: { fill: white; stroke: black; stroke-width: 1; border-radius: 8 } }
+  store: { shape: cylinder; style: { fill: "#eeeeee"; stroke: black; stroke-width: 1 } }
+}
+
+client: "HTTP 클라이언트" { class: input }
+ctrl: "MemberController\n매핑 · DTO · 상태코드(201/409)" { class: proc }
+svc: "MemberService\n가입 규칙 (중복 검사)" { class: proc }
+repo: "MemberRepository\n저장 (메모리 맵)" { class: store }
+
+client -> ctrl: "POST /members" { style.stroke: "#222222" }
+ctrl -> svc: "signUp(request) 위임" { style.stroke: "#222222" }
+svc -> repo: "existsByEmail / save 조율" { style.stroke: "#222222" }
+repo -> svc: "Member" { style.stroke: "#222222" }
+svc -> ctrl: "결과 반환" { style.stroke: "#222222" }
+ctrl -> client: "SignUpResponse (201) / 409 Conflict" { style.stroke: "#222222" }

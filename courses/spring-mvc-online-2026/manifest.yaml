@@ -1,0 +1,33 @@
+# Course Manifest — G1 승인 대기 (draft, 2026-07-05 세션 종료 시점 동결) / online 라인 드라이런 (유튜브 판서 VOD)
+# 재개 방법: online-lecture 스킬 Phase 0가 이 파일을 발견하면 G1 승인 요청부터 이어간다
+course:
+  id: spring-mvc-online-2026
+  title: Spring MVC와 웹 요청 처리 구조 — 유튜브 판서 강의
+  delivery_type: online
+
+target_learners:
+  - Java 문법 가능
+  - Spring Boot로 CRUD API를 만들어 본 경험 있음
+  - Servlet 컨테이너와 DispatcherServlet 내부 구조는 모름
+
+duration:
+  total_minutes: 27        # 유튜브 영상 2편 (한 레슨 = 한 개념 덩어리, 10~20분 집중 단위)
+
+learning_goals:
+  - HTTP 요청이 Spring MVC 내부에서 처리되는 흐름을 설명할 수 있다.
+  - Controller와 Service의 책임을 구분할 수 있다.
+  # 구현 실습 목표는 온라인 계약(원고·판서슬라이드·시뮬레이터 3종) 밖 — 제외
+
+required_outputs:
+  - script
+  - slides                 # summary 고정 (온라인 = 무조건 판서)
+  - simulator
+
+style:
+  tone: 실무형, 초급자 친화적
+  visual_style: 깔끔한 기술 교육용
+  language: ko-KR
+  # slide_mode 없음 — 온라인은 summary 고정 (v1.7)
+
+constraints:
+  citation_required_for: [statistics, news, version_specific_claims, external_case_studies]

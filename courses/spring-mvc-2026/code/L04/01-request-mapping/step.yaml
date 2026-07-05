@@ -1,9 +1,0 @@
-step:
-  id: step-01
-  title: 요청 매핑 — POST /members 를 컨트롤러 메서드에 연결
-  previous_state: MemberController가 없음. 요청을 받을 진입점이 아직 존재하지 않는다.
-  change_reason: 클라이언트 요청이 도착할 진입점(핸들러)이 필요하다.
-  changed_files:
-    - src/main/java/com/example/member/MemberController.java
-  expected_result: POST /members 호출 시 컨트롤러 메서드가 실행되고 고정 문자열이 200으로 응답된다.
-  lecture_message: 요청 매핑은 "이 URL·이 메서드가 오면 이 자바 메서드를 실행하라"는 선언이다. L02에서 본 DispatcherServlet이 이 선언을 보고 핸들러를 찾는다.

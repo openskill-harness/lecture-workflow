@@ -1,110 +1,182 @@
 ---
 name: panseo-slide
-description: html/css/js로 글자 적은 강의 슬라이드를 만들고, 그 위에 펜으로 바로 판서하며 "판서모드(빈 칠판)"까지 전환되는 강의자료를 생성하는 스킬. 갤럭시 탭 등 펜·터치 기기에서 열어 녹화 강의에 쓴다. 슬라이드와 함께 판서 대본도 만든다. "판서 슬라이드 만들어줘", "강의 슬라이드 만들어줘", "판서보드 만들어줘", "온라인 강의자료 만들어줘", "이 주제로 강의 슬라이드+대본 뽑아줘" 같은 요청에 사용. 일반 발표용 .pptx가 필요하면 이 스킬 말고 pptx 스킬을 쓴다.
+description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전환)이 내장된 강의 슬라이드 HTML과 판서대본을 만든다. "판서 슬라이드 만들어줘", "판서 자료" 요청 시 사용. 요약 모드(원고를 판서용으로 요약)와 그대로 모드(PPT 프리뷰 내용 그대로 + 판서 레이어) 중 선택.
 ---
 
-# 판서슬라이드 스킬
+# panseo-slide
 
-글자 적은 HTML 슬라이드 + 그 위 펜 판서 + 빈 칠판(판서모드) + 판서 대본을, 하나의 강의 묶음으로 생성한다.
-**"슬라이드만 켜서 PPT 읽는 사람"이 되지 않는 것**이 이 스킬의 목적이다. 슬라이드는 뼈대, 판서와 대본이 본체.
+파이프라인 7단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표).
+확정 원고 `manuscripts/chNN.md`(3단계) 또는 PPT 프리뷰 `ppt_previews/chNN.html`(6단계)을 입력으로
+받아, 판서 엔진이 내장된 강의 슬라이드 `panseo/chNN.html`과 판서대본 `panseo/chNN_대본.md`를
+만든다. 이 스킬은 하네스의 **판서 엔진 소유 스킬**이다 — 엔진(펜/모눈/선택이동/지우개/판서모드
+전환/전체화면)의 요구 명세는 `reference/engine.md`, 소유 템플릿은 `template/`에 있다.
 
 ## 산출물 (항상 2개)
-1. `<강의명>_판서보드.html` — 단일 파일. 펜·터치 기기 브라우저에서 바로 열림.
-2. `<강의명>_판서대본.md` — 슬라이드별 "강렬한 한 줄 + 쉬운 설명 (+ 개념)".
 
-## 재현성 원칙
-HTML은 반드시 `template/board_template.html` 엔진을 복사해서 만든다.
-엔진의 `<style>`/`<script>`(레이아웃·펜·칠판·네비)는 **수정 금지**. 강의별로 바꾸는 곳은 단 두 군데:
-- `STEPS START ~ STEPS END` 사이의 `.step` 섹션
-- 필요 시 `:root`의 강조색 변수
+- `panseo/chNN.html` — 단일 파일. 판서 기능이 내장된 강의 슬라이드. 펜·터치 기기 브라우저에서
+  바로 열림.
+- `panseo/chNN_대본.md` — 슬라이드별 판서 지시 + 대본.
 
----
+## 0. 모드 질문 (필수, 매 실행마다 먼저)
 
-## 전체 흐름
+`AskUserQuestion` 도구가 있으면 활용해 아래 두 선택지를 제시한다. 없으면 번호를 매겨 텍스트로
+묻고 사용자 응답을 받는다. **모드를 확인하지 않고 임의로 정하지 않는다.**
 
-```
-1 시나리오 설계  →  2 컷(슬라이드) 정의  →  3 HTML 생성  →  4 판서 대본  →  5 검증·전달
-```
+- **요약 모드** — 확정 원고를 판서 여백이 있는 저밀도 슬라이드로 요약한다. 화면 하단 1/3은 비워
+  둔다.
+- **그대로 모드** — `ppt_previews/chNN.html`의 각 `.ppt-slide` 캔버스 내용을 그대로 이식하고 판서
+  레이어만 추가한다(캔버스는 요약하지 않는다).
 
-## Step 1 — 시나리오 설계 (가장 중요)
-프로젝트 `CLAUDE.md`가 있으면 먼저 읽어 톤·비유 규칙을 따른다. 그리고 강의를 **하나의 이야기**로 짠다:
-- 이야기(상황) → 문제 → 해결(방법이 여럿이면 하나씩).
-- **중심 비유 1개**를 정하고 끝까지 끌고 간다(예: 조수석 vs 운전석, RPG 던전, 컨테이너 말콤 맥린).
-- 부술 오개념 / 심을 진실을 한 줄씩 정한다.
-- 초보자 눈높이 + 전문적 내용. 어려운 개념일수록 더 쉬운 일상 비유로.
+## 1. 시작 — 전제 확인
 
-## Step 2 — 컷 정의
-시나리오를 6~9개 컷으로 쪼갠다. 각 컷은 **한 줄짜리 큰 메시지 + (선택) 보조 한 줄**만. 문장 3줄 이상 금지.
-컷 종류와 HTML 조각은 `reference/components.md` 참고(도발질문·썸네일피드·게이지·번호리스트·초대 등).
+- 대상 차시 `courses/{course-id}/status.md`를 읽는다.
+- **요약 모드**: `manuscripts/chNN.md`가 없거나 `원고확정`이 ✅가 아니면 사용자에게 알리고
+  중단한다.
+- **그대로 모드**: `ppt_previews/chNN.html`이 없거나 `PPT프리뷰`가 ✅가 아니면 사용자에게 알리고
+  중단한다.
+- `status.md`의 해당 차시 `판서` 칸을 🔄로 갱신한다.
 
-## Step 3 — HTML 생성
-1. 엔진 복사:
-   ```bash
-   SKILL_DIR=/sessions/*/mnt/.claude/skills/panseo-slide   # 설치 위치에 맞게
-   cp "$SKILL_DIR/template/board_template.html" "<출력폴더>/<강의명>_판서보드.html"
+## 2. 모드별 템플릿 선택
+
+두 모드 모두 `reference/engine.md`의 엔진(펜/모눈/✂선택이동/✋획이동/지우개/판서모드전환/
+전체화면)을 **그대로 복사**해서 쓴다. `<script>`는 절대 다시 타이핑하지 않는다. 템플릿은 다음
+기본값을 따른다(사용자가 다른 테마를 명시적으로 요청하면 그쪽을 쓴다):
+
+| 모드 | 템플릿 | 이유 |
+|------|--------|------|
+| 요약 모드 | `template/board_template.html` (다크 네이비) | 판서 대비가 좋은 원래 정체성. 저밀도 컷 + 넓은 판서 여백에 어울림 |
+| 그대로 모드 | `template/board_template_light.html` (라이트) | `ppt_previews/chNN.html`이 라이트 팔레트라 이질감 없이 이식됨 |
+
+`panseo/chNN.html`로 복사한다.
+
+## 3. 요약 모드 절차
+
+1. 원고 `manuscripts/chNN.md`의 `## Slide N.` 블록마다 `.step` 컷을 하나씩 만든다. **컷 수는
+   원고 슬라이드 수와 반드시 같다.**
+2. 각 컷은 핵심 1~2줄 + 키워드만(문장 3줄 이상 금지). `reference/components.md`의 컴포넌트
+   (도발질문·썸네일피드·게이지·번호리스트·초대 등)를 그대로 붙여 쓴다.
+3. **화면 하단 1/3은 판서 여백**으로 비운다 — 컷 내용을 상단에 몰아 배치한다(필요하면 해당
+   `.step`에 `style="padding-bottom:34vh"`처럼 컷별 인라인 스타일을 추가해 강제한다. 엔진의
+   `.step` 기본 규칙 자체는 건드리지 않는다).
+4. `{{DECK_TITLE}}`을 강의명으로, `{{KICKER}}`(쓴다면)를 첫 컷 라벨로 치환한다. 첫 `.step`에만
+   `class="step active"`.
+5. 톤에 맞으면 `:root` 강조색 변수만 조정한다(기본: 다크 네이비 테크).
+
+## 4. 그대로 모드 절차
+
+1. `ppt_previews/chNN.html`을 읽어 `<section class="ppt-slide" data-slide="N">` 블록을
+   `data-slide` 오름차순으로 전부 추출한다. 개수·연번은 `ppt-preview` 확정 체크리스트가 이미
+   보장하지만 재확인한다(1부터 연번, 누락·중복 없음).
+2. 블록마다: `<section class="ppt-slide" data-slide="N">...` 태그와 그 **직계 자식**
+   `<div class="ppt-canvas ...">...</div>` 전체(클래스·내부 마크업·이미지 상대경로 포함)를
+   **손대지 않고** 엔진의 `.step` 섹션 하나로 감싼다:
+   ```html
+   <section class="step embed">        <!-- 첫 컷은 "step active embed" -->
+     <section class="ppt-slide" data-slide="1">
+       <div class="ppt-canvas cover-canvas">...(원본 그대로)...</div>
+     </section>
+   </section>
    ```
-   (스킬을 작업폴더에 둔 경우 그 경로의 template을 복사.)
-2. `STEPS START ~ STEPS END` 사이를 Step 2에서 정한 `.step` 섹션들로 교체.
-   - 첫 섹션에 `class="step active"`, 나머지는 `class="step"`.
-   - `{{DECK_TITLE}}`를 강의명으로 치환.
-3. 톤에 맞으면 `:root` 강조색 조정(기본: 다크 네이비 테크).
-4. 컷 개수는 자동 인식되니 JS는 건드리지 않는다.
+   `.ppt-canvas`가 `.ppt-slide`의 직계 자식인지 확인하고 파싱한다(이 경로가 안전하다).
+3. 이미지 경로: `panseo/`와 `ppt_previews/`는 과정 루트 기준 같은 깊이(1단계 하위)이므로
+   원고에 적힌 상대경로(`../assets/images/chNN/...`)를 **그대로** 쓸 수 있다. 디렉터리 깊이가
+   다르면 상대경로를 재계산한다.
+4. 라이트 템플릿의 `<style>` 뒤에 `ppt_previews/chNN.html`의 `<style>` 중 **슬라이드/캔버스
+   관련 규칙만** 복사해 붙인다: `.ppt-slide`, `.ppt-canvas`와 그 하위 모든 위젯 클래스(예:
+   `.cover-canvas`/`.cover-text`/`.cover-image`, `.standard-canvas`, `.image-canvas`/
+   `.ppt-two-col`/`.ppt-media`, `.flow`/`.node`/`.arrow`, `.split`/`.panel`/`.old`/`.new`,
+   `.code-canvas`/`.ppt-code-layout`/`pre`/`code`, `.ide`/`.tree`/`.editor`,
+   `.browser`/`.bar`/`.result`, `.assessment-canvas`/`.ppt-question`/`.question`/`.choice`,
+   `.sources-canvas`/`.ppt-source-list` — 실제 파일에 있는 것만). **`*`, `body`, `header`,
+   `h1`, `main` 같은 페이지 레벨 규칙은 가져오지 않는다**(엔진 자체 배경·레이아웃과 충돌한다).
+5. 복사한 스타일의 `:root{...}` 변수 중 엔진과 이름이 겹치는 6개(`--ink`/`--muted`/`--line`/
+   `--green`/`--blue`/`--soft`)는 텍스트 치환으로 `--ppt-ink`/`--ppt-muted`/`--ppt-line`/
+   `--ppt-green`/`--ppt-blue`/`--ppt-soft`로 바꾸고, 그 스타일 블록 안에서 그 변수를 참조하는
+   곳(`var(--ink)` 등)도 함께 바꾼다(엔진 자체 kicker/hl 색상이 오염되지 않도록).
+6. 엔진 `<style>` 끝에 그대로 모드 전용 규칙을 한 번만 추가한다:
+   ```css
+   .step.embed{align-items:center; padding:4vh 4vw;}
+   .step.embed .ppt-slide{width:min(1120px, 92vw);}
+   ```
+   (엔진의 `.step` 기본 규칙은 좌측 정렬이라, 그대로 모드에서 16:9 캔버스를 가운데 두기 위한
+   추가 규칙이다. 다른 엔진 규칙은 건드리지 않는다.)
+7. `{{DECK_TITLE}}`을 강의명/원고 제목으로 치환한다. 판서 캔버스(`#pad`)는 엔진 구조상 이미
+   전체 화면을 덮는 오버레이이므로, 슬라이드 위에 판서 레이어를 얹기 위한 별도 작업은 필요 없다.
 
-## Step 4 — 판서 대본
-`reference/script_guide.md` 형식으로 슬라이드별 **① 강렬한 한 줄 → ② 쉬운 비유 설명 → (개념 매핑 시) 개념 정의**를 쓴다.
-"무엇을 말할지"에 집중한다. **시간 표기·이모지·"그릴 것" 같은 연출 지시는 넣지 않는다.**
-비난 금지, 비유 먼저, 하나의 이야기로 흐르게. 인용구는 실제 출처가 있는 것만(저자·작품·연도 표기).
+## 5. 판서 대본 생성 (공통, 모드 무관)
 
-## Step 5 — 검증 후 전달
-- `node --check`로 엔진 JS 문법 확인(엔진은 고정이라 보통 통과).
-- 컷 수 = `.step` 수, 첫 컷만 `active`인지 확인.
-- `present_files`로 HTML과 대본을 전달.
-- 사용 안내: **HTML을 펜 기기(갤럭시 탭 등) 브라우저에서 열어 S펜으로 판서 → 탭을 PC로 미러링 → PC 화면 녹화**가 지연이 가장 적다. (PC에서 띄우고 탭을 펜패드로 쓰려면 spacedesk·Weylus 같은 역방향 터치 미러링 앱 필요.)
+`panseo/chNN_대본.md`를 `reference/script_guide.md` 형식으로 슬라이드 수만큼 작성한다:
 
-## 조작 (사용자 안내용)
-펜으로 바로 판서 · `←/→` 컷 이동 · `b` 판서모드(빈 칠판) · `g` 모눈 · `s` 도형스냅 · `e` 지우개 · `c` 전체지움 · `f`/⛶ 전체화면 · `Ctrl/⌘+Z` 되돌리기.
-슬라이드 판서와 칠판 판서는 따로 저장되어 섞이지 않는다. 화면 상단/툴바 안내 글자(hint)는 제거됨(클린 화면) — 조작은 툴바 버튼으로.
-- **큰 네모 지우개**: 지우개는 한 변 `ERS`(=72px)짜리 큰 사각형. 빠르게 넓게 지운다(필압·펜 굵기와 무관).
-- **선택한 획 삭제**: `✂ 선택`으로 묶은 직후(점선 박스가 떠 있을 때), **지우개 버튼**(또는 `Delete`/`Backspace`)을 누르면 선택된 획이 삭제된다(`Ctrl+Z`로 복구). 다른 곳을 탭하면 그 자리에 고정(이동 확정).
-- **◇ 도형 버튼**: 도형 스냅을 끄고 켠다(키보드 없는 태블릿용). `⛶`(좌상단)/`f`는 전체화면 토글 — 태블릿은 F11이 안 되므로 이 버튼/키로 연다.
+```
+## 슬라이드 N — {제목}
+판서:
+(그릴 도형/쓸 키워드 — 짧게)
+대본:
+(실제로 할 말…)
+```
 
-### 도형 스냅 (draw-and-hold, 엔진 v3)
-직선·사각형·원/타원·삼각형을 그린 뒤 **펜을 떼지 않은 채 그 자리에서 ~0.6초 멈추면** 깔끔한 도형으로 스냅된다(OneNote·GoodNotes식). 의미 없는 낙서는 스냅하지 않는다. `s` 키로 끄고 켠다(기본 켜짐).
-- **끊어 그린 도형(멀티스트로크)**: 사각형을 두세 획으로 끊어 그려도, 마지막에 멈추면 **가까이 이어진 획들을 한 점구름으로 합쳐** 사각형/원으로 스냅한다. 한 획 인식(`recognizeShape`)이 실패할 때만 `clusterFrom`+`cloudRect`/`cloudEllipse`로 시도하므로 안전하다(ㄱ자 단독·멀리 떨어진 획은 합치지 않음).
-- **직선 각도 교정**: 직선이 수평/수직(0·90·180·270°)에서 `SNAP_DEG`(=10°) 이내면 정확한 축으로 스냅한다(273°→수직). 30°·45° 같은 의도적 사선은 직선화만 하고 각도는 보존.
-- 구현: 엔진 `<script>` 안의 순수 함수(`recognizeShape`/`clusterFrom`/`cloudRect`/`cloudEllipse`/`angDist`) + `pointerdown/move/up`의 정지 타이머(`holdArm/holdTrack/holdCancel`). 결과는 점 배열로 생성돼 기존 지우개·✂선택·✋이동과 그대로 호환.
-- 파라미터: `HOLD_MS=600`(멈춤 ms), `HOLD_MOVE=5`(정지 판정 px), `SNAP_DEG=10`(각도 스냅 허용°), `GAP=28`(획 합치기 근접 px), `ERS=72`(지우개 한 변 px).
-- v3에서 엔진은 `<script>`뿐 아니라 `<style>`(전체화면 버튼)·툴바 HTML(`◇도형`·`⛶`)·hint 제거까지 바뀐다. 그래서 이미 만든 덱 재동기화는 `<script>` 교체가 아니라 **STEPS(내용)+`<title>`만 보존하고 나머지는 템플릿에서 통째로 재생성**한다(START/END 마커 기준). panseo-board 엔진은 panseo-slide와 동일(이 템플릿을 복사).
-- 검증: `node --check`(문법) + 합성 입력 동작 테스트(직선/사각형/원/삼각형/낙서/멀티스트로크/각도교정)로 회귀 확인.
+- 슬라이드 번호(N)는 `.step` 순서(요약 모드는 원고 `## Slide N.` 순서, 그대로 모드는
+  `data-slide` 순서)와 정확히 1:1.
+- "판서" 항목: 요약 모드는 컷에 못 담은 세부(도형·수식·화살표), 그대로 모드는 이미 화면에 있는
+  내용 중 강조·부연할 부분(밑줄/원/화살표)을 짧게 적는다.
+- "대본" 항목: 확정 원고 `manuscripts/chNN.md`의 해당 `Slide N` Narration/Easy analogy 필드를
+  근거로 구어체로 쓴다(그대로 모드도 원고를 참고한다 — 시각 구성만 ppt-preview에서 가져올 뿐,
+  말할 내용의 원천은 항상 원고다).
+- 톤·인용 규칙(비유 먼저, 하나의 이야기, 인용구는 실제 출처만)은 `reference/script_guide.md`를
+  따른다.
 
----
+## 6. 확정
 
-## 하네스 통합 재정의 (이 프로젝트 전용)
+사용자에게 `panseo/chNN.html`을 브라우저로 열어 보여주고(펜 기기 없으면 마우스로 최소 조작
+확인) 확인을 받은 뒤:
 
-이 스킬은 `참고스킬/panseo-slide`의 복사본이다. 원본 폴더는 백업으로 보존하며 수정하지 않는다. 위 본문과 아래가 충돌하면 **아래가 우선**한다.
+- `courses/{course-id}/status.md`의 해당 차시 `판서` 칸을 ✅로 갱신한다.
+- "산출물 인덱스"에 `- chNN 판서: panseo/chNN.html + panseo/chNN_대본.md (확정 YYYY-MM-DD, 모드:
+  {요약|그대로})`를 추가한다.
+- "다음 할 일"을 `chNN 시뮬레이터 필요 여부 확인(edu-sim-builder)`로 갱신한다.
 
-### 판서 엔진 소유 스킬 선언 + 슬라이드 2프로파일 (v1.7, 사용자 결정)
+## 확정 체크리스트
 
-이 스킬은 하네스의 **판서 엔진 소유 스킬**이다. 템플릿 2종을 소유하며, 엔진 위에서 만드는 슬라이드는 두 프로파일 중 하나를 따른다. **명명 주의: rich는 "판서슬라이드의 모드"가 아니라 "판서 엔진 기반 고밀도 슬라이드 프로파일"이다 — Registry 타입이 최종 의미를 가진다.**
+- [ ] **엔진 기능 7종 전부 동작** — `reference/engine.md`의 7종(펜 드로잉/모눈 격자/✂ 사각형
+  선택 이동/✋ 획 객체 이동/파괴적 지우개/판서모드 전환/전체화면)을 브라우저(Playwright 또는
+  사용자 육안)로 실제 조작해 확인했다.
+- [ ] **슬라이드 수 일치** — 요약 모드: `.step` 수 = 원고 `## Slide N.` 블록 수. 그대로 모드:
+  `.step`으로 이식된 `data-slide` 개수 = `ppt_previews/chNN.html`의 `[data-slide]` 개수, 값이
+  1부터 연번.
+- [ ] **대본 슬라이드 번호 정합** — `panseo/chNN_대본.md`의 `## 슬라이드 N` 번호가 1부터
+  연번이고 `panseo/chNN.html`의 컷 수와 정확히 같다.
+- [ ] **`node --check`** — `panseo/chNN.html`의 `<script>` 문법 통과(엔진을 그대로 복사했으면
+  항상 통과 — 실패하면 복사 중 스크립트를 실수로 건드렸다는 뜻).
+- [ ] **자립성** — 외부 CDN·웹폰트·스크립트 참조 없이 파일 하나로 브라우저에서 바로 열린다.
 
-| 프로파일 | 밀도 규칙 | 템플릿 | Registry 타입 | 사용 라인 |
-|----------|----------|--------|---------------|----------|
-| `rich` (풍부) | 고밀도 허용 — ≤45단어/장, 도형·코드칩·이미지 OK. 위 본문의 "글자 적게" 규칙 **비적용** | `template/board_template_light.html` (라이트) | `html_slide` — 판서대본 생성 안 함 (대본은 라인이 정함: 촬영=프롬프터, 오프라인 rich=진행노트) | **촬영강의: 고정** / 오프라인: 선택 |
-| `summary` (요약/판서용) | **위 본문 규칙 전부 적용** — 컷당 한 줄, 문장 3줄 금지, 판서 여백. "판서슬라이드는 글자가 적어야 한다"(인수인계 확정 조항)는 이 프로파일의 조항 | `template/board_template.html` (다크 원본) | `panseo_slide_html` + `panseo_script` (항상 2개) | **온라인(유튜브 판서 VOD): 고정** / 오프라인: 선택 |
+## repair 규칙
 
-- 오프라인의 프로파일은 **G1 manifest의 `style.slide_mode: rich \| summary`**로 정하고, G5에서 레슨 단위 예외를 승인할 수 있다.
-- QA 결합 규칙: `panseo_slide_html`인데 고밀도(코드칩 다수·45단어 근접)면 warning / `html_slide`인데 제목만 있는 빈 덱이면 warning.
-- 완성 구조도(architecture_diagram)는 rich 슬라이드 도형의 원천이 될 수 있으나 **summary(판서슬라이드)에는 직접 파생 금지** (인수인계 확정 조항) — 선택 참고만.
+체크리스트 중 하나라도 실패하면 전체를 다시 만들지 않는다.
 
-### 재동기화 절차 (v1.7 — 양쪽 템플릿)
+- **엔진 결함**(7종 중 하나라도 오작동, `node --check` 실패)은 `reference/engine.md` 명세와
+  `template/board_template.html` 또는 `template/board_template_light.html` 원본을 기준으로,
+  `<script>` 블록만 원본에서 그대로 재복사한다(다른 부분은 손대지 않는다).
+- **콘텐츠 결함**(오탈자, 슬라이드 순서 어긋남, 요약 과밀, 그대로 모드 이식 누락)은 해당
+  `.step` 하나만 다시 만든다. 다른 컷은 건드리지 않는다.
+- **대본 정합 결함**(번호 누락/중복)은 어긋난 슬라이드 번호의 대본 항목만 추가·수정한다.
+- **그대로 모드 스타일 충돌**(`:root` 변수 오염, 페이지 레벨 규칙 유입)이 발견되면 해당
+  스타일 블록만 §4의 5~6 규칙대로 다시 고친다.
 
-원본 엔진(`참고스킬/panseo-slide/template/board_template.html`) 개정 시: ① 다크 템플릿 본문 재복사 ② 라이트 템플릿은 `<script>` 블록을 원본 것으로 통째 교체 + `<style>` 색 토큰 반전 재적용 ③ **양쪽 모두** 검증 — script 바이트 동일 diff, `node --check`, 판서 기능(펜/b/g/⛶) 동작 확인.
+## 참고
 
-### 환경 재정의 (기존)
-
-- 엔진 복사 원본: **이 스킬 폴더의 `template/`** (`/sessions/*/mnt/...` 경로는 이 환경에 없음 — 무시)
-- 출력 위치: 강의 소속이면 `courses/{course-id}/slides/`
-- `present_files`는 이 환경에 없다 → 파일 경로 보고 + Artifact Registry 등록
-- 강의 파이프라인에서 summary 프로파일은 **G5(컷 구성·비유 방향) 승인 후에만**, rich 프로파일은 **G4(스토리보드) 승인 후에만** HTML을 생성한다
-- 톤 규칙: 프로젝트 CLAUDE.md + 해당 강의 `manifest.yaml`의 `style`을 따른다
-- 파일명이 `_판서보드.html`이라도 summary 산출물의 Registry type은 `panseo_slide_html`이다 (판서보드 기능이 내장된 판서슬라이드)
+- 엔진 명세(기능 7종 + 이벤트 처리 방식 + 데이터 모델): `reference/engine.md`
+- 소유 템플릿: `template/board_template.html`(다크), `template/board_template_light.html`(라이트)
+  — `<script>` 바이트 동일, `<style>` 색 토큰만 다름
+- 요약 모드 컷 컴포넌트: `reference/components.md`
+- 판서 대본 형식·톤·인용 규칙: `reference/script_guide.md`
+- 그대로 모드가 소비하는 출력 계약(작성 주체는 `ppt-preview` 스킬): `.claude/skills/ppt-preview/SKILL.md`
+  "출력 계약" 절 — `<section class="ppt-slide" data-slide="N">` + 직계 자식 `.ppt-canvas` +
+  캔버스 내 `h2`
+- 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md`
+- status.md 형식: `templates/status_template.md`
+- 파이프라인 표·디렉터리 구조: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`
+  §3(7단계), §4(`panseo/chNN.html` 경로 규약), §7(이 스킬의 재작성 배경)
+- 빈 칠판만 필요하면(명시 요청 시): `panseo-board` 스킬 — 동일 엔진을 쓰지만 슬라이드 없이 칠판만
+  낸다.
+- 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 3(구조 검증) grep으로 SKILL.md 자체를 확인했고,
+  실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

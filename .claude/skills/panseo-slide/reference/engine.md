@@ -1,0 +1,87 @@
+# 판서 엔진 명세
+
+`panseo-slide`가 **소유**하는 판서 엔진의 요구 명세다. 요약 모드/그대로 모드 어느 쪽이든
+결과 HTML은 이 엔진을 **복사**해서 만든다 — `<script>`는 한 글자도 다시 타이핑하지 않는다.
+
+## 소유 템플릿 (재사용 대상 — 유지)
+
+- `template/board_template.html` — 다크 네이비 테마 엔진 원본.
+- `template/board_template_light.html` — 라이트 테마 스킨.
+
+두 파일의 `<script>`는 **바이트 동일**(diff로 확인됨). 다른 점은 `<style>`의 색상 값(`--bg`/
+`--board`/`--ink`/`--dim`/`--line`/`--accent`/`--warn`/`--gold`/`--green`과 그라디언트·그림자
+색)뿐이고, 레이아웃 치수·클래스 이름·DOM 구조·이벤트 로직은 완전히 같다. 어느 모드든 이 둘 중
+하나를 복사해 출발점으로 삼는다(SKILL.md "모드별 템플릿 선택" 참고).
+
+## 기능 7종 (확정 체크리스트가 확인하는 목록)
+
+1. **펜 드로잉** — 색 5종(`.swatch`, 흰/노랑/파랑/빨강/초록) · 굵기 3종(`.sz`). Pointer Events
+   기반, 필압 반영.
+2. **모눈 격자** (▦ 버튼 / 단축키 `g`) — 판서모드(칠판) 배경에 46px 격자를 씌운다.
+3. **✂ 사각형 선택 이동** — 드래그로 사각형을 그리면 그 안에 들어온 스트로크를 통째로 들어
+   올려(`liftStrokes`) 옮길 수 있다.
+4. **✋ 획 객체 이동** — 클릭 지점에서 가장 가까운 **스트로크 한 개만** 집는다(`pickStroke`) —
+   색이 다른 두 획이 겹쳐 있어도 따로 잡힌다.
+5. **파괴적 지우개** — 한 변 72px(`ERS`) 정사각 지우개. 지나간 자리의 점을 실제로 잘라
+   스트로크를 분할한다(`applyErase`) — **영구 삭제**이며, 잘린 스트로크를 나중에 이동해도
+   지워진 부분은 복원되지 않는다(Undo만 복원 가능).
+6. **판서모드 전환** (🪧 버튼 / 단축키 `b`) — 슬라이드 콘텐츠(`#content`)를 가리고 초록 빈
+   칠판(`#board`)으로 전환한다. 슬라이드 레이어(`slideStrokes[i]`)와 칠판 레이어
+   (`boardStrokes`)는 분리된 배열이라 섞이지 않는다.
+7. **전체화면 토글** (⛶ 버튼, 좌상단 / 단축키 `f`) — 태블릿은 F11이 없으므로 버튼 하나로
+   `requestFullscreen`/`exitFullscreen`을 토글한다.
+
+**7종에는 안 들어가지만 엔진에 포함된 부가 기능**(체크리스트 대상 아님, 존재만 확인):
+도형 스냅(◇ 버튼 / `s`, draw-and-hold 0.6초 정지 시 직선·사각형·원·삼각형으로 스냅), 되돌리기
+(`Ctrl`/`Cmd`+`Z`), 전체지움(`c`), 슬라이드 네비(←/→, `PageUp`/`PageDown`), 선택 후 삭제
+(`Delete`/`Backspace`).
+
+## 터치/펜 이벤트 처리 방식
+
+- `#pad` 캔버스 하나에 `pointerdown` / `pointermove` / `pointerup` / `pointercancel` /
+  `pointerleave` 리스너만 건다 — mouse/touch/pen을 하나의 Pointer Events API로 통합 처리하고,
+  별도 `touchstart`/`touchmove` 핸들러는 없다.
+- `pad.setPointerCapture(e.pointerId)`로 포인터를 캡처해, 빠르게 그을 때 손가락/펜이 캔버스
+  경계를 넘어가도 그리기가 끊기지 않는다.
+- `html,body{touch-action:none; overscroll-behavior:none}` — 브라우저 제스처(스크롤·핀치줌·
+  당겨서 새로고침)를 막는다. 갤럭시탭 등에서 판서 중 화면이 밀리지 않으려면 **반드시 유지**.
+- 모든 포인터 리스너는 `{passive:false}`로 등록해 `preventDefault()`가 항상 가능하다.
+- 필압: `e.pressure`(없으면 0.5 기본값)로 선 굵기(`lineW`/`lineW2`)를 보정한다(`0.45 + p*1.1`
+  배수).
+- 빠른 드래그에서도 끊김 없는 선을 위해 `e.getCoalescedEvents()`가 있으면 그 이벤트들을 모두
+  순회해 점을 찍는다.
+- 리사이즈: `devicePixelRatio` 대응으로 `fit()`이 캔버스 실픽셀 크기를 다시 계산하고 벡터
+  스트로크를 다시 그려(`render()`) 흐려지지 않는다.
+
+## 데이터 모델
+
+- 모든 판서는 스트로크 객체 `{color, size, erase, pts:[{x,y,p}]}`의 배열이다. 화면은 항상 전체
+  재드로(`render()`) 방식이라 창 크기가 바뀌어도 벡터로 다시 선명하게 그려진다.
+- 슬라이드별 레이어 `slideStrokes[i]`(컷 개수만큼)와 칠판 레이어 `boardStrokes`는 분리 배열 —
+  `setLayer()`/`toggleBoard()`가 현재 활성 배열(`strokes`)을 바꿔 낀다.
+- Undo: 조작 직전 `snapshot()`으로 `strokes.slice()`(shallow copy)를 스택에 push, 최대 60개
+  보관. `Ctrl/Cmd+Z` → `doUndo()`가 pop해서 복원.
+
+## STEPS 마커 규약
+
+- `<!-- ===================== STEPS START ===================== -->` ~
+  `<!-- ===================== STEPS END ===================== -->` 사이만 강의별로 교체한다.
+- 첫 `<section>`에만 `class="step active"`, 나머지는 `class="step"`.
+- `{{DECK_TITLE}}`(`<title>`) / `{{KICKER}}`(선택, 첫 컷 상단 라벨) 플레이스홀더를 치환한다.
+- 컷 개수는 JS가 `document.querySelectorAll('.step')`로 로드 시점에 자동 인식한다 — STEPS 영역
+  밖(`<style>`/`<script>`)은 건드리지 않아도 새 컷 수에 맞춰 네비게이션·점(dots)·Undo 스택이
+  자동으로 맞춰진다.
+
+## 검증 방법
+
+- `node --check <파일>` — `<script>` 문법 확인(엔진 원본을 그대로 복사했으면 항상 통과. 실패하면
+  복사 과정에서 실수로 스크립트를 건드렸다는 뜻).
+- 브라우저(Playwright 등)로 열어 위 7종 기능을 실제로 조작해 확인한다 — 정적 코드 리딩만으로는
+  pointer 이벤트 동작(특히 ✂/✋/지우개의 히트테스트)을 보증하지 못한다.
+- 컷 수 확인: `.step` 개수 세기 + 첫 컷만 `class`에 `active`가 붙어 있는지 grep.
+
+## 재동기화 (엔진 자체를 고칠 때만 — 평소 산출물 생성에는 해당 없음)
+
+두 템플릿의 `<script>`는 항상 바이트 동일해야 한다. 한쪽만 고쳤다면 `diff`로 `<script>...
+</script>` 구간만 다른 템플릿에 그대로 복사한다(`<style>`의 색상 값은 건드리지 않는다). 검증:
+script 바이트 동일 diff + `node --check` 양쪽 + 판서 기능(펜/`b`/`g`/`⛶`) 브라우저 확인.

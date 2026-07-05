@@ -1,17 +1,18 @@
 ---
 name: ppt-preview
-description: 확정 원고(`manuscripts/chNN.md`)의 Screen/Visual asset 필드를 16:9 슬라이드 캔버스로 나열한 라이트 테마 PPT 미리보기 `ppt_previews/chNN.html`을 만든다. "PPT 프리뷰 만들어줘", "PPT 미리보기 만들어줘" 요청 시 사용. 캔버스당 제목+짧은 문구+이미지/D2/코드만 배치하고 긴 설명은 넣지 않는다(설명은 원고·스토리보드 담당). 디자인 규범은 `templates/golden/ppt_preview_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 슬라이드 DOM은 `<section class="ppt-slide" data-slide="N">` + 내부 `.ppt-canvas` + 캔버스 내 `h2` 제목으로 고정한다(panseo-slide 그대로 모드·pptx-build가 이 구조를 그대로 소비). 사용자 확인 후 status.md PPT프리뷰 칸을 ✅로 갱신한다.
+description: 확정 원고(`manuscripts/chNN.md`)의 Screen/Visual asset 필드를 16:9 슬라이드 캔버스로 나열한 라이트 테마 PPT 미리보기 `ppt_previews/chNN.html`을 만든다. "PPT 프리뷰 만들어줘", "PPT 미리보기 만들어줘" 요청 시 사용. 캔버스당 제목+짧은 문구+이미지/D2/코드만 배치하고 긴 설명은 넣지 않는다(설명은 원고·스토리보드 담당). 디자인 규범은 `templates/golden/ppt_preview_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 슬라이드 DOM은 `<section class="ppt-slide" data-slide="N">` + 내부 `.ppt-canvas` + 캔버스 내 `h2` 제목으로 고정한다(panseo-slide 그대로 모드가 이 구조를 그대로 소비 — pptx-build는 이 HTML이 아니라 원고 manuscripts/chNN.md를 직접 파싱하므로 이 계약에 의존하지 않는다). 사용자 확인 후 status.md PPT프리뷰 칸을 ✅로 갱신한다.
 ---
 
 # ppt-preview
 
 확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물)의 Screen/Visual asset 필드를 실제 PPT 화면처럼 16:9 캔버스로 나열한 라이트 테마 미리보기 `ppt_previews/chNN.html`을 만드는 스킬이다. 파이프라인 6단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표)이며, 순서 확인용으로 `storyboards/chNN.html`(5단계 산출물)을 참고한다.
 
-이 단계의 산출물은 **후속 두 단계가 그대로 소비하는 계약 파일**이다:
-- 7단계 `panseo-slide`의 "그대로 모드" — `ppt_previews/chNN.html`의 슬라이드 내용을 그대로 가져와 판서 기능 레이어만 얹는다.
-- 9단계 `pptx-build` — 원고와 이 파일을 기준으로 python-pptx 16:9 슬라이드를 생성한다.
+이 단계의 산출물은 **후속 단계가 그대로 소비하는 계약 파일**이다:
+- 7단계 `panseo-slide`의 "그대로 모드" — `ppt_previews/chNN.html`의 슬라이드 내용을 그대로 가져와 판서 기능 레이어만 얹는다. 이 DOM 계약(아래 "출력 계약")의 실제 소비자는 이 하나뿐이다.
 
-그래서 이 스킬은 스토리보드보다 **DOM 구조 고정**이 훨씬 중요하다. 아래 "출력 계약"을 벗어나면 안 된다.
+**9단계 `pptx-build`는 이 파일을 소비하지 않는다** — 원고(`manuscripts/chNN.md`)를 직접 파싱해 python-pptx 16:9 슬라이드를 생성한다(`ppt_previews/chNN.html`은 사람이 보는 미리보기일 뿐 pptx-build의 입력이 아니다).
+
+그래서 이 스킬은 스토리보드보다 **DOM 구조 고정**이 훨씬 중요하다(panseo-slide 그대로 모드가 파싱하므로). 아래 "출력 계약"을 벗어나면 안 된다.
 
 ## 디자인 규범 (golden)
 
@@ -25,7 +26,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Screen/Visual asset 필드�
 
 ## 출력 계약 (필수 — 후속 단계 파싱 대상)
 
-`ppt_previews/chNN.html`의 슬라이드 DOM은 다음 3가지로 고정한다. panseo-slide 그대로 모드와 pptx-build가 이 구조를 그대로 파싱하므로 임의로 바꾸지 않는다.
+`ppt_previews/chNN.html`의 슬라이드 DOM은 다음 3가지로 고정한다. panseo-slide 그대로 모드가 이 구조를 그대로 파싱하므로 임의로 바꾸지 않는다(pptx-build는 이 HTML이 아니라 원고 `manuscripts/chNN.md`를 직접 파싱하므로 이 출력 계약에 의존하지 않는다).
 
 1. **슬라이드 루트**: `<section class="ppt-slide" data-slide="N">` — `N`은 원고 `## Slide N.` 번호와 1:1로 일치하는 정수(1부터 연번, 누락·중복 없음).
 2. **캔버스**: 슬라이드 루트 내부에 `<div class="ppt-canvas ...">` (16:9, `aspect-ratio: 16/9`). 골든처럼 `cover-canvas`/`standard-canvas`/`image-canvas`/`code-canvas`/`assessment-canvas`/`sources-canvas` 등 레이아웃 보조 클래스를 `ppt-canvas`와 함께 추가로 붙이는 것은 허용된다(선택자 `.ppt-canvas`는 항상 매치되어야 한다).
@@ -96,5 +97,6 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Screen/Visual asset 필드�
 - 순서 참고용 스토리보드: `storyboards/chNN.html` (`storyboard` 스킬 산출물)
 - 이미지 생성 브릿지 규약(`→ 생성됨:` 병기): `.claude/skills/manuscript-final/SKILL.md` §3
 - status.md 형식: `templates/status_template.md`
-- 파이프라인 표·디렉터리 구조: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(6단계), §4(`ppt_previews/chNN.html` 경로 규약), §7(panseo-slide 그대로 모드), §9(pptx-build가 이 파일을 소비)
+- 파이프라인 표·디렉터리 구조: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(6단계), §4(`ppt_previews/chNN.html` 경로 규약), §7(panseo-slide 그대로 모드)
+- pptx-build와의 관계: `.claude/skills/pptx-build/SKILL.md` "참고" — pptx-build는 `ppt_previews/chNN.html`을 소비하지 않고 원고(`manuscripts/chNN.md`)를 직접 파싱한다.
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

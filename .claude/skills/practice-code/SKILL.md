@@ -13,6 +13,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거�
 
 ### 1. Practice 필드 수집 및 시나리오 재구성
 
+- `manuscripts/chNN.md`가 없거나 `status.md`의 해당 차시 `원고확정`이 ✅가 아니면 사용자에게 알리고 중단한다(미확정 원고로 코드를 생성하지 않는다).
 - `manuscripts/chNN.md`를 처음부터 끝까지 훑어 `- 없음.`이 아닌 모든 **Practice** 필드를 슬라이드 번호 순서대로 수집한다.
 - 골든 사례(`templates/golden/manuscript_golden.md` Slide 13~19)처럼 실습이 여러 슬라이드에 걸쳐 단계형으로 이어지는 경우가 많다(프로젝트 생성 → 의존성 추가 → 코드 작성 → 실행 → 호출 확인). 수집한 Practice 지시를 슬라이드 순서 그대로 하나의 **실습 시나리오**로 재구성한다 — 슬라이드 단위로 흩어진 지시를 실행 가능한 순서(생성 → 작성 → 실행 → 확인)로 정렬하는 것이 이 단계의 핵심이다.
 - Practice 필드가 참조하는 코드/설정은 같은 슬라이드의 **Visual asset** 필드(`Code block for slide:`, `Code block for PPT:` 등)에 실제 소스가 들어 있는 경우가 많다 — Practice만 보지 말고 해당 슬라이드의 Visual asset 코드 블록도 함께 확인해 실제 구현 소스로 삼는다.

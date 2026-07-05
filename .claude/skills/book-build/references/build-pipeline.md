@@ -64,9 +64,12 @@ Pandoc이 생성하는 `<한국어-라벨>` 앵커 제거:
 
 ## Typst 컴파일 옵션
 
+> **이식 주의 (이 하네스 기준):** 아래 예시는 원본(macOS) 기준이다. 이 하네스에서는 `typst_builder.py`가 컴파일을 대신 수행하며, Windows에 맞게 이미 조정되어 있다 — `--font-path`는 저장소 내 `references/fonts/`(D2Coding·KoPubWorld바탕)를 절대경로로 주입하고, `--root`는 하드코딩 `/` 대신 `_typst_root_for()`가 `.typ` 파일의 드라이브 앵커(Windows는 `C:/`)에서 도출한다. 아래 명령을 Windows에서 그대로 실행하지 말 것.
+
 ```bash
+# 원본(macOS) 예시 — 참고용
 typst compile output.typ output.pdf --font-path ~/Library/Fonts --root /
 ```
 
-- `--root /`: 절대경로 이미지 접근을 위해 루트를 `/`로 설정
-- `--font-path`: RIDIBatang, D2Coding 등 사용자 폰트 경로
+- `--root`: 절대경로 이미지 접근을 위한 루트. 이 하네스에서는 `_typst_root_for()`가 드라이브 앵커로 도출(Windows `C:/`, POSIX `/`).
+- `--font-path`: 사용자 폰트 경로. 이 하네스에서는 저장소 `references/fonts/`(D2Coding, KoPubWorld바탕).

@@ -1,9 +1,29 @@
-# 디자인 시스템 — 다크 네이비 테크 테마 (고정)
+# 디자인 시스템 — 다크 네이비 색 토큰 (다크 요청 시에만 사용)
 
-모든 시뮬레이터는 이 토큰을 쓴다. 색을 즉흥적으로 바꾸지 말 것. 평평(flat)하게, 그라데이션 남발
-금지(배경 메시 정도만 허용).
+**기본값은 라이트 테마다.** 색 토큰의 SSOT는 `SKILL.md` §3(라이트 팔레트)이고, 이 파일의 다크
+네이비 토큰은 **사용자가 다크를 명시적으로 요청한 시뮬레이터에서만** 쓴다. 아래 컴포넌트
+**모양**(카드/버튼/뱃지 등 border-radius·여백·flat 스타일)은 라이트/다크 공통으로 그대로
+재사용하되, **색만** 상황에 맞는 팔레트(기본은 라이트, 요청 시만 이 파일의 다크 토큰)로 교체한다.
+평평(flat)하게, 그라데이션 남발 금지(배경 메시 정도만 허용) — 이 원칙은 라이트/다크 공통이다.
 
-## 폰트 (head에 넣기)
+## 참고: 라이트 팔레트 요약 (기본값, SSOT는 SKILL.md §3)
+
+```css
+:root{
+  --ink:#17202a; --muted:#5d6875; --line:#d9dee7; --soft:#f5f7fa;
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f5f7fa;
+  --blue:#2f6fcb; --blue-deep:#1f4f9c;
+  --green:#5aa05a; --green-deep:#3f7a3f;
+  --amber:#c98a1a; --rose:#c0435a;
+  --mono:'JetBrains Mono',monospace;
+}
+```
+
+흰 배경 + 실선 보더(`1px solid var(--line)`)로 카드를 구분하고, 반투명 오버레이(`rgba(255,255,255,0.04)`
+류)는 쓰지 않는다. 전체 값·의미 색 관례(파랑=중립/기본, 초록=성공, 로즈=오류, 앰버=강조)의
+상세는 `SKILL.md` §3을 따른다 — 이 표는 두 문서 불일치 방지를 위한 요약일 뿐이다.
+
+## 폰트 (head에 넣기, 라이트/다크 공통)
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
@@ -11,7 +31,9 @@
 ```
 본문 = Pretendard, 숫자/코드 = JetBrains Mono(`var(--mono)`).
 
-## :root 토큰
+## 아래는 다크 토큰 (다크 요청 시에만 사용 — 기본 라이트 팔레트는 위 요약 또는 SKILL.md §3)
+
+## :root 토큰 (다크)
 
 ```css
 :root{
@@ -41,7 +63,7 @@ body{
 }
 ```
 
-## 핵심 컴포넌트 (복사해서 사용)
+## 핵심 컴포넌트 (모양은 라이트/다크 공통, 색 이름은 다크 기준 — 라이트는 SKILL.md §3의 blue/green으로 교체)
 
 - **뱃지**: 둥근 pill, 색상별(amber/indigo/rose) 변형, 작은 점(dot) + glow.
 - **글래스 카드** `.card`: `background:var(--surface); border:1px solid var(--border);

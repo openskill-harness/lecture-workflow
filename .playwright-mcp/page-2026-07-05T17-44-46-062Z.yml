@@ -1,0 +1,386 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - heading "1차시 PPT 미리보기" [level=1] [ref=e3]
+    - paragraph [ref=e4]: 서버 프로그램과 웹 애플리케이션 실행 환경 이해 - 실제 PPT 화면 검수용
+  - main [ref=e5]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: 스프링 부트 기초 · 1차시
+        - heading "서버 프로그램과 웹 애플리케이션 실행 환경 이해" [level=2] [ref=e10]
+        - paragraph [ref=e11]: Spring Boot가 웹 애플리케이션을 실행하는 방식을 처음부터 보기
+      - generic [ref=e12]: "이미지 미생성 — 프롬프트: 노트북 브라우저와 작은 Spring Boot 서버 상자가 화살표로 연결된 교육용 일러스트"
+    - generic [ref=e14]:
+      - paragraph [ref=e15]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "전자정부 표준프레임워크 5.0도 Spring Boot 실행 환경을 전제로 확장되고 있다" [level=2] [ref=e16]
+      - generic [ref=e17]:
+        - list [ref=e19]:
+          - listitem [ref=e20]: "eGovFrame v5.0.0: SpringBoot 3.5.6 지원 + 실행환경 OSS 업그레이드"
+          - listitem [ref=e21]: Spring AI RAG, Kubernetes/Istio 운영환경 가이드 포함
+          - listitem [ref=e22]: "심플홈페이지 BackEnd: JSP 중심에서 BackEnd/FrontEnd 분리로"
+        - generic [ref=e24]:
+          - generic [ref=e25]:
+            - heading "eGovFrame 5.0 이슈" [level=4] [ref=e26]
+            - paragraph [ref=e27]: SpringBoot 3.5.6
+            - paragraph [ref=e28]: Spring AI RAG 예제
+            - paragraph [ref=e29]: 클라우드 운영 가이드
+          - generic [ref=e30]:
+            - heading "오늘 배울 흐름" [level=4] [ref=e31]
+            - paragraph [ref=e32]: 요청 → 내장 서버
+            - paragraph [ref=e33]: → Controller
+            - paragraph [ref=e34]: → 응답
+    - generic [ref=e36]:
+      - paragraph [ref=e37]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "오늘은 “요청이 들어와 응답이 나가기까지”를 본다" [level=2] [ref=e38]
+      - generic [ref=e39]:
+        - list [ref=e41]:
+          - listitem [ref=e42]: 서버 프로그램의 역할을 설명할 수 있다.
+          - listitem [ref=e43]: 웹 서버와 웹 애플리케이션 서버의 차이를 구분할 수 있다.
+          - listitem [ref=e44]: Spring Boot 애플리케이션이 내장 서버와 자동 설정으로 실행되는 흐름을 설명할 수 있다.
+        - generic [ref=e46]:
+          - generic [ref=e47]: 서버 역할
+          - generic [ref=e48]: →
+          - generic [ref=e49]: HTTP 요청/응답
+          - generic [ref=e50]: →
+          - generic [ref=e51]: Spring Boot 실행
+    - generic [ref=e53]:
+      - paragraph [ref=e54]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "서버 프로그램의 기본 역할" [level=2] [ref=e55]
+      - generic [ref=e56]:
+        - list [ref=e58]:
+          - listitem [ref=e59]: 요청을 받는다
+          - listitem [ref=e60]: 필요한 처리를 한다
+          - listitem [ref=e61]: 응답을 돌려준다
+        - generic [ref=e62]: "이미지 미생성 — 프롬프트: 식당 주방 비유(손님→주문서→주방→완성된 음식) 4단계 일러스트"
+    - generic [ref=e64]:
+      - paragraph [ref=e65]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "HTTP 요청과 응답" [level=2] [ref=e66]
+      - generic [ref=e67]:
+        - list [ref=e69]:
+          - listitem [ref=e70]: "Request: 브라우저가 서버에 보내는 메시지"
+          - listitem [ref=e71]: "Response: 서버가 브라우저에 돌려주는 메시지"
+        - generic [ref=e73]:
+          - generic [ref=e74]: 브라우저
+          - generic [ref=e75]: →
+          - generic [ref=e76]:
+            - text: HTTP 요청
+            - text: GET /hello
+          - generic [ref=e77]: →
+          - generic [ref=e78]: Spring Boot 서버
+          - generic [ref=e79]: →
+          - generic [ref=e80]:
+            - text: 200 OK
+            - text: Hello
+    - generic [ref=e82]:
+      - paragraph [ref=e83]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "요청과 응답은 구조가 있다" [level=2] [ref=e84]
+      - generic [ref=e85]:
+        - list [ref=e87]:
+          - listitem [ref=e88]: "왼쪽: 요청 예시 GET /hello HTTP/1.1"
+          - listitem [ref=e89]: "오른쪽: 응답 예시 HTTP/1.1 200 OK"
+        - generic [ref=e91]:
+          - code [ref=e93]: "GET /hello HTTP/1.1 Host: localhost:8080"
+          - code [ref=e95]: "HTTP/1.1 200 OK Content-Type: text/plain Hello Spring Boot"
+    - generic [ref=e97]:
+      - paragraph [ref=e98]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "웹 서버의 대표 역할" [level=2] [ref=e99]
+      - generic [ref=e100]:
+        - list [ref=e102]:
+          - listitem [ref=e103]: HTML, CSS, JS, 이미지 전달
+          - listitem [ref=e104]: 정적 파일 처리에 강함
+          - listitem [ref=e105]: 필요하면 WAS로 요청 전달
+        - generic [ref=e107]:
+          - generic [ref=e108]: 브라우저
+          - generic [ref=e109]: →
+          - generic [ref=e110]: 웹 서버
+          - generic [ref=e111]: →
+          - generic [ref=e112]:
+            - text: HTML
+            - text: CSS
+            - text: 이미지
+    - generic [ref=e114]:
+      - paragraph [ref=e115]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "WAS는 동적인 요청을 처리한다" [level=2] [ref=e116]
+      - generic [ref=e117]:
+        - list [ref=e119]:
+          - listitem [ref=e120]: 로그인
+          - listitem [ref=e121]: 게시글 등록
+          - listitem [ref=e122]: 주문 처리
+          - listitem [ref=e123]: 데이터베이스 연동
+        - generic [ref=e125]:
+          - generic [ref=e126]: 브라우저
+          - generic [ref=e127]: →
+          - generic [ref=e128]:
+            - text: WAS
+            - text: 애플리케이션 로직
+          - generic [ref=e129]: →
+          - generic [ref=e130]: DB
+          - generic [ref=e131]: →
+          - generic [ref=e132]: 동적 응답
+    - generic [ref=e134]:
+      - paragraph [ref=e135]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "전통적인 배포 흐름" [level=2] [ref=e136]
+      - generic [ref=e137]:
+        - list [ref=e139]:
+          - listitem [ref=e140]: Tomcat 설치
+          - listitem [ref=e141]: WAR 파일 배포
+          - listitem [ref=e142]: 서버 설정 관리
+        - generic [ref=e144]:
+          - generic [ref=e145]: 개발 코드
+          - generic [ref=e146]: →
+          - generic [ref=e147]: 배포 파일
+          - generic [ref=e148]: →
+          - generic [ref=e149]: 외부 Tomcat
+          - generic [ref=e150]: →
+          - generic [ref=e151]: 실행
+    - generic [ref=e153]:
+      - paragraph [ref=e154]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "Spring Boot는 내장 서버로 바로 실행된다" [level=2] [ref=e155]
+      - generic [ref=e156]:
+        - list [ref=e158]:
+          - listitem [ref=e159]: 애플리케이션 실행
+          - listitem [ref=e160]: 내장 Tomcat 시작
+          - listitem [ref=e161]: 요청 처리 준비 완료
+        - generic [ref=e163]:
+          - generic [ref=e164]:
+            - text: 개발자
+            - text: main()
+          - generic [ref=e165]: →
+          - generic [ref=e166]:
+            - text: Spring
+            - text: 컨테이너 시작
+          - generic [ref=e167]: →
+          - generic [ref=e168]:
+            - text: 내장 Tomcat
+            - text: 시작
+          - generic [ref=e169]: →
+          - generic [ref=e170]:
+            - text: localhost:8080
+            - text: 요청 대기
+    - generic [ref=e172]:
+      - paragraph [ref=e173]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "Auto-configuration은 기본 설정을 자동으로 잡아준다" [level=2] [ref=e174]
+      - generic [ref=e175]:
+        - list [ref=e177]:
+          - listitem [ref=e178]: Web MVC starter 있음
+          - listitem [ref=e179]: Spring MVC/Tomcat 설정 추정
+          - listitem [ref=e180]: 개발자는 핵심 코드에 집중
+        - generic [ref=e182]:
+          - generic [ref=e183]:
+            - text: Web MVC
+            - text: 스타터
+          - generic [ref=e184]: →
+          - generic [ref=e185]:
+            - text: Spring Boot
+            - text: 자동 설정
+          - generic [ref=e186]: →
+          - generic [ref=e187]: Spring MVC
+          - generic [ref=e188]: →
+          - generic [ref=e189]: 내장 Tomcat
+    - generic [ref=e191]:
+      - paragraph [ref=e192]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "실무에서는 실행 환경 단순화가 큰 장점이다" [level=2] [ref=e193]
+      - generic [ref=e194]:
+        - list [ref=e196]:
+          - listitem [ref=e197]: "설정 먼저: 서버 설치·포트·배포 오류로 지친 모습"
+          - listitem [ref=e198]: "실행 먼저: Spring Boot App 실행 후 바로 확인"
+        - generic [ref=e200]:
+          - generic [ref=e201]:
+            - heading "설정 먼저" [level=4] [ref=e202]
+            - paragraph [ref=e203]: 서버 설치
+            - paragraph [ref=e204]: 런타임 등록
+            - paragraph [ref=e205]: 배포 경로 확인
+          - generic [ref=e206]:
+            - heading "실행 먼저" [level=4] [ref=e207]
+            - paragraph [ref=e208]: Gradle 프로젝트 import
+            - paragraph [ref=e209]: Run As Spring Boot App
+            - paragraph [ref=e210]: localhost 확인
+    - generic [ref=e212]:
+      - paragraph [ref=e213]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "/hello에 응답하는 가장 작은 서버" [level=2] [ref=e214]
+      - generic [ref=e215]:
+        - list [ref=e217]:
+          - listitem [ref=e218]: "프로젝트명: ch01-hello-server"
+          - listitem [ref=e219]:
+            - text: "주소:"
+            - link "http://localhost:8080/hello" [ref=e220] [cursor=pointer]:
+              - /url: http://localhost:8080/hello
+          - listitem [ref=e221]: "응답: Hello Spring Boot"
+        - generic [ref=e223]:
+          - generic [ref=e224]: http://localhost:8080/hello
+          - generic [ref=e225]: Hello Spring Boot
+    - generic [ref=e227]:
+      - paragraph [ref=e228]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "Spring Starter Project 생성" [level=2] [ref=e229]
+      - generic [ref=e230]:
+        - list [ref=e232]:
+          - listitem [ref=e233]: STS4 New > Spring Starter Project 화면 캡처
+          - listitem [ref=e234]: "Group: com.example"
+          - listitem [ref=e235]: "Artifact: ch01-hello-server"
+          - listitem [ref=e236]: "Name: ch01-hello-server"
+        - generic [ref=e238]:
+          - generic [ref=e239]: "Spring Starter Project Name: ch01-hello-server Type: Gradle Spring Boot: 4.1.0 Java: 21 Packaging: Jar Package: com.example.ch01"
+          - generic [ref=e240]:
+            - generic [ref=e241]: New Spring Starter Project
+            - code [ref=e243]: "Group com.example Artifact ch01-hello-server Package com.example.ch01 Dependency: Spring Web MVC"
+    - generic [ref=e245]:
+      - paragraph [ref=e246]: 실습
+      - heading "Web MVC 스타터는 웹 서버 실행의 힌트가 된다" [level=2] [ref=e247]
+      - generic [ref=e248]:
+        - list [ref=e250]:
+          - listitem [ref=e251]: Dependencies에서 Spring Web MVC 선택
+          - listitem [ref=e252]: 스타터가 자동 설정의 단서가 된다
+        - generic [ref=e254]:
+          - generic [ref=e255]:
+            - text: Web MVC
+            - text: 스타터
+          - generic [ref=e256]: →
+          - generic [ref=e257]:
+            - text: Spring Boot
+            - text: 자동 설정
+          - generic [ref=e258]: →
+          - generic [ref=e259]:
+            - text: Spring MVC
+            - text: 내장 Tomcat
+    - generic [ref=e261]:
+      - paragraph [ref=e262]: 실습
+      - heading "요청을 받을 Controller 만들기" [level=2] [ref=e263]
+      - generic [ref=e264]:
+        - list [ref=e266]:
+          - listitem [ref=e267]: HelloController.java 코드 크게 표시
+          - listitem [ref=e268]: "핵심 강조: @RestController, @GetMapping(\"/hello\")"
+        - code [ref=e271]: "package com.example.ch01; import org.springframework.web.bind.annotation.GetMapping; import org.springframework.web.bind.annotation.RestController; @RestController public class HelloController { @GetMapping(\"/hello\") public String hello() { return \"Hello Spring Boot\"; } }"
+    - generic [ref=e273]:
+      - paragraph [ref=e274]: 실습
+      - heading "시작점은 main()이다" [level=2] [ref=e275]
+      - generic [ref=e276]:
+        - list [ref=e278]:
+          - listitem [ref=e279]: Ch01HelloServerApplication.java 코드
+          - listitem [ref=e280]: SpringApplication.run(...) 강조
+        - code [ref=e283]: "package com.example.ch01; import org.springframework.boot.SpringApplication; import org.springframework.boot.autoconfigure.SpringBootApplication; @SpringBootApplication public class Ch01HelloServerApplication { public static void main(String[] args) { SpringApplication.run(Ch01HelloServerApplication.class, args); } }"
+    - generic [ref=e285]:
+      - paragraph [ref=e286]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "실행하면 내장 서버가 열린다" [level=2] [ref=e287]
+      - generic [ref=e288]:
+        - list [ref=e290]:
+          - listitem [ref=e291]: STS4 Run As > Spring Boot App 캡처
+          - listitem [ref=e292]: Console의 Started 로그 캡처
+          - listitem [ref=e293]: Tomcat started on port 8080에 하이라이트
+        - generic [ref=e295]:
+          - generic [ref=e296]: ch01-hello-server src/main/java com.example.ch01 Ch01HelloServerApplication.java HelloController.java build.gradle
+          - generic [ref=e297]:
+            - generic [ref=e298]: Console
+            - code [ref=e300]: ":: Spring Boot :: (v4.1.0) Tomcat initialized with port 8080 Tomcat started on port 8080 Started Ch01HelloServerApplication"
+    - generic [ref=e302]:
+      - paragraph [ref=e303]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "브라우저가 요청하고 서버가 응답한다" [level=2] [ref=e304]
+      - generic [ref=e305]:
+        - list [ref=e307]:
+          - listitem [ref=e308]:
+            - text: "주소창:"
+            - link "http://localhost:8080/hello" [ref=e309] [cursor=pointer]:
+              - /url: http://localhost:8080/hello
+          - listitem [ref=e310]: "화면 결과: Hello Spring Boot"
+          - listitem [ref=e311]: 옆에 요청-응답 미니 화살표
+        - generic [ref=e313]:
+          - generic [ref=e314]: http://localhost:8080/hello
+          - generic [ref=e315]: Hello Spring Boot
+    - generic [ref=e317]:
+      - paragraph [ref=e318]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "/hello 요청은 어디로 흘러갈까?" [level=2] [ref=e319]
+      - generic [ref=e320]:
+        - list [ref=e322]:
+          - listitem [ref=e323]: 다섯 단계로 이어지는 요청-응답 경로
+        - generic [ref=e325]:
+          - generic [ref=e326]:
+            - text: 브라우저
+            - text: /hello
+          - generic [ref=e327]: →
+          - generic [ref=e328]: 내장 Tomcat
+          - generic [ref=e329]: →
+          - generic [ref=e330]: Spring MVC
+          - generic [ref=e331]: →
+          - generic [ref=e332]: HelloController
+          - generic [ref=e333]: →
+          - generic [ref=e334]: 응답
+    - generic [ref=e336]:
+      - paragraph [ref=e337]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "서버가 안 보일 때 어디부터 볼까?" [level=2] [ref=e338]
+      - generic [ref=e339]:
+        - list [ref=e341]:
+          - listitem [ref=e342]: 서버 실행 실패
+          - listitem [ref=e343]: 404 Not Found
+          - listitem [ref=e344]: 응답 문자열이 예상과 다름
+        - generic [ref=e346]:
+          - generic [ref=e347]:
+            - heading "1. 실행 로그" [level=4] [ref=e348]
+            - paragraph [ref=e349]: Started 메시지 확인
+          - generic [ref=e350]:
+            - heading "2. URL" [level=4] [ref=e351]
+            - paragraph [ref=e352]: /hello 오타 확인
+          - generic [ref=e353]:
+            - heading "3. Controller 코드" [level=4] [ref=e354]
+            - paragraph [ref=e355]: "@GetMapping 경로 확인"
+    - generic [ref=e357]:
+      - paragraph [ref=e358]: 1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+      - heading "브라우저 요청은 서버 프로그램의 코드로 이어진다" [level=2] [ref=e359]
+      - generic [ref=e360]:
+        - list [ref=e362]:
+          - listitem [ref=e363]: 브라우저
+          - listitem [ref=e364]: HTTP 요청
+          - listitem [ref=e365]: 내장 Tomcat
+          - listitem [ref=e366]: Spring MVC
+          - listitem [ref=e367]: Controller
+          - listitem [ref=e368]: HTTP 응답
+        - generic [ref=e370]:
+          - generic [ref=e371]: 브라우저
+          - generic [ref=e372]: →
+          - generic [ref=e373]:
+            - text: HTTP
+            - text: 요청
+          - generic [ref=e374]: →
+          - generic [ref=e375]:
+            - text: 내장
+            - text: Tomcat
+          - generic [ref=e376]: →
+          - generic [ref=e377]:
+            - text: Spring
+            - text: MVC
+          - generic [ref=e378]: →
+          - generic [ref=e379]: Controller
+          - generic [ref=e380]: →
+          - generic [ref=e381]:
+            - text: HTTP
+            - text: 응답
+    - generic [ref=e383]:
+      - paragraph [ref=e384]: 평가하기
+      - heading "문제풀기 1" [level=2] [ref=e385]
+      - generic [ref=e387]:
+        - heading "내장 Tomcat이 시작되는 이유로 가장 적절한 것은?" [level=4] [ref=e388]
+        - generic [ref=e389]: 1. 브라우저가 자동으로 Tomcat을 설치한다.
+        - generic [ref=e390]: 2. Web MVC 스타터와 자동 설정으로 실행 환경을 구성한다.
+        - generic [ref=e391]: 3. 모든 Java 프로그램은 8080 포트를 연다.
+        - generic [ref=e392]: 4. Controller가 데이터베이스를 자동 생성한다.
+    - generic [ref=e394]:
+      - paragraph [ref=e395]: 평가하기
+      - heading "문제풀기 2" [level=2] [ref=e396]
+      - generic [ref=e398]:
+        - heading "HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다." [level=4] [ref=e399]
+        - generic [ref=e400]: O
+        - generic [ref=e401]: X
+    - generic [ref=e403]:
+      - paragraph [ref=e404]: 평가하기
+      - heading "문제풀기 3" [level=2] [ref=e405]
+      - generic [ref=e407]:
+        - heading "웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다." [level=4] [ref=e408]
+        - generic [ref=e409]: O
+        - generic [ref=e410]: X
+    - generic [ref=e412]:
+      - paragraph [ref=e413]: 참고자료
+      - heading "참고자료" [level=2] [ref=e414]
+      - generic [ref=e416]:
+        - heading "참고자료" [level=4] [ref=e417]
+        - generic [ref=e418]: Spring Boot 공식 문서
+        - generic [ref=e419]: Spring Boot 첫 애플리케이션 튜토리얼
+        - generic [ref=e420]: Spring Tools 공식 페이지
+        - generic [ref=e421]: MDN HTTP Overview
+        - generic [ref=e422]: eGovFrame 심플홈페이지 BackEnd GitHub

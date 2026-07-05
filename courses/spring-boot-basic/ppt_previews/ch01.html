@@ -289,32 +289,32 @@
     <p>서버 프로그램과 웹 애플리케이션 실행 환경 이해 - 실제 PPT 화면 검수용</p>
   </header>
   <main>
-    <section class="ppt-slide" id="ppt-slide-1">
+    <section class="ppt-slide" id="ppt-slide-1" data-slide="1">
       <div class="ppt-canvas cover-canvas">
         <div class="cover-text">
           <p class="lesson-label">스프링 부트 기초 · 1차시</p>
           <h2>서버 프로그램과 웹 애플리케이션 실행 환경 이해</h2>
           <p>Spring Boot가 웹 애플리케이션을 실행하는 방식을 처음부터 보기</p>
         </div>
-        <div class="cover-image"><img src="../assets/images/ch01/ch01_cover_developer_server.png" alt="개발자와 Spring Boot 서버 표지 이미지"></div>
+        <div class="cover-image" style="display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;background:var(--soft);color:var(--muted);font-size:15px;line-height:1.4;">이미지 미생성 — 프롬프트: 노트북 브라우저와 작은 Spring Boot 서버 상자가 화살표로 연결된 교육용 일러스트</div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-2">
+    <section class="ppt-slide" id="ppt-slide-2" data-slide="2">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
-        <h2>공공 예제도 API와 Spring Boot 실행 방식을 전제로 한다</h2>
+        <h2>전자정부 표준프레임워크 5.0도 Spring Boot 실행 환경을 전제로 확장되고 있다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>Spring Boot 4.1.0은 Java 17 이상, Gradle 8.14 이상 또는 9.x를 지원한다.</li><li>이 과정 실습 기준은 JDK 21, Spring Boot 4.1.0, Gradle, Spring Tools for Eclipse 5.2.0 이상이다.</li><li>eGovFrame 심플홈페이지 BackEnd 예제도 Spring Boot 기반 BackEnd/FrontEnd 분리 흐름을 보여준다.</li><li>기존 JSP 뷰 중심에서 BackEnd와 FrontEnd를 분리한 예시를 제공한다.</li></ul></div>
+          <div class="ppt-copy"><ul><li>eGovFrame v5.0.0: SpringBoot 3.5.6 지원 + 실행환경 OSS 업그레이드</li><li>Spring AI RAG, Kubernetes/Istio 운영환경 가이드 포함</li><li>심플홈페이지 BackEnd: JSP 중심에서 BackEnd/FrontEnd 분리로</li></ul></div>
           <div class="ppt-media"><div class="split">
-            <div class="panel old"><h4>과거 방식</h4><p>JSP 화면 중심</p><p>WAR 배포</p><p>외부 서버 설정</p></div>
-            <div class="panel new"><h4>현재 흐름</h4><p>API BackEnd</p><p>FrontEnd 분리</p><p>Spring Boot 실행</p></div>
+            <div class="panel old"><h4>eGovFrame 5.0 이슈</h4><p>SpringBoot 3.5.6</p><p>Spring AI RAG 예제</p><p>클라우드 운영 가이드</p></div>
+            <div class="panel new"><h4>오늘 배울 흐름</h4><p>요청 → 내장 서버</p><p>→ Controller</p><p>→ 응답</p></div>
           </div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-3">
+    <section class="ppt-slide" id="ppt-slide-3" data-slide="3">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>오늘은 “요청이 들어와 응답이 나가기까지”를 본다</h2>
@@ -325,18 +325,18 @@
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-4">
+    <section class="ppt-slide" id="ppt-slide-4" data-slide="4">
       <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>서버 프로그램의 기본 역할</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>요청을 받는다</li><li>필요한 처리를 한다</li><li>응답을 돌려준다</li></ul></div>
-          <div class="ppt-media"><img src="../assets/images/ch01/ch01_restaurant_request_response.png" alt="식당 주문 비유 이미지"></div>
+          <div class="ppt-media" style="align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--muted);font-size:15px;line-height:1.4;">이미지 미생성 — 프롬프트: 식당 주방 비유(손님→주문서→주방→완성된 음식) 4단계 일러스트</div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-5">
+    <section class="ppt-slide" id="ppt-slide-5" data-slide="5">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>HTTP 요청과 응답</h2>
@@ -347,12 +347,12 @@
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-6">
+    <section class="ppt-slide" id="ppt-slide-6" data-slide="6">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>요청과 응답은 구조가 있다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>왼쪽: 요청 예시 GET /hello HTTP/1.1</li></ul></div>
+          <div class="ppt-copy"><ul><li>왼쪽: 요청 예시 GET /hello HTTP/1.1</li><li>오른쪽: 응답 예시 HTTP/1.1 200 OK</li></ul></div>
           <div class="ppt-media"><div class="split"><pre><code>GET /hello HTTP/1.1
 Host: localhost:8080</code></pre><pre><code>HTTP/1.1 200 OK
 Content-Type: text/plain
@@ -362,7 +362,7 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-7">
+    <section class="ppt-slide" id="ppt-slide-7" data-slide="7">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>웹 서버의 대표 역할</h2>
@@ -373,7 +373,7 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-8">
+    <section class="ppt-slide" id="ppt-slide-8" data-slide="8">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>WAS는 동적인 요청을 처리한다</h2>
@@ -384,7 +384,7 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-9">
+    <section class="ppt-slide" id="ppt-slide-9" data-slide="9">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>전통적인 배포 흐름</h2>
@@ -395,18 +395,18 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-10">
-      <div class="ppt-canvas image-canvas">
+    <section class="ppt-slide" id="ppt-slide-10" data-slide="10">
+      <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Spring Boot는 내장 서버로 바로 실행된다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>애플리케이션 실행</li><li>내장 Tomcat 시작</li><li>요청 처리 준비 완료</li></ul></div>
-          <div class="ppt-media"><img src="../assets/images/ch01/ch01_foodtruck_embedded_server.png" alt="푸드트럭 내장 서버 비유 이미지"></div>
+          <div class="ppt-media"><div class="flow"><div class="node input">개발자<br>main()</div><div class="arrow">→</div><div class="node key">Spring<br>컨테이너 시작</div><div class="arrow">→</div><div class="node">내장 Tomcat<br>시작</div><div class="arrow">→</div><div class="node input">localhost:8080<br>요청 대기</div></div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-11">
+    <section class="ppt-slide" id="ppt-slide-11" data-slide="11">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Auto-configuration은 기본 설정을 자동으로 잡아준다</h2>
@@ -417,12 +417,12 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-12">
+    <section class="ppt-slide" id="ppt-slide-12" data-slide="12">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>실무에서는 실행 환경 단순화가 큰 장점이다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>A: 외부 서버 설치, 포트 설정, 배포 오류로 지친 모습</li><li>B: Spring Boot App 실행 후 브라우저 확인</li><li>화면 글자는 최소화: “설정 먼저” vs “실행 먼저”</li></ul></div>
+          <div class="ppt-copy"><ul><li>설정 먼저: 서버 설치·포트·배포 오류로 지친 모습</li><li>실행 먼저: Spring Boot App 실행 후 바로 확인</li></ul></div>
           <div class="ppt-media"><div class="split">
             <div class="panel old"><h4>설정 먼저</h4><p>서버 설치</p><p>런타임 등록</p><p>배포 경로 확인</p></div>
             <div class="panel new"><h4>실행 먼저</h4><p>Gradle 프로젝트 import</p><p>Run As Spring Boot App</p><p>localhost 확인</p></div>
@@ -431,7 +431,7 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-13">
+    <section class="ppt-slide" id="ppt-slide-13" data-slide="13">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>/hello에 응답하는 가장 작은 서버</h2>
@@ -442,7 +442,7 @@ Hello Spring Boot</code></pre></div></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-14">
+    <section class="ppt-slide" id="ppt-slide-14" data-slide="14">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Spring Starter Project 생성</h2>
@@ -466,46 +466,18 @@ Dependency: Spring Web MVC</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-15">
-      <div class="ppt-canvas code-canvas">
+    <section class="ppt-slide" id="ppt-slide-15" data-slide="15">
+      <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">실습</p>
         <h2>Web MVC 스타터는 웹 서버 실행의 힌트가 된다</h2>
-        <div class="ppt-code-layout">
-          <div class="ppt-copy"><ul><li>Dependencies 선택 화면 캡처</li><li>Spring Web MVC 선택 표시</li></ul></div>
-          <div class="ppt-media"><pre><code>plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.1.0'
-    id 'io.spring.dependency-management' version '1.1.7'
-}
-
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-description = 'Lesson 1 Spring Boot hello server practice code'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}</code></pre></div>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul><li>Dependencies에서 Spring Web MVC 선택</li><li>스타터가 자동 설정의 단서가 된다</li></ul></div>
+          <div class="ppt-media"><div class="flow"><div class="node input">Web MVC<br>스타터</div><div class="arrow">→</div><div class="node key">Spring Boot<br>자동 설정</div><div class="arrow">→</div><div class="node">Spring MVC<br>내장 Tomcat</div></div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-16">
+    <section class="ppt-slide" id="ppt-slide-16" data-slide="16">
       <div class="ppt-canvas code-canvas">
         <p class="lesson-label">실습</p>
         <h2>요청을 받을 Controller 만들기</h2>
@@ -528,7 +500,7 @@ public class HelloController {
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-17">
+    <section class="ppt-slide" id="ppt-slide-17" data-slide="17">
       <div class="ppt-canvas code-canvas">
         <p class="lesson-label">실습</p>
         <h2>시작점은 main()이다</h2>
@@ -550,7 +522,7 @@ public class Ch01HelloServerApplication {
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-18">
+    <section class="ppt-slide" id="ppt-slide-18" data-slide="18">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>실행하면 내장 서버가 열린다</h2>
@@ -572,7 +544,7 @@ Started Ch01HelloServerApplication</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-19">
+    <section class="ppt-slide" id="ppt-slide-19" data-slide="19">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>브라우저가 요청하고 서버가 응답한다</h2>
@@ -583,48 +555,47 @@ Started Ch01HelloServerApplication</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-20">
+    <section class="ppt-slide" id="ppt-slide-20" data-slide="20">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>/hello 요청은 어디로 흘러갈까?</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"></div>
+          <div class="ppt-copy"><ul><li>다섯 단계로 이어지는 요청-응답 경로</li></ul></div>
           <div class="ppt-media"><div class="flow"><div class="node input">브라우저<br>/hello</div><div class="arrow">→</div><div class="node key">내장 Tomcat</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node key">HelloController</div><div class="arrow">→</div><div class="node input">응답</div></div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-21">
+    <section class="ppt-slide" id="ppt-slide-21" data-slide="21">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>서버가 안 보일 때 어디부터 볼까?</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>서버 실행 실패</li><li>404 Not Found</li><li>응답 문자열이 예상과 다름</li></ul></div>
-          <div class="ppt-media"><div class="split">
+          <div class="ppt-media"><div class="split" style="grid-template-columns: 1fr 1fr 1fr;">
             <div class="panel"><h4>1. 실행 로그</h4><p>Started 메시지 확인</p></div>
             <div class="panel"><h4>2. URL</h4><p>/hello 오타 확인</p></div>
-            <div class="panel"><h4>3. 코드</h4><p>@GetMapping 경로 확인</p></div>
-            <div class="panel"><h4>4. 포트</h4><p>8080 사용 여부 확인</p></div>
+            <div class="panel"><h4>3. Controller 코드</h4><p>@GetMapping 경로 확인</p></div>
           </div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-22">
+    <section class="ppt-slide" id="ppt-slide-22" data-slide="22">
       <div class="ppt-canvas standard-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>브라우저 요청은 서버 프로그램의 코드로 이어진다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>브라우저</li><li>HTTP 요청</li><li>내장 Tomcat</li><li>Spring MVC</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">HTTP</div><div class="arrow">→</div><div class="node key">Spring Boot</div><div class="arrow">→</div><div class="node">Controller</div><div class="arrow">→</div><div class="node input">응답</div></div></div>
+          <div class="ppt-copy"><ul><li>브라우저</li><li>HTTP 요청</li><li>내장 Tomcat</li><li>Spring MVC</li><li>Controller</li><li>HTTP 응답</li></ul></div>
+          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">HTTP<br>요청</div><div class="arrow">→</div><div class="node key">내장<br>Tomcat</div><div class="arrow">→</div><div class="node">Spring<br>MVC</div><div class="arrow">→</div><div class="node key">Controller</div><div class="arrow">→</div><div class="node input">HTTP<br>응답</div></div></div>
         </div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-23">
+    <section class="ppt-slide" id="ppt-slide-23" data-slide="23">
       <div class="ppt-canvas assessment-canvas">
         <p class="lesson-label">평가하기</p>
-        <h2>평가하기</h2>
+        <h2>문제풀기 1</h2>
         <div class="ppt-question"><div class="question">
             <h4>내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</h4>
             <div class="choice">1. 브라우저가 자동으로 Tomcat을 설치한다.</div>
@@ -635,10 +606,10 @@ Started Ch01HelloServerApplication</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-24">
+    <section class="ppt-slide" id="ppt-slide-24" data-slide="24">
       <div class="ppt-canvas assessment-canvas">
         <p class="lesson-label">평가하기</p>
-        <h2>평가하기</h2>
+        <h2>문제풀기 2</h2>
         <div class="ppt-question"><div class="question">
             <h4>HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다.</h4>
             <div class="choice">O</div><div class="choice">X</div>
@@ -646,10 +617,10 @@ Started Ch01HelloServerApplication</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-25">
+    <section class="ppt-slide" id="ppt-slide-25" data-slide="25">
       <div class="ppt-canvas assessment-canvas">
         <p class="lesson-label">평가하기</p>
-        <h2>평가하기</h2>
+        <h2>문제풀기 3</h2>
         <div class="ppt-question"><div class="question">
             <h4>웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다.</h4>
             <div class="choice">O</div><div class="choice">X</div>
@@ -657,14 +628,13 @@ Started Ch01HelloServerApplication</code></pre></div>
       </div>
     </section>
 
-    <section class="ppt-slide" id="ppt-slide-26">
+    <section class="ppt-slide" id="ppt-slide-26" data-slide="26">
       <div class="ppt-canvas sources-canvas">
         <p class="lesson-label">참고자료</p>
         <h2>참고자료</h2>
         <div class="ppt-source-list"><div class="question">
             <h4>참고자료</h4>
             <div class="choice">Spring Boot 공식 문서</div>
-            <div class="choice">Spring Boot 4.1.0 시스템 요구사항</div>
             <div class="choice">Spring Boot 첫 애플리케이션 튜토리얼</div>
             <div class="choice">Spring Tools 공식 페이지</div>
             <div class="choice">MDN HTTP Overview</div>

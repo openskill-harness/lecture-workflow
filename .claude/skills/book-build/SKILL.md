@@ -83,6 +83,19 @@ typst_builder.build(config)
 
 주의사항:
 - `merge_template_and_content()`가 `template_path.parent / "book_base.typ"`를 찾으므로, 프로젝트별 `book.typ`(book-title/color-primary 등 변수 정의)는 반드시 `references/templates/book_base.typ`의 사본과 **같은 디렉토리**(`book/` 또는 `book/_build/`)에 둔다. 처음 만드는 과정이면 `book_base.typ`를 그 디렉토리로 복사하고 `book.typ`에서 변수만 채운다.
+- **`book.typ`가 반드시 정의해야 하는 변수(누락 시 Typst 컴파일 실패)**: `book-title`, `book-subtitle`, `book-description`, `book-header-title`, `book-authors`, `book-cover-image`(없으면 `""`), 표지 색상 `color-primary`/`color-primary-dark`/`color-primary-light`, 그리고 **`#let paragraph-gap = 6pt`**. `paragraph-gap`은 `book_base.typ`가 아니라 `paragraph-gap.lua` 필터가 생성 typst에 삽입하는 참조라 눈에 안 띄지만, 정의하지 않으면 `unknown variable: paragraph-gap`으로 빌드가 멈춘다. book.typ 최소 골격:
+  ```typst
+  #let book-title = "{과정명}"
+  #let book-subtitle = "{회차 부제}"
+  #let book-description = [{한두 문장 소개}]
+  #let book-header-title = "{헤더 표시}"
+  #let book-authors = "course-harness"
+  #let book-cover-image = ""
+  #let color-primary = rgb("#2563eb")
+  #let color-primary-dark = rgb("#1e3a8a")
+  #let color-primary-light = rgb("#93b4e8")
+  #let paragraph-gap = 6pt
+  ```
 - `font_path`는 `references/fonts/` 절대경로를 그대로 넘긴다(Windows에서 `--font-path`로 주입됨).
 - 이미지·D2 PNG 경로는 챕터 md 파일 기준 상대경로로 두면 `fix_image_paths()`가 자동으로 절대경로(Typst용 드라이브 앵커 제거 형식)로 변환한다.
 - 과정의 전 차시가 `원고확정` + 책 집필을 완료하면(status.md 전체 ✅), 사용자 요청 시 `chapters` 리스트에 전 차시 `chNN_원고.md`를 순서대로 담아 합본(`book/합본.pdf`)을 같은 방식으로 빌드한다. 표지/목차는 `book_base.typ`가 자동 생성하므로 챕터 md를 연결하는 것 외에 별도 작업이 필요 없다.

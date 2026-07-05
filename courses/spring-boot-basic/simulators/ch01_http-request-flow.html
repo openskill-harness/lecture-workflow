@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTTP 요청-응답 흐름 시뮬레이터 · 1차시</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+  :root{
+    --ink:#17202a; --muted:#5d6875; --line:#d9dee7; --soft:#f5f7fa;
+    --bg:#ffffff; --surface:#ffffff; --surface-2:#f5f7fa;
+    --blue:#2f6fcb; --blue-deep:#1f4f9c;
+    --green:#5aa05a; --green-deep:#3f7a3f;
+    --amber:#c98a1a; --rose:#c0435a;
+    --mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box;} html,body{margin:0;padding:0;}
+  body{font-family:'Pretendard Variable',Pretendard,-apple-system,sans-serif;color:var(--ink);
+    background:var(--bg); min-height:100vh; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1500px;margin:0 auto;padding:34px 36px 70px;}
+  .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;
+    background:var(--soft);color:var(--blue-deep);font-size:0.85rem;font-weight:700;
+    border:1px solid var(--line);}
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:var(--blue);}
+  h1{font-size:2.2rem;font-weight:800;letter-spacing:-0.02em;margin:16px 0 6px;color:var(--ink);}
+  .sub{color:var(--muted);font-size:1.02rem;margin:0 0 26px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 360px;gap:18px;align-items:start;}
+  @media(max-width:1024px){.grid2{grid-template-columns:1fr;}}
+
+  .stage{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px;overflow:hidden;}
+  svg{display:block;width:100%;height:auto;}
+
+  .step-desc{margin-top:14px;border:1px solid var(--line);background:var(--soft);border-radius:14px;
+    padding:14px 16px;min-height:76px;}
+  .step-desc .st-title{font-weight:800;font-size:1rem;color:var(--ink);margin:0 0 6px;}
+  .step-desc .st-body{font-size:0.92rem;line-height:1.55;color:var(--muted);margin:0;}
+  .step-desc .st-body b{color:var(--ink);}
+
+  .sidecard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:18px;
+    display:flex;flex-direction:column;gap:16px;}
+  .block-title{font-size:0.78rem;font-weight:800;color:var(--muted);text-transform:uppercase;
+    letter-spacing:0.04em;margin:0 0 8px;}
+
+  .progress-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+  .progress-text{font-family:var(--mono);font-weight:700;font-size:0.85rem;color:var(--ink);}
+  .dots{display:flex;gap:6px;}
+  .dot-ind{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .2s;}
+  .dot-ind.on{background:var(--blue);}
+
+  .btnrow{display:flex;gap:8px;}
+  .btn{flex:1;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);
+    border-radius:11px;padding:10px 12px;font-size:0.88rem;font-weight:700;cursor:pointer;
+    transition:.15s;font-family:inherit;}
+  .btn:hover:not(:disabled){transform:translateY(-1px);border-color:var(--blue);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn.active{background:var(--blue);border-color:var(--blue-deep);color:#fff;}
+  .btn.ghost{background:transparent;}
+  .btn.wide{flex:none;width:100%;}
+
+  .seg{display:flex;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
+  .seg button{flex:1;border:none;background:var(--surface-2);color:var(--ink);padding:9px 6px;
+    font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;border-left:1px solid var(--line);}
+  .seg button:first-child{border-left:none;}
+  .seg button.active{background:var(--blue);color:#fff;}
+
+  .verdict{border-radius:12px;padding:11px 13px;font-size:0.85rem;line-height:1.5;
+    border:1px solid var(--line);background:var(--surface-2);color:var(--muted);}
+  .verdict b{color:var(--ink);}
+  .verdict.request{border-color:var(--blue);background:rgba(47,111,203,0.08);}
+  .verdict.response{border-color:var(--green);background:rgba(90,160,90,0.08);}
+
+  .hint{color:#8b95a3;font-size:0.82rem;margin-top:16px;line-height:1.5;}
+  .hint b{color:var(--muted);}
+
+  /* SVG element styling */
+  .box-outer{fill:var(--soft);stroke:var(--line);stroke-width:1.5;}
+  .box-inner{fill:#ffffff;stroke:var(--line);stroke-width:1.5;transition:stroke .25s,fill .25s,stroke-width .25s;}
+  .box-inner.active{stroke:var(--amber);stroke-width:2.6;fill:rgba(201,138,26,0.10);}
+  .box-label{font-size:15px;font-weight:800;fill:var(--ink);text-anchor:middle;font-family:'Pretendard Variable',sans-serif;}
+  .box-sub{font-size:12.5px;font-weight:600;fill:var(--muted);text-anchor:middle;font-family:'Pretendard Variable',sans-serif;}
+  .panel-label{font-size:13.5px;font-weight:800;fill:var(--ink);text-anchor:middle;font-family:'Pretendard Variable',sans-serif;}
+  .panel-sub{font-size:11.5px;font-weight:600;fill:var(--muted);text-anchor:middle;font-family:'Pretendard Variable',sans-serif;}
+  .wire{stroke:var(--line);stroke-width:2.5;transition:stroke .25s;}
+  .wire.request-on{stroke:var(--blue);}
+  .wire.response-on{stroke:var(--green);}
+  .addr-text{font-family:var(--mono);font-size:12.5px;fill:var(--ink);}
+  .screen-box{fill:#ffffff;stroke:var(--line);stroke-width:1.5;transition:fill .3s,stroke .3s;}
+  .screen-box.filled{fill:rgba(90,160,90,0.12);stroke:var(--green);}
+  .screen-text{font-size:13.5px;font-weight:800;fill:var(--green-deep);text-anchor:middle;
+    font-family:'Pretendard Variable',sans-serif;opacity:0;transition:opacity .3s;}
+  .screen-text.show{opacity:1;}
+  .screen-placeholder{font-size:12px;fill:#b7bfc9;text-anchor:middle;font-family:'Pretendard Variable',sans-serif;}
+
+  #packet{transform:translate(250px,210px);opacity:0;}
+  #packet circle{fill:var(--blue);stroke:#fff;stroke-width:2;transition:fill .2s;}
+  #packet.response circle{fill:var(--green);}
+  #packet text{font-family:var(--mono);font-size:11px;font-weight:700;fill:var(--ink);text-anchor:middle;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge"><span class="dot"></span>1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</div>
+  <h1>HTTP 요청이 서버 코드까지 도착하는 흐름</h1>
+  <p class="sub">브라우저 주소창에 URL을 입력한 순간부터, 응답이 화면에 나타날 때까지 — 버튼을 눌러 한 단계씩 확인하세요.</p>
+
+  <div class="grid2">
+    <div>
+      <div class="stage">
+        <svg viewBox="0 0 900 420" id="svg">
+          <!-- 정적 구조 -->
+          <rect class="box-outer" x="20" y="40" width="230" height="340" rx="16"/>
+          <text class="box-label" id="lbl-browser" x="135" y="28">브라우저</text>
+
+          <rect class="box-outer" x="650" y="40" width="230" height="340" rx="16"/>
+          <text class="box-label" id="lbl-server" x="765" y="28">Spring Boot 서버 (내장 실행)</text>
+
+          <!-- 브라우저 내부: 주소창 -->
+          <rect class="box-inner" id="addr-box" x="40" y="70" width="190" height="34" rx="8"/>
+          <text class="addr-text" id="lbl-addr" x="50" y="91">localhost:8080/hello</text>
+
+          <!-- 브라우저 내부: 화면(응답 표시) -->
+          <rect class="screen-box" id="screen-box" x="40" y="250" width="190" height="110" rx="10"/>
+          <text class="screen-placeholder" id="screen-placeholder" x="135" y="308">아직 응답 없음</text>
+          <text class="screen-text" id="screen-text" x="135" y="300"></text>
+          <text class="screen-text" id="screen-text2" x="135" y="318" style="font-size:11px;font-weight:600;"></text>
+
+          <!-- 서버 내부: 3단 처리 파이프라인 -->
+          <rect class="box-inner" id="tomcat-box" x="665" y="60" width="200" height="90" rx="10"/>
+          <text class="panel-label" id="lbl-tomcat1" x="765" y="98">내장 Tomcat</text>
+          <text class="panel-sub" id="lbl-tomcat2" x="765" y="118"></text>
+
+          <rect class="box-inner" id="mvc-box" x="665" y="165" width="200" height="90" rx="10"/>
+          <text class="panel-label" id="lbl-mvc1" x="765" y="203">Spring MVC</text>
+          <text class="panel-sub" id="lbl-mvc2" x="765" y="223">요청 매핑</text>
+
+          <rect class="box-inner" id="controller-box" x="665" y="270" width="200" height="90" rx="10"/>
+          <text class="panel-label" id="lbl-ctrl1" x="765" y="308">HelloController</text>
+          <text class="panel-sub" id="lbl-ctrl2" x="765" y="328">hello()</text>
+
+          <!-- 브라우저-서버 사이 네트워크 회선 -->
+          <line class="wire" id="wire" x1="250" y1="210" x2="650" y2="210"/>
+
+          <!-- 이동하는 패킷 -->
+          <g id="packet">
+            <circle r="16"/>
+            <text id="packet-t1" y="-24"></text>
+            <text id="packet-t2" y="-10"></text>
+          </g>
+        </svg>
+
+        <div class="step-desc">
+          <p class="st-title" id="st-title">① 브라우저 주소 입력</p>
+          <p class="st-body" id="st-body">설명이 여기에 표시됩니다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidecard">
+      <div>
+        <p class="block-title">진행 단계</p>
+        <div class="progress-row">
+          <span class="progress-text" id="progress-text">1 / 7</span>
+          <div class="dots" id="dots"></div>
+        </div>
+        <div class="btnrow" style="margin-top:10px;">
+          <button class="btn" id="prev">◀ 이전</button>
+          <button class="btn" id="next">다음 ▶</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="block-title">보기 전환</p>
+        <div class="seg" id="view-toggle">
+          <button data-view="analogy">🍽 식당 비유</button>
+          <button data-view="concept" class="active">💻 실제 개념</button>
+        </div>
+      </div>
+
+      <div>
+        <p class="block-title">애니메이션 속도</p>
+        <div class="seg" id="speed-toggle">
+          <button data-speed="0.5">0.5x</button>
+          <button data-speed="1" class="active">1x</button>
+          <button data-speed="2">2x</button>
+        </div>
+      </div>
+
+      <div class="verdict" id="verdict">대기 중… <b>다음</b> 버튼을 눌러 시작하세요.</div>
+
+      <button class="btn ghost wide" id="reset">↺ 처음부터 다시</button>
+    </div>
+  </div>
+
+  <p class="hint"><b>포인트:</b> 식당 비유와 실제 개념은 <b>같은 7단계</b>를 가리킵니다. 토글을 눌러도 진행 단계는 그대로 유지됩니다 — 손님(브라우저), 주문서(HTTP 요청), 주방(서버 프로그램), 요리(응답)가 실제로는 무엇인지 비교해 보세요.</p>
+</div>
+
+<script>
+(function(){
+  // ---------- 데이터 ----------
+  var STEP_TEXT = [
+    { title:'① 브라우저 주소 입력',
+      concept:'브라우저 주소창에 <b>http://localhost:8080/hello</b>를 입력합니다. localhost는 내 컴퓨터, 8080은 Spring Boot가 요청을 기다리는 포트, /hello는 호출할 경로입니다.',
+      analogy:'손님(브라우저)이 식당 메뉴판을 보고 무엇을 주문할지 정합니다. 아직 주문서는 쓰지 않았습니다.' },
+    { title:'② 요청 생성',
+      concept:'브라우저가 입력한 주소를 바탕으로 HTTP 요청 메시지를 만듭니다. <b>GET /hello HTTP/1.1</b>처럼 메서드와 경로가 담깁니다.',
+      analogy:'손님이 주문서에 메뉴 이름을 적습니다. 주문서(HTTP 요청)가 완성되었습니다.' },
+    { title:'③ 네트워크 전송',
+      concept:'완성된 HTTP 요청이 네트워크를 타고 서버로 전달됩니다. 경로나 포트가 하나라도 틀리면 요청은 엉뚱한 곳으로 갑니다.',
+      analogy:'종업원이 완성된 주문서를 들고 주방으로 걸어갑니다.' },
+    { title:'④ 서버 수신',
+      concept:'Spring Boot 안에 <b>내장된 Tomcat</b>이 요청을 받습니다. 외부 Tomcat을 따로 설치하지 않아도, 애플리케이션 실행과 함께 이미 켜져 있던 서버가 요청을 받습니다.',
+      analogy:'주방 입구에서 주문서를 받습니다. 이 주방은 이미 불을 켜고 준비를 마친 상태입니다 (내장 서버, 푸드트럭처럼).' },
+    { title:'⑤ Controller 처리',
+      concept:'<b>Spring MVC</b>가 요청 경로 /hello를 보고 처리할 메서드를 찾습니다. <b>HelloController.hello()</b>가 실행되어 문자열 "Hello Spring Boot"를 반환합니다.',
+      analogy:'주문 전달 담당자가 주문서를 보고 어느 요리사가 만들지 정하고, 요리사(Controller)가 요리를 완성합니다.' },
+    { title:'⑥ 응답 반환',
+      concept:'Controller가 반환한 문자열이 HTTP 응답 본문에 담깁니다. 상태 코드 <b>200 OK</b>와 함께 응답이 서버를 떠나 브라우저로 향합니다.',
+      analogy:'완성된 요리가 접시에 담겨 손님에게 전달되러 나갑니다.' },
+    { title:'⑦ 브라우저 렌더',
+      concept:'브라우저가 응답을 받아 화면에 "Hello Spring Boot"를 표시합니다. 요청과 응답이 한 번 왕복하는 전체 흐름이 완성되었습니다.',
+      analogy:'손님이 요리를 받아 확인합니다. 손님의 주문 한 번이 완성되었습니다.' }
+  ];
+
+  var LABELS = {
+    concept: {
+      browser:'브라우저', server:'Spring Boot 서버 (내장 실행)',
+      addr:'localhost:8080/hello',
+      tomcat1:'내장 Tomcat', tomcat2:'요청을 받는 창구',
+      mvc1:'Spring MVC', mvc2:'요청 매핑',
+      ctrl1:'HelloController', ctrl2:'hello()',
+      reqLabel:['GET /hello',''],
+      resLabel:['200 OK','Hello Spring Boot'],
+      screenText:['Hello Spring Boot','200 OK']
+    },
+    analogy: {
+      browser:'손님 (브라우저)', server:'식당 주방 (Spring Boot 서버)',
+      addr:'메뉴판: "hello 세트" 주문',
+      tomcat1:'주방 입구', tomcat2:'(주문 접수대)',
+      mvc1:'주문 전달', mvc2:'담당자',
+      ctrl1:'요리사', ctrl2:'(Controller)',
+      reqLabel:['주문서','Hello 세트'],
+      resLabel:['완성 요리','Hello 정식'],
+      screenText:['🍽 Hello 정식 도착!','주문 완료']
+    }
+  };
+
+  // 패킷 좌표/종류: [x, y, kind, pop(등장연출), fadeOut(도착후 사라짐)]
+  var PACKET = [
+    { visible:false, x:250, y:210, kind:'request' },
+    { visible:true,  x:250, y:210, kind:'request', pop:true },
+    { visible:true,  x:650, y:210, kind:'request' },
+    { visible:true,  x:765, y:105, kind:'request' },
+    { visible:true,  x:765, y:315, kind:'request' },
+    { visible:true,  x:250, y:210, kind:'response' },
+    { visible:true,  x:120, y:330, kind:'response', fadeOut:true }
+  ];
+
+  // 각 단계에서 강조할 박스 id 목록
+  var ACTIVE = [
+    ['addr-box'],
+    ['addr-box'],
+    [],
+    ['tomcat-box'],
+    ['mvc-box','controller-box'],
+    ['controller-box'],
+    []
+  ];
+
+  var N = STEP_TEXT.length;
+  var state = { step:0, view:'concept', speed:1 };
+  var pending = [];
+
+  // ---------- DOM ----------
+  var svg = document.getElementById('svg');
+  var packetEl = document.getElementById('packet');
+  var packetT1 = document.getElementById('packet-t1');
+  var packetT2 = document.getElementById('packet-t2');
+  var wireEl = document.getElementById('wire');
+  var allBoxes = ['addr-box','tomcat-box','mvc-box','controller-box'];
+
+  function baseDur(){ return Math.round(900 / state.speed); }
+
+  function clearPending(){
+    pending.forEach(function(id){ clearTimeout(id); });
+    pending = [];
+  }
+
+  function updateLabels(){
+    var L = LABELS[state.view];
+    document.getElementById('lbl-browser').textContent = L.browser;
+    document.getElementById('lbl-server').textContent = L.server;
+    document.getElementById('lbl-addr').textContent = L.addr;
+    document.getElementById('lbl-tomcat1').textContent = L.tomcat1;
+    document.getElementById('lbl-tomcat2').textContent = L.tomcat2;
+    document.getElementById('lbl-mvc1').textContent = L.mvc1;
+    document.getElementById('lbl-mvc2').textContent = L.mvc2;
+    document.getElementById('lbl-ctrl1').textContent = L.ctrl1;
+    document.getElementById('lbl-ctrl2').textContent = L.ctrl2;
+
+    var p = PACKET[state.step];
+    if (p.visible) {
+      var lab = (p.kind === 'request') ? L.reqLabel : L.resLabel;
+      packetT1.textContent = lab[0];
+      packetT2.textContent = lab[1];
+    }
+  }
+
+  function updateBoxHighlights(){
+    var active = ACTIVE[state.step];
+    allBoxes.forEach(function(id){
+      var el = document.getElementById(id);
+      el.classList.toggle('active', active.indexOf(id) !== -1);
+    });
+  }
+
+  function updateWire(step){
+    wireEl.classList.remove('request-on','response-on');
+    if (step === 2) wireEl.classList.add('request-on');
+    if (step === 5) wireEl.classList.add('response-on');
+  }
+
+  function updateScreen(reveal){
+    var screenBox = document.getElementById('screen-box');
+    var placeholder = document.getElementById('screen-placeholder');
+    var t1 = document.getElementById('screen-text');
+    var t2 = document.getElementById('screen-text2');
+    if (reveal) {
+      var L = LABELS[state.view];
+      t1.textContent = L.screenText[0];
+      t2.textContent = L.screenText[1];
+      screenBox.classList.add('filled');
+      t1.classList.add('show');
+      t2.classList.add('show');
+      placeholder.style.opacity = 0;
+    } else {
+      screenBox.classList.remove('filled');
+      t1.classList.remove('show');
+      t2.classList.remove('show');
+      placeholder.style.opacity = 1;
+    }
+  }
+
+  function updateProgress(){
+    document.getElementById('progress-text').textContent = (state.step+1) + ' / ' + N;
+    var dots = document.getElementById('dots');
+    dots.innerHTML = '';
+    for (var i=0;i<N;i++){
+      var d = document.createElement('span');
+      d.className = 'dot-ind' + (i === state.step ? ' on' : '');
+      dots.appendChild(d);
+    }
+    document.getElementById('prev').disabled = (state.step === 0);
+    document.getElementById('next').disabled = (state.step === N-1);
+  }
+
+  function updateStepDesc(){
+    var s = STEP_TEXT[state.step];
+    document.getElementById('st-title').textContent = s.title;
+    document.getElementById('st-body').innerHTML = s[state.view];
+  }
+
+  function updateVerdict(){
+    var p = PACKET[state.step];
+    var v = document.getElementById('verdict');
+    if (!p.visible) {
+      v.className = 'verdict';
+      v.innerHTML = '대기 중… <b>다음</b> 버튼을 눌러 시작하세요.';
+      return;
+    }
+    var L = LABELS[state.view];
+    if (p.kind === 'request') {
+      v.className = 'verdict request';
+      v.innerHTML = '<b>요청</b>이 이동 중입니다 — ' + L.reqLabel.filter(Boolean).join(' · ');
+    } else {
+      v.className = 'verdict response';
+      v.innerHTML = '<b>응답</b>이 이동 중입니다 — ' + L.resLabel.filter(Boolean).join(' · ');
+    }
+  }
+
+  function movePacket(){
+    var p = PACKET[state.step];
+    var dur = baseDur();
+
+    if (!p.visible) {
+      packetEl.style.transition = 'none';
+      packetEl.style.opacity = 0;
+      packetEl.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
+      updateScreen(false);
+      return;
+    }
+
+    packetEl.classList.toggle('response', p.kind === 'response');
+
+    if (p.pop) {
+      packetEl.style.transition = 'none';
+      packetEl.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
+      packetEl.style.opacity = 0;
+      // 강제 리플로우 후 트랜지션 적용
+      void packetEl.getBoundingClientRect();
+      packetEl.style.transition = 'transform ' + dur + 'ms ease, opacity 220ms ease';
+      requestAnimationFrame(function(){ packetEl.style.opacity = 1; });
+    } else {
+      packetEl.style.transition = 'transform ' + dur + 'ms ease, opacity 220ms ease';
+      packetEl.style.opacity = 1;
+      packetEl.style.transform = 'translate(' + p.x + 'px,' + p.y + 'px)';
+    }
+
+    if (p.fadeOut) {
+      var t = setTimeout(function(){
+        packetEl.style.opacity = 0;
+        updateScreen(true);
+      }, dur + 150);
+      pending.push(t);
+    } else {
+      updateScreen(false);
+    }
+  }
+
+  function render(){
+    clearPending();
+    updateLabels();
+    updateBoxHighlights();
+    updateWire(state.step);
+    updateProgress();
+    updateStepDesc();
+    updateVerdict();
+    movePacket();
+  }
+
+  // ---------- 이벤트 ----------
+  document.getElementById('next').addEventListener('click', function(){
+    if (state.step < N-1) { state.step++; render(); }
+  });
+  document.getElementById('prev').addEventListener('click', function(){
+    if (state.step > 0) { state.step--; render(); }
+  });
+
+  document.getElementById('view-toggle').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-view]');
+    if (!btn) return;
+    state.view = btn.dataset.view;
+    document.querySelectorAll('#view-toggle button').forEach(function(b){
+      b.classList.toggle('active', b === btn);
+    });
+    // step은 유지, 라벨/설명/판정만 갱신 (패킷 위치는 그대로)
+    updateLabels();
+    updateStepDesc();
+    updateVerdict();
+    if (PACKET[state.step].fadeOut && packetEl.style.opacity === '0') {
+      updateScreen(true);
+    }
+  });
+
+  document.getElementById('speed-toggle').addEventListener('click', function(e){
+    var btn = e.target.closest('button[data-speed]');
+    if (!btn) return;
+    state.speed = parseFloat(btn.dataset.speed);
+    document.querySelectorAll('#speed-toggle button').forEach(function(b){
+      b.classList.toggle('active', b === btn);
+    });
+  });
+
+  document.getElementById('reset').addEventListener('click', function(){
+    clearPending();
+    state.step = 0;
+    state.speed = 1;
+    document.querySelectorAll('#speed-toggle button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.speed === '1');
+    });
+    // view는 사용자 선택을 존중해 유지 (구조상 리셋 대상은 step/속도/타이머)
+    packetEl.style.transition = 'none';
+    render();
+  });
+
+  // ---------- 초기 렌더 ----------
+  packetEl.style.transition = 'none';
+  render();
+})();
+</script>
+</body>
+</html>

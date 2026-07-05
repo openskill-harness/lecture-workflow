@@ -1,0 +1,63 @@
+---
+name: pptx-build
+description: 확정 원고(`manuscripts/chNN.md`)를 python-pptx로 16:9 PPTX(`pptx/chNN.pptx`)로 변환하고, 슬라이드마다 Narration을 발표자 노트에 삽입한다. "PPTX 만들어줘", "PPT 완성", "PPTX 빌드" 요청 시 사용. 파이프라인 9단계 — `scripts/build_pptx.py` CLI를 실행해 원고를 직접 파싱한다(HTML 프리뷰를 다시 파싱하지 않음). 확정 원고와 `--assets-root`로 지정한 과정 디렉터리의 `assets/` 하위 이미지 경로를 사용한다.
+---
+
+# pptx-build
+
+확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 문법)를 16:9 PPTX(`pptx/chNN.pptx`)로 변환하는 스킬이다. 파이프라인 9단계이며, 빌더는 `scripts/build_pptx.py`(python-pptx 1.0.2, Task 11 스파이크로 notes_slide 동작 검증됨)다.
+
+## 전제
+
+- `courses/{course-id}/status.md`의 해당 차시 `원고확정`이 ✅여야 한다. 아니면 사용자에게 알리고 중단한다.
+- `manuscripts/chNN.md`가 존재해야 한다.
+
+## 핵심 인터페이스 (고정 — 재현성을 위해 변경 시 이 문서와 브리프를 함께 갱신)
+
+- CLI: `python scripts/build_pptx.py <manuscript.md> <out.pptx> [--assets-root <course-dir>]`
+- 함수: `parse_manuscript(md_text) -> list[Slide]` — Slide dict keys: `title, screen_lines, image_paths, code, narration`
+- 함수: `build_pptx(md_text, out_path, assets_root=".") -> int` — 생성된 슬라이드 수 반환
+- 원고 문법: `## Slide N. 제목` 헤더로 슬라이드 구간을 나누고, `**Screen**`/`**Narration**`/`**Visual asset**` 등 필드 라벨로 내용을 분류한다. 이미지 자산 경로는 `assets/...png|jpg|jpeg|webp` 패턴만 인식한다(D2 다이어그램의 `.d2` 소스 경로는 이미지로 삽입하지 않음 — 렌더된 png/jpg만 인식).
+
+## 절차
+
+### 1. 실행
+
+```powershell
+python scripts/build_pptx.py courses/{course-id}/manuscripts/chNN.md courses/{course-id}/pptx/chNN.pptx --assets-root courses/{course-id}
+```
+
+- 출력 대상 디렉터리(`pptx/`)가 없으면 먼저 생성한다.
+- 성공 시 `OK: <N> slides -> <out.pptx>` 출력.
+
+### 2. 검증 (확정 체크리스트)
+
+- **슬라이드 수 일치**: 출력된 `N`이 원고의 `## Slide` 헤더 개수와 같은지 확인한다(`Select-String "^## Slide \d+\." chNN.md` 또는 grep로 카운트).
+- **전 슬라이드 노트 존재**: Narration 필드가 있는 모든 슬라이드에서 `notes_slide.notes_text_frame.text`가 비어 있지 않은지 확인한다. 빠르게 확인하려면:
+
+```powershell
+python -c "from pptx import Presentation; prs = Presentation('courses/{course-id}/pptx/chNN.pptx'); [print(i+1, bool(s.notes_slide.notes_text_frame.text)) for i, s in enumerate(prs.slides)]"
+```
+
+- **이미지 누락 경고**: 원고에 `assets/...png|jpg` 경로가 있는데 파일이 실제로 없으면 빌더가 조용히 건너뛴다(에러 없음) — 검증 시 원고의 이미지 경로 목록과 실제 `assets/` 파일 존재 여부를 대조해 누락 목록을 사용자에게 보고한다.
+- **이미지 깨짐 없음**: PowerPoint(또는 LibreOffice Impress)에서 실제로 열어 이미지·코드 블록·레이아웃이 깨지지 않았는지 사용자 확인을 받는다.
+
+### 3. 사용자 확인 및 확정
+
+- 검증 결과(슬라이드 수, 노트 존재 여부, 이미지 누락 목록)를 사용자에게 보고한다.
+- PowerPoint에서 열어 확인해 달라고 요청한다.
+- 사용자가 확정하면 `courses/{course-id}/status.md`의 해당 차시 `PPTX` 칸을 ✅로 갱신하고, 산출물 인덱스에 `- chNN PPTX: pptx/chNN.pptx (확정 YYYY-MM-DD)`를 추가한다.
+
+## repair 규칙
+
+파서(`scripts/build_pptx.py`의 `parse_manuscript`)가 원고의 특정 표기(다중 라인 나레이션, 제목의 특수문자, 새로운 필드 라벨 등)를 놓치면:
+
+1. **원고를 수정하지 않는다** — `manuscript-schema` 문법을 따르는 확정 원고는 건드리지 않는다.
+2. `scripts/build_pptx.py`의 정규식(`SLIDE_RE`, `FIELD_RE`, `IMG_PATH_RE`)이나 파싱 로직을 수정해 대응한다.
+3. 수정 후 `scripts/test_build_pptx.py`에 회귀 케이스를 추가하고 `cd scripts; python -m pytest test_build_pptx.py -v`로 재실행해 통과를 확인한다.
+4. 실데이터로 다시 빌드해 슬라이드 수·노트가 여전히 올바른지 재확인한다.
+
+## 참고
+
+- 빌더는 `ppt_previews/chNN.html`(6단계 산출물)을 소비하지 않는다 — 원고(`manuscripts/chNN.md`)를 직접 파싱한다. HTML 프리뷰는 사람이 보는 미리보기이고, PPTX는 원고 기준의 별도 빌드다.
+- D2 다이어그램을 실제 이미지로 슬라이드에 넣으려면 먼저 `pub-d2-diagram` 스킬로 렌더(svg/png)한 뒤, 원고의 Visual asset 필드에 렌더 결과 png/jpg 경로를 병기해야 이 빌더가 인식한다.

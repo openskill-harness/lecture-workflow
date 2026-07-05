@@ -1,26 +1,89 @@
-# 강의 제작 하네스
+# 강의 제작 하네스 v2 — 원고 단일 원천 10단계 파이프라인
 
-## 하네스: 개발자 강의 제작
+## 목표
 
-**목표:** 개발자 강의(촬영/오프라인/온라인)를 산출물 계약과 품질 게이트로 제작한다.
+확정 원고(manuscript)를 단일 원천으로 삼아 실습 코드·스토리보드·PPT·판서·시뮬레이터·PPTX·PDF책을 차례로 파생하는 단일 파이프라인으로 개발자 강의를 제작한다. 라인(촬영/오프라인/온라인) 구분과 승인 게이트는 폐기하고, 단계별 확정(생성 → 확인/수정 → 확정 → 다음 단계)으로 진행 상태를 관리한다.
 
-**트리거:**
-- 촬영/녹화 강의 제작·수정·재실행 요청 → `filmed-lecture` 스킬
-- 오프라인/현장/기관 강의 제작·수정·재실행 요청 → `offline-lecture` 스킬
-- 온라인/유튜브/인강(판서 VOD) 강의 제작·수정·재실행 요청 → `online-lecture` 스킬
-- 강의 유형이 불명확하면 delivery_type(촬영/오프라인/온라인)을 먼저 확인
-- 하네스 구조·스키마·게이트 질문, 구조 변경 → `lecture-harness` 스킬
-- 판서슬라이드 생성 → `panseo-slide` 스킬, 빈 판서보드(명시 요청만) → `panseo-board` 스킬, 시뮬레이터 → `edu-sim-builder` 스킬. 셋 다 각 SKILL.md 말미 "하네스 통합 재정의" 섹션이 본문보다 우선. `참고스킬/` 원본 폴더는 백업 — 수정 금지
-- 단순 질문은 직접 응답 가능
+## 파이프라인 (10단계)
 
-**변경 처리 원칙 (필수, 선반영 금지):** 질문형 요청("~가능해?", "~어때?")과 품질 피드백은 실행 지시가 아니다. 하네스 구조 변경은 반드시 ① 변경 계획서 작성(`docs/proposals/{날짜}_{주제}.md` — 배경/제안/대안/영향 범위/되돌리기) → ② codex **사전** 검증(정합성뿐 아니라 **아이디어 자체의 타당성**: 장점/리스크/더 나은 대안/반대 의견) → ③ 사용자에게 항목별 [계획+codex 의견+권고] 보고 → ④ 승인된 항목만 반영 → ⑤ 반영 후 정합성 검증 순서를 따른다. 절차 상세: `.claude/skills/lecture-harness/references/gpt-review-process.md`.
+각 단계는 독립 스킬이다. 어느 단계에서든 세션을 끝내고 나중에 이어서 실행할 수 있다.
 
-**설계 결정 검증 규칙 (필수):** 설계 시점에 결정되는 구조적 사항(아키텍처·스키마·파이프라인·품질 게이트 변경, 에이전트/스킬 추가·수정)은 GPT를 CLI로 spawn하여(`codex exec --sandbox read-only '...' </dev/null`, Git Bash에서 stdin 닫고 실행) 교차 검토·검증을 거친다. 절차: `.claude/skills/lecture-harness/references/gpt-review-process.md`. 결과는 `docs/reviews/`에 저장. blocker는 보고 전 수정, 최종 결정은 사용자.
+| # | 스킬 | 산출물 | 확정 방식 |
+|---|------|--------|-----------|
+| 1 | `course-outline` | `1.과정개요서.md` | 대화로 함께 작성 → 확정 |
+| 2 | `manuscript-draft` | `manuscripts/chNN_draft.md` | 생성 → 확인 |
+| 3 | `manuscript-final` | `manuscripts/chNN.md` | 티키타카 수정 → 확정 |
+| 4 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
+| 5 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
+| 6 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
+| 7 | `panseo-slide` | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
+| 8 | `edu-sim-builder` | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
+| 9 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
+| 10 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
 
-**설계 문서:** `docs/harness-design-v1.md` (최신 개정은 문서 내 개정 이력 표 참조 — 버전 핀 두지 않음) — 구조 변경 시 이 문서를 먼저 개정한다. 상위 배경 문서: `docs/claude-handoff-lecture-harness.md` — **이력 문서(비규범)**. 규범은 설계 문서다. 인수인계 문서의 일부 조항(bridge 방식, SIMULATION 레슨 모드, 온라인=자기주도형)은 이후 사용자 결정으로 대체됨 (대체 이력: `docs/harness-changelog.md`).
+2~10단계는 차시(chapter) 단위로 반복된다. 차시별로 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택). 오케스트라 스킬 `course-pipeline`은 `status.md`를 읽어 미완료 첫 단계부터 순서대로 스킬을 호출한다(오케스트라 없이 각 단계 스킬 단독 호출도 항상 가능).
 
-**현재 구성:** 에이전트 17 (`.claude/agents/`), 스킬 7 (라인 3 + lecture-harness + 판서/보드/시뮬 복사본 3) + 연동 스킬(image-gen, pub-d2-diagram — 원고 북 빌드 담당). 슬라이드는 panseo-slide 스킬(판서 엔진 소유)의 2프로파일 — rich(고밀도·라이트, 촬영 고정/오프라인 선택) / summary(판서용·다크, 온라인=유튜브 판서 VOD 고정/오프라인 선택). 레슨 모드는 THEORY/LAB/HYBRID (시뮬레이터는 레슨의 파트). 원고 = 발화 대본 + 책(렌더된 d2 모노톤 도형·생성 이미지·비유 — content-rules (f)).
+보조 엔진 스킬(파이프라인 단계 아님, 각 단계 스킬이 필요 시 호출):
+- `image-gen` — GPT 이미지 생성·교체
+- `pub-d2-diagram` — D2 모노톤 도형 렌더
+- `panseo-board` — 빈 판서보드, 명시 요청 시만
+- `humanizer` — 책 문체 교정 (Task 13에서 이식 예정, book-build가 사용)
 
-**강의 현황:** `spring-mvc-2026` (촬영 2편, G6 final) / `spring-mvc-offline-2026` (오프라인 180분, G6 final) / `spring-mvc-online-2026` (온라인 유튜브 판서 VOD — **G1 승인 대기 동결**, 재개 시 여기부터). 로드맵 잔여: 온라인 드라이런 완주, PPTX 변환, 기관 변환 실행 경로.
+## 트리거 라우팅
 
-**변경 이력:** `docs/harness-changelog.md` (append-only — CLAUDE.md에는 이력을 두지 않는다. 설계 규범 변경의 버전 이력은 설계 문서 내 개정 이력 표)
+| 사용자 발화 | 스킬 |
+|---|---|
+| "과정 만들자", "개요서" | `course-outline` |
+| "원고 초안" | `manuscript-draft` |
+| "원고 수정", "원고 완성" | `manuscript-final` |
+| "실습 코드" | `practice-code` |
+| "스토리보드" | `storyboard` |
+| "PPT 프리뷰" | `ppt-preview` |
+| "판서" | `panseo-slide` |
+| "시뮬레이터" | `edu-sim-builder` |
+| "PPTX" | `pptx-build` |
+| "책", "PDF" | `book-build` |
+| "이어서 하자", "다음 단계", "전체 실행" | `course-pipeline` |
+
+## 규약
+
+**디렉터리 구조** (스펙 §4):
+
+```
+courses/{course-id}/
+├── status.md                 # 단계×차시 진행 상태 (재개용)
+├── 1.과정개요서.md            # 1단계 확정 산출물
+├── research/                 # 개요서 단계의 리서치 md (서브에이전트 산출)
+├── manuscripts/              # chNN_draft.md → chNN.md (확정)
+├── storyboards/              # chNN.html
+├── ppt_previews/              # chNN.html
+├── panseo/                   # chNN.html + chNN_대본.md
+├── simulators/                # chNN_{주제}.html
+├── pptx/                      # chNN.pptx
+├── book/                      # chNN.pdf, 합본.pdf, 집필 중간 md
+├── assets/
+│   ├── images/chNN/           # 생성 이미지
+│   └── diagrams/               # D2 소스 + 렌더 PNG
+└── code/chNN/                  # 차시별 실습 코드
+```
+
+**status.md 갱신 의무**: 단계 스킬은 작업 시작 시 해당 열을 🔄로, 사용자 확정 시 ✅로 갱신하고 산출물 인덱스에 경로(및 확정일, 있으면 검증 로그 경로)를 한 줄 추가한다. 사용자가 보류를 선택하면 ➖ + 보류/누락 섹션에 사유를 기록한다. 템플릿: `templates/status_template.md` (신규 과정 시작 시 이 파일을 `courses/{course-id}/status.md`로 복사해 시작).
+
+**골든 템플릿**: `templates/golden/manuscript_golden.md`, `templates/golden/storyboard_golden.html`, `templates/golden/ppt_preview_golden.html` — 각각 원고 스키마·스토리보드·PPT 프리뷰의 포맷/디자인 기준(라이트 테마)이다. 해당 단계 스킬은 새 산출물 작성 시 반드시 이 파일을 참조한다.
+
+## 유지 규칙
+
+하네스 구조 변경(스킬 추가/수정, 디렉터리 규약, status.md 스키마 등)은 `docs/proposals/`에 계획서를 작성하고 codex 사전 검증(`codex exec --sandbox read-only '...' </dev/null`, Git Bash에서 stdin 닫고 실행)을 거친 후 반영한다. 검증 결과는 `docs/reviews/`에 저장한다.
+
+## 설계 문서
+
+- 스펙: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`
+- 구현 계획: `docs/superpowers/plans/2026-07-05-unified-lecture-pipeline.md`
+
+## 강의 현황
+
+`spring-boot-basic` — 파일럿 진행 중. ch01은 GPT가 만든 원고/스토리보드/PPT 프리뷰(골든 템플릿의 원본)를 이어받아 원고확정(`manuscript-final`) 단계부터 재개한다. 상태: `courses/spring-boot-basic/status.md`.
+
+---
+
+구축 상태: 스킬 구현 진행 중 (구현 계획 참조)

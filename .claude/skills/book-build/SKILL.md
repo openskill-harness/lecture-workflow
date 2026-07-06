@@ -1,13 +1,13 @@
 ---
 name: book-build
-description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`book/chNN.pdf`)을 만든다. 과정 완주 시 합본(`book/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 10단계 — 캐릭터 설정 → 소설체 재집필 → humanizer 문체 교정 → 편집 검토 3종(사실성·개념 누락·과도한 소설화) → typst_builder(Typst/Pandoc)로 PDF 빌드.
+description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`book/chNN.pdf`)을 만든다. 과정 완주 시 합본(`book/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 11단계 — 캐릭터 설정 → 소설체 재집필(이미지는 `assets/manifest.json`의 확정 경로를 참조) → humanizer 문체 교정 → 편집 검토 3종(사실성·개념 누락·과도한 소설화) → typst_builder(Typst/Pandoc)로 PDF 빌드. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 ---
 
 # book-build
 
-확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 8필드)를 **소설처럼 이야기 형태로 재집필**해 차시별 PDF 책(`book/chNN.pdf`)을 만드는 스킬이다. 파이프라인 10단계(마지막 단계)이며, 원고를 그대로 렌더하지 않고 비유·실무사례·나레이션·실습·평가를 씨앗 삼아 새로 쓴다.
+확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 8필드)를 **소설처럼 이야기 형태로 재집필**해 차시별 PDF 책(`book/chNN.pdf`)을 만드는 스킬이다. 파이프라인 11단계(마지막 단계)이며, 원고를 그대로 렌더하지 않고 비유·실무사례·나레이션·실습·평가를 씨앗 삼아 새로 쓴다.
 
-**전제**: `courses/{course-id}/status.md`의 해당 차시 `원고확정`이 ✅여야 한다. 아니면 사용자에게 알리고 중단한다. `manuscripts/chNN.md`가 존재해야 한다.
+**전제**: `courses/{course-id}/status.md`의 해당 차시 `원고확정`이 ✅여야 한다. 아니면 사용자에게 알리고 중단한다. `manuscripts/chNN.md`가 존재해야 한다. **하드 게이트**: `시각자산`이 ✅도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 사용자에게 알리고 중단한다 — 먼저 `visual-assets` 스킬로 완료(또는 명시적 보류)해야 한다.
 
 **참조 규범 (Task 13 이식 자산 — 이 스킬은 규칙을 재정의하지 않고 그대로 따른다)**:
 - `references/storytelling.md` — 캐릭터 삼각구도(팀장=힌트 제공자, 동료=문제 제기자, 오픈이=독자 대리인), 비유→왜?→정의 2단계, 비유는 캐릭터 대사에서 발견, Show Don't Tell, Try/Fail(성공 전 최소 2회 실패), 챕터 구조(이야기 파트 → 기술 파트, 라벨형 H2 금지 — "이야기", "기술 설명" 같은 제목을 달지 않고 자연스러운 장 제목만 쓴다), 이야기 파트 체크리스트(감각 묘사·Try/Fail·캐릭터 대화·내면독백·비유 촉발 등)
@@ -33,7 +33,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실�
 - 챕터는 이야기 파트(문제 등장 → 비유로 기술 소개 → Try/Fail 시행착오 → 결과)로 시작하고, 이후 기술 파트(정식 정의·심화 설명·실습 코드)로 이어진다. 두 파트를 가르는 라벨형 H2("## 이야기", "## 기술 설명" 등)는 달지 않는다 — 자연스러운 장 제목(예: `## 1장. 팔찌를 잃어버린 날`)만 쓴다.
 - 원고의 핵심 개념·실습·평가문항이 하나도 누락되지 않도록 챕터 전체에 분배한다(한 슬라이드 = 반드시 한 장면일 필요는 없다. 여러 슬라이드를 하나의 장면으로 압축하거나, 한 슬라이드를 여러 장면으로 늘려도 된다).
 - 캐릭터 등장 규칙(2개 챕터 연속 부재 금지)을 지킨다.
-- 이미지·D2 PNG는 원고의 `assets/...` 상대경로를 그대로 재사용한다(`book/chNN_원고.md` 기준 상대경로로 보정).
+- **자산 해석 규칙(필수, 2026-07-06 개정)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `assets/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `image.status == "present"`이면 `image.path`, (2) 아니고 `d2.status == "present"`이면 `d2.path`, (3) 둘 다 `present`가 아니면(`deferred`/`missing`) 그 장면은 삽화 없이 텍스트만으로 쓴다. 실사용 경로는 `book/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 
 ### 3. humanizer 패스
 
@@ -133,5 +133,6 @@ typst_builder.build(config)
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (8개 필드: Screen, Easy analogy, Practical case, Visual asset, Source, Narration, Practice, Assessment)
 - Task 13 자산 이식 보고서: `.superpowers/sdd/task-13-report.md`, 드라이런 상세: `docs/reviews/2026-07-05_typst-windows-dryrun.md`
 - status.md 형식: `templates/status_template.md` (마지막 열이 `책`)
-- 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §10(이 스킬의 설계 근거)
+- 시각자산 SSOT: `assets/manifest.json`(`visual-assets` 스킬 소유) — §2 "자산 해석 규칙" 참조.
+- 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §10(이 스킬의 설계 근거)
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

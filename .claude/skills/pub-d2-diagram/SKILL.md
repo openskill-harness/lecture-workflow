@@ -107,7 +107,30 @@ cd projects/사내AI비서_v2/assets/diagrams
 | 09_sequence-pipeline | CH09 | 전체 파이프라인 시퀀스 |
 
 ---
-## 하네스 통합 (강의 제작 하네스 전용, v1.9)
+## 하네스 통합 (강의 제작 하네스 전용, v1.10)
 - 원고 북 빌드의 도형 렌더는 `scripts/render_md_diagrams.py <원고.md> <images_dir> <접두사>` 사용 (ELK + 모노톤 치환, SVG까지 — 원고 계약이 SVG 병기라 PNG/rsvg-convert 불사용).
 - 원고 d2 블록은 위 "디자인 규칙"(3색 모노톤·classes·direction: right)을 따른다 — script-agent 계약은 lecture-harness content-rules (f) 참조.
 - Windows: d2는 `C:\Program Files\D2\d2.exe` (brew 지침은 macOS용).
+
+### Windows 렌더 — PNG 변환 (rsvg-convert 부재 시 정식 경로)
+
+Windows에는 `rsvg-convert`가 없다. `visual-assets`/`pub-d2-diagram` 파이프라인이 PNG(슬라이드·책 임베드용)를 필요로 할 때는 아래 **headless Chromium(playwright) 스크린샷 폴백을 즉흥 수단이 아니라 정식 경로로** 쓴다(`ch01-d2-manifest.md` 파일럿에서 실제로 검증된 방식과 동일).
+
+1. `d2.exe --layout elk --pad 40 input.d2 output.svg` (위 "빌드 파이프라인" 1단계와 동일)
+2. sed 규칙(위 §"빌드 파이프라인" 2단계 — 0D32B2→222222, F7F8FE/EDF0FD/E3E9FD/EEF1F8→FFFFFF, `streaks-*` fill→FFFFFF)을 SVG에 그대로 적용.
+3. **PNG 변환(고정 값)**: playwright(Python 또는 Node) `chromium.launch()` → `page.goto(f"file:///{svg_path}")` (또는 SVG를 `<img>`로 감싼 임시 HTML을 만들어 로드) → `page.screenshot(path=out_png, omit_background=True)`.
+   - **뷰포트**: SVG 자체의 `width`/`height`(또는 `viewBox`) 값을 그대로 뷰포트 크기로 설정한다(`page.set_viewport_size({"width": w, "height": h})`) — 임의 고정 해상도(예: 1920×1080)로 잘라내지 않는다.
+   - **device scale factor**: `2`(레티나/고해상도 인쇄 대비 — `browser.new_context(device_scale_factor=2)`).
+   - **배경**: 투명 배경 고정 — `page.screenshot(..., omit_background=True)` 사용, HTML 래퍼를 쓸 경우 `body { background: transparent }`도 명시(이중 안전장치).
+4. 임시 `.d2`/`.svg`/(HTML 래퍼) 파일은 정리한다.
+5. 산출물 파일명은 소비 계약(`assets/diagrams/{chNN}-slide{NN}-{요지}.png` — 슬라이드 번호 포함, `courses/spring-boot-basic/assets/diagrams/ch01-slide05-http.png` 등 기존 실사례 참고)을 따른다. **주의**: `render_md_diagrams.py`는 파일 내 D2 블록 등장 순서로 `{접두사}-d{i}.svg`를 명명한다(슬라이드 번호 기반이 아니다) — PNG 변환 시 원고 순서와 대조해 슬라이드 번호를 붙여 리네임해야 `visual-assets`의 manifest 빌더(`build_asset_manifest.py`)가 `assets/diagrams/{chNN}-slide{NN}-*.png` 글롭으로 찾을 수 있다.
+
+### 종횡비 가이드 — 3:1 권장 (자동 재배치 아님)
+
+D2 다이어그램은 슬라이드(16:9)·책 페이지에 임베드되므로 **가로:세로 3:1 이내**를 권장한다. `direction: right`(가로 흐름) 기본값은 노드 수가 많아지면 가로로 계속 늘어나 극단적으로 납작해질 수 있다(파일럿에서 확인된 실패 사례: 일부 다이어그램이 ~9:1~10:1까지 늘어나 글자가 안 보임).
+
+- **hard fail이 아니라 warning + 수정 지침**이다 — 렌더 자체를 실패시키지 않는다. 자동 재배치는 하지 않는다(레이아웃 판단은 사람이 한다).
+- 렌더 후 SVG/PNG의 실제 너비/높이를 확인해 종횡비를 계산한다. 3:1을 넘으면 아래 중 하나로 원고 D2 소스를 고치도록 사용자에게 안내한다:
+  - `direction: down`(세로 흐름)으로 전환.
+  - 노드를 논리적 그룹으로 묶어 여러 행으로 래핑(컨테이너 노드 + 그룹별 `direction` 분리).
+- 종횡비 초과를 방치한 채 슬라이드/책에 그대로 임베드하지 않는다 — `visual-assets` 스킬의 D2 렌더 단계(§3)에서 이 경고를 받으면 재생성 전 사용자 확인을 거친다.

@@ -20,7 +20,7 @@ description: >
 "플레이로 발견"하게 만드는 것이다.
 
 이 스킬은 통합 강의 제작 파이프라인(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`
-§3 표, §8)의 **8단계**다. 파이프라인 안에서 호출되면 확정 원고를 입력으로 받는 **원고 연동**
+§3 표, §8)의 **9단계**다. 파이프라인 안에서 호출되면 확정 원고를 입력으로 받는 **원고 연동**
 모드로 동작하고, 파이프라인 밖에서 단독 호출되면 기존처럼 사용자 요청만으로 동작한다.
 
 결과물은 **항상 의존성 없는 단일 `.html` 파일** (외부는 폰트 CDN만 허용). **라이트 테마가 기본값**
@@ -39,7 +39,9 @@ description: >
 
 - **파이프라인 호출** (대상 과정/차시가 이미 지정된 상태로 불렸을 때):
   1. 대상 과정 `courses/{course-id}/status.md`를 읽는다. 해당 차시 `원고확정`이 ✅가 아니면
-     사용자에게 알리고 중단한다(시뮬레이터는 확정 원고 없이 만들지 않는다).
+     사용자에게 알리고 중단한다(시뮬레이터는 확정 원고 없이 만들지 않는다). **하드 게이트**: `시각자산`이
+     ✅도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 중단하고 먼저 `visual-assets`(4단계)를 완료(또는
+     명시적 보류)하도록 안내한다.
   2. `manuscripts/chNN.md`를 읽어 `## Slide N. 제목` 블록 전체 목록을 사용자에게 제시하고
      **"어떤 슬라이드를 시뮬레이터로 만들까요?"** 라고 묻는다. `storyboards/chNN.html`이 있으면
      화면 미리보기 참고 링크로 함께 안내한다(§1 참고). 여러 슬라이드를 골라 하나의 시뮬레이터로
@@ -215,7 +217,7 @@ description: >
 - `assets/template.html` — 탭 시뮬레이터 최소 스캐폴드(구조 참고용, 색은 §3 라이트 토큰으로 교체)
 - 원고 스키마(Easy analogy/Narration/Visual asset 등 8개 필드 정의): `.claude/skills/manuscript-draft/references/manuscript-schema.md`
 - status.md 형식: `templates/status_template.md`
-- 파이프라인 표·디렉터리 구조·본 스킬 재작성 방향: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(8단계), §4(`simulators/chNN_{주제}.html` 경로 규약), §8
+- 파이프라인 표·디렉터리 구조·본 스킬 재작성 방향: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(9단계), §4(`simulators/chNN_{주제}.html` 경로 규약), §8
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. 산출물 품질은 위 "확정 체크리스트"가 매 실행마다
   담당한다.
 

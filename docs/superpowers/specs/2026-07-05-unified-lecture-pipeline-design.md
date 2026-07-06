@@ -3,6 +3,7 @@
 - 날짜: 2026-07-05
 - 상태: codex 사전 검증 반영 완료 (`docs/reviews/2026-07-05_v2-redesign-codex-review.md`), 사용자 최종 승인 대기
 - 대체 대상: 기존 3라인 하네스 전체 (`docs/harness-design-v1.md` 및 관련 구성)
+- 개정 이력: 2026-07-06 `visual-assets` 스테이지 신설 — 10단계 → 11단계로 재편 (`docs/proposals/2026-07-06_visual-assets-stage-redesign.md`, codex 검증: `docs/reviews/2026-07-06_visual-assets-redesign-codex-review.md`)
 
 ## 1. 배경
 
@@ -21,7 +22,7 @@
 7. 시뮬레이터 스킬(edu-sim-builder)은 **라이트 테마 + 원고 연동 입력 계약** 및 **구조/품질 표준화** 방향으로 재작성.
 8. 스토리보드·PPT preview·시뮬레이터는 라이트 테마. GPT 산출물 3종을 골든 템플릿(디자인 레퍼런스)으로 보관.
 
-## 3. 파이프라인 (10단계)
+## 3. 파이프라인 (11단계)
 
 각 단계는 독립 스킬이다. 어느 단계에서든 세션을 끝내고 나중에 이어서 실행할 수 있다. 오케스트라 스킬 `course-pipeline`은 `status.md`를 읽어 다음 미완료 단계부터 순서대로 스킬을 호출한다.
 
@@ -30,24 +31,37 @@
 | 1 | `course-outline` | `1.과정개요서.md` | 대화로 함께 작성 → 확정 |
 | 2 | `manuscript-draft` | `manuscripts/chNN_draft.md` | 생성 → 확인 |
 | 3 | `manuscript-final` | `manuscripts/chNN.md` | 티키타카 수정 → 확정 |
-| 4 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
-| 5 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
-| 6 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
-| 7 | `panseo-slide` (재작성) | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
-| 8 | `edu-sim-builder` (재작성) | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
-| 9 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
-| 10 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
+| 4 | `visual-assets` (신규) | `assets/images/chNN/`, `assets/diagrams/`, `assets/manifest.json` | 생성(지금/deferred 선택) → 확인 |
+| 5 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
+| 6 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
+| 7 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
+| 8 | `panseo-slide` (재작성) | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
+| 9 | `edu-sim-builder` (재작성) | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
+| 10 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
+| 11 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
 
-- 2~10단계는 차시(chapter) 단위로 반복된다. 차시별로 단계를 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택).
+- 2~11단계는 차시(chapter) 단위로 반복된다. 차시별로 단계를 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택).
 - 1차시를 파일럿으로 완성해 형식을 검증한 뒤 나머지 차시로 확장한다.
-- 시각 자산 생성은 기존 엔진 스킬을 그대로 사용: `image-gen`(GPT 이미지 생성·교체), `pub-d2-diagram`(D2 모노톤 도형 렌더).
+- 시각 자산 생성은 기존 엔진 스킬을 그대로 사용: `image-gen`(GPT 이미지 생성·교체), `pub-d2-diagram`(D2 모노톤 도형 렌더). 두 엔진은 이제 4단계 `visual-assets`가 호출한다(§3.0-A).
 - **단계별 확정 체크리스트**: 각 단계 스킬은 자기 산출물의 확정 체크리스트(예: 원고 — 슬라이드별 필수 필드 존재·출처 유효, 코드 — 실행 검증 통과, 책 — 사실성·개념 누락 체크)와 실패 시 repair 규칙을 스킬 안에 내장한다. 별도 QA 에이전트는 두지 않는다.
+- **하드 게이트(codex 조건 반영)**: `visual-assets`가 ✅(생성 완료) 또는 명시적 `deferred`(placeholder 유지로 확인)일 때만 5~11단계를 진행한다. 원고확정만 되고 시각자산 칸이 비어 있으면(⬜/🔄) 후속 단계 스킬은 진행을 거부하고 먼저 `visual-assets`를 완료하도록 안내한다. `course-pipeline`의 선행 게이트 표에도 동일하게 반영한다(`.claude/skills/course-pipeline/SKILL.md`).
 
-### 3.0 실습 코드 단계 (`practice-code`)
+### 3.0-A 시각자산 스테이지 (`visual-assets`, 신규)
+
+원고확정 직후, 소비 산출물(코드~책) 앞에 놓인다. 책임:
+
+- 확정 원고의 Visual asset 필드를 스캔해 이미지 프롬프트를 image-gen의 `[IMAGE PROMPT]` 태그로 자동 변환(브릿지 내장) 후 image-gen 실행 → `assets/images/chNN/`. `` ```d2 `` 블록은 pub-d2-diagram으로 렌더 → `assets/diagrams/`.
+- 슬라이드마다 "지금 생성" 또는 "나중에(`deferred`, placeholder 유지)"를 사용자에게 명시적으로 선택받는다 — image-gen 지연(장당 1~2분, 직렬)을 고려해 백그라운드 배치 + 진행 표시로 처리한다.
+- 생성 완료 자산 경로를 원고 Visual asset 필드에 `→ 생성됨:`/`→ 렌더됨:`으로 주석(사람이 읽는 보조 표기)하는 동시에, **`assets/manifest.json`을 SSOT로 갱신**한다 — 슬라이드별 `{ image: {status, path, prompt_hash}, d2: {status, path, d2_hash} }` 구조. 슬라이드별 status는 `present`(실자산 존재) / `deferred`(사용자가 나중으로 선택, placeholder 유지) / `missing`(아직 미확정) 중 하나(`scripts/build_asset_manifest.py`, `.claude/skills/visual-assets/SKILL.md` §4 실제 구현 기준). 이와 별개로 status.md `시각자산` 열(차시 전체 요약)은 `✅`/`deferred`/`partial`/`stale` 4가지 값을 쓴다(§4, `templates/status_template.md` 참조) — 원고가 재수정되어 해시가 어긋난 상태는 이 status.md 칸에 `stale`로 표기된다.
+- **해시 기반 부분 재생성**: 원고 Visual asset의 프롬프트/D2 소스가 바뀌면 그 슬라이드의 해시만 불일치 → `visual-assets`가 그 슬라이드 자산만 재생성한다(전체 재생성 금지, `.claude/skills/visual-assets/SKILL.md` §7). 후속 산출물(스토리보드 등)도 그 슬라이드만 다시 만들면 된다.
+- 결과: 이후 5~11단계(코드/스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)는 **원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로**를 읽어 자산을 임베드한다(소비 계약, 각 스킬 SKILL.md 참조) — 재동기화 폭포(자산을 나중에 만들어 소비 산출물을 전부 다시 만드는 문제)를 제거하기 위한 핵심 변경.
+- 코드/캡처형 자산(화면 캡처 등 실행 결과가 필요한 자산)은 예외적으로 `practice-code`(5단계) 이후 finalize substage에서 처리한다(image/D2는 원고확정 직후 착수).
+
+### 3.1 실습 코드 단계 (`practice-code`)
 
 확정 원고의 `Practice` 필드를 근거로 차시별 실습 코드를 `code/chNN/`에 생성하고 **실제로 실행해 검증**한다(빌드/실행/HTTP 호출 등, 결과는 검증 로그로 남김). 검증 중 원고의 실습 지시와 코드가 어긋나면 원고를 역수정(사용자 확인 후)한다. 이후 단계(스토리보드/PPT/책)의 코드 블록은 이 검증된 코드에서 발췌한다.
 
-### 3.1 오케스트라 스킬 `course-pipeline`
+### 3.2 오케스트라 스킬 `course-pipeline`
 
 - 입력: 과정 폴더 경로(또는 신규 과정 시작).
 - 동작: `status.md` 파싱 → 미완료 첫 단계 식별 → 해당 단계 스킬 실행 → 사용자 확정 시 `status.md` 갱신 → 다음 단계. 사용자가 "여기까지"라고 하면 정지.
@@ -69,7 +83,8 @@ courses/{course-id}/
 ├── book/                     # chNN.pdf, 합본.pdf, 집필 중간 md
 ├── assets/
 │   ├── images/chNN/          # 생성 이미지
-│   └── diagrams/             # D2 소스 + 렌더 PNG
+│   ├── diagrams/             # D2 소스 + 렌더 PNG
+│   └── manifest.json         # 시각자산 SSOT (슬라이드→경로/해시/상태, visual-assets 소유)
 └── code/chNN/                # 차시별 실습 코드
 ```
 
@@ -77,9 +92,9 @@ courses/{course-id}/
 
 ```markdown
 # spring-boot-basic 진행 상태
-| 차시 | 원고초안 | 원고확정 | 코드 | 스토리보드 | PPT프리뷰 | 판서 | 시뮬 | PPTX | 책 |
-|---|---|---|---|---|---|---|---|---|---|
-| ch01 | ✅ | ✅ | ✅ | ✅ | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
+| 차시 | 원고초안 | 원고확정 | 시각자산 | 코드 | 스토리보드 | PPT프리뷰 | 판서 | 시뮬 | PPTX | 책 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| ch01 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
 | ch02 | ⬜ | … |
 
 다음 할 일: ch01 PPT프리뷰 사용자 확인 대기
@@ -125,6 +140,7 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - **차시당 평가 문항**: 4지선다 1개 + 진위형 2개 (정답·해설 포함).
 - **초안 원칙**: 압축하지 않는다. 차시당 30분 초과 허용. 덜어내기는 사용자가 완성 단계(티키타카)에서 한다.
 - 초안(`chNN_draft.md`) 확정 후 사용자와의 반복 수정을 거쳐 `chNN.md`로 완성 확정.
+- **시각 자산 생성과의 분리(2026-07-06 개정)**: `manuscript-final`은 Visual asset 필드의 프롬프트/D2 소스 문구를 다듬는 것까지만 책임진다. 실제 이미지/D2 렌더 생성과 `→ 생성됨:`/`→ 렌더됨:` 병기, `assets/manifest.json` 갱신은 원고확정 **다음** 단계인 `visual-assets`(§3.0-A)가 전담한다 — 원고확정 시점에는 자산이 아직 없어도 확정할 수 있다.
 
 ## 7. 판서슬라이드 (`panseo-slide` 재작성)
 
@@ -134,6 +150,8 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - **그대로 모드**: `ppt_previews/chNN.html`의 슬라이드 내용을 그대로 가져오고 판서 기능 레이어만 얹음.
 
 실행 시 사용자에게 모드를 묻는다. 판서대본도 함께 생성한다. 기존 "복사본 + 하네스 통합 재정의 섹션" 방식은 폐기하고 스킬 본문을 직접 새로 쓴다. `panseo-board`(빈 칠판 단독)는 명시 요청 시 사용하는 보조 스킬로 유지한다.
+
+**시각 자산 소비(2026-07-06 개정)**: 그대로 모드는 `ppt_previews/chNN.html`의 DOM(이미지 포함)을 그대로 이식하므로, 실자산 여부는 그 상위 단계인 `ppt-preview`가 `assets/manifest.json`을 읽어 이미 반영한 상태를 그대로 물려받는다(panseo-slide 자신이 manifest를 직접 읽지 않는다 — 간접 소비).
 
 ## 8. 시뮬레이터 (`edu-sim-builder` 재작성)
 
@@ -148,6 +166,7 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - 슬라이드 본문: 제목, 짧은 문구, 이미지(assets), D2 렌더 PNG, 핵심 코드.
 - **발표자 노트에 Narration 삽입** — python-pptx의 `notes_slide` API가 발표자 노트를 정식 지원한다(codex가 blocker로 지적했으나 과대평가로 판단). 다만 구현 초기에 "슬라이드 1장 + 노트 삽입 + PowerPoint에서 열어 확인" spike를 먼저 수행해 확정한다.
 - 강의장에서 바로 쓸 수 있는 실제 .pptx가 목표.
+- **시각 자산과의 관계(2026-07-06 개정)**: `pptx-build`(10단계) 코드 자체는 바뀌지 않는다 — 원고에 병기된 `assets/...png|jpg` 경로를 정규식으로 잡는 방식 그대로다. 이제 `visual-assets`(4단계)가 원고확정 직후 실행되므로, `pptx-build`가 호출되는 시점엔 원고에 이미 실자산 경로가 병기되어 있는 것이 정상 경로다(과거처럼 placeholder만 있는 상태로 넘어와 재빌드가 필요한 상황이 줄어든다).
 
 ## 10. PDF책 (`book-build`) — lecture-book-workflow 이식
 
@@ -170,6 +189,8 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 
 참조 clone 위치(재사용): scratchpad의 `lecture-book-workflow/` — 구현 시 필요한 파일만 저장소로 복사.
 
+**시각 자산 소비(2026-07-06 개정)**: 이미지·D2 PNG 삽입 시 원고에 병기된 프롬프트 텍스트가 아니라 `assets/manifest.json`에서 해당 슬라이드의 확정 경로(image가 `present`면 그 path, 없고 d2가 `present`면 그 path)를 읽어 참조한다. 둘 다 `present`가 아니면(`deferred`/`missing`) 해당 장면은 삽화 없이 텍스트만으로 진행한다.
+
 ## 11. 삭제 / 보존 / 이동
 
 **삭제** (legacy snapshot 커밋 후):
@@ -183,6 +204,8 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 **이동**: 루트의 `ch01_server-webapp-runtime.md`, `ch01_storyboard.html`, `ch01_ppt_preview.html` → 새 파일럿 과정 `courses/spring-boot-basic/`의 1차시 산출물로 배치하고, 동시에 각 스킬의 골든 템플릿(디자인·포맷 레퍼런스)으로 참조.
 
 **재작성**: `CLAUDE.md`를 새 하네스(단일 파이프라인, 단계별 확정, 스킬 목록) 기준으로 다시 쓴다. 구조 변경 시 codex 사전 검증 규칙은 유지한다.
+
+**이후 추가 (2026-07-06)**: 위 삭제/보존/이동은 이 문서 최초 작성 시점(10단계)의 1회성 마이그레이션 기록이며 이미 실행 완료됨. 이후 §3.0-A 신설로 스킬 `visual-assets`(`.claude/skills/visual-assets/`)가 신규 추가되었다 — 이 스킬은 위 삭제/보존/이동 대상이 아니라 파이프라인 재편(10→11단계)에 따른 신규 스킬이다.
 
 ## 12. 되돌리기
 
@@ -205,3 +228,5 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 6. `book-build` 이식 (10단계) — **Windows Typst/Pandoc 드라이런 선행** (폰트·경로·한글 줄바꿈·변환 품질 확인)
 7. `course-pipeline` 오케스트라 작성
 8. 파일럿(스프링부트 기초 1차시)으로 전 구간 드라이런
+
+(위 1~8은 이 문서 최초 작성 시점의 10단계 기준 실행 순서이며 이미 완료된 기록이다 — 단계 번호는 §3의 현재 11단계 표가 아니라 당시 10단계 표를 가리킨다. `visual-assets` 스킬 신설은 §3.0-A 참조.)

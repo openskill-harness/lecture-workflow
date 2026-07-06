@@ -1,11 +1,11 @@
 ---
 name: manuscript-final
-description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반복 수정)하며 확정 원고로 완성한다. "원고 수정", "원고 완성", "티키타카" 요청 시 사용. manuscripts/chNN_draft.md를 chNN.md로 이어받아 슬라이드 추가/삭제/압축/비유 교체/나레이션 수정을 한 번에 한 요청씩 처리하고, 필요 시 image-gen/pub-d2-diagram으로 시각 자산을 실생성한 뒤, 사용자가 "확정"이라 하면 확정 체크리스트를 통과시켜 status.md 원고확정을 갱신한다.
+description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반복 수정)하며 확정 원고로 완성한다. "원고 수정", "원고 완성", "티키타카" 요청 시 사용. manuscripts/chNN_draft.md를 chNN.md로 이어받아 슬라이드 추가/삭제/압축/비유 교체/나레이션 수정을 한 번에 한 요청씩 처리하고, 사용자가 "확정"이라 하면 확정 체크리스트를 통과시켜 status.md 원고확정을 갱신한다. 시각 자산(이미지/D2)의 실제 생성은 이 스킬이 아니라 다음 단계 `visual-assets`(4단계)가 담당한다.
 ---
 
 # manuscript-final
 
-원고 초안 `manuscripts/chNN_draft.md`(2단계 산출물, `manuscript-draft` 소유)를 사용자와의 반복 수정(티키타카)으로 다듬어 확정 원고 `manuscripts/chNN.md`를 만드는 스킬. 이 확정 원고는 이후 `practice-code`(코드), `storyboard`, `ppt-preview`, `panseo-slide`, `edu-sim-builder`, `pptx-build`, `book-build` 전 단계의 단일 입력(source of truth)이 된다.
+원고 초안 `manuscripts/chNN_draft.md`(2단계 산출물, `manuscript-draft` 소유)를 사용자와의 반복 수정(티키타카)으로 다듬어 확정 원고 `manuscripts/chNN.md`를 만드는 스킬. 이 확정 원고는 이후 `visual-assets`(4단계, 시각자산), `practice-code`(코드), `storyboard`, `ppt-preview`, `panseo-slide`, `edu-sim-builder`, `pptx-build`, `book-build` 전 단계의 단일 입력(source of truth)이 된다.
 
 **스키마 규범**: `.claude/skills/manuscript-draft/references/manuscript-schema.md` — 이 스킬은 원고를 수정하는 동안에도 이 스키마(필드명·순서·표기)를 절대 깨뜨리지 않는다. 골든 참고: `templates/golden/manuscript_golden.md`.
 
@@ -28,24 +28,11 @@ description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반�
 - 나레이션을 압축해도 "그대로 소리 내어 읽을 수 있는 존댓말 완결 문장"이라는 스키마 원칙은 유지한다(불릿으로 바꾸지 않는다).
 - Source 필드는 삭제·요약 대상이 아니다 — 슬라이드를 삭제하지 않는 한 출처는 그대로 남긴다.
 
-### 3. 시각 자산 확정 지원
+### 3. 시각 자산 — 다음 단계로 이관 (2026-07-06 개정)
 
-사용자가 특정 슬라이드의 시각 자산을 실제로 생성해 달라고 하면:
+이 스킬은 Visual asset 필드의 프롬프트/D2 소스 **문구를 다듬는 것까지만** 책임진다. 실제 이미지/D2 렌더 생성, `→ 생성됨:`/`→ 렌더됨:` 병기, `assets/manifest.json` 갱신은 원고확정 **다음** 단계인 `visual-assets` 스킬(4단계, `.claude/skills/visual-assets/SKILL.md`)이 전담한다 — image-gen/pub-d2-diagram 브릿지 절차(태그 변환, 스크래치 파일, 경로 규약)도 그쪽으로 이관되었다.
 
-- **`image-gen` 스킬 — 필드→태그 변환(브릿지)이 필수**: `image-gen`의 실행 스크립트(`scripts/image_gen.py`)는 원고 스키마의 인라인 라벨 `GPT image prompt: \`...\`` 을 인식하지 못한다. 실제로 스캔하는 것은 파일 안의 리터럴 블록
-  ```
-  <!-- [IMAGE PROMPT: {id}]
-  {프롬프트 본문}
-  path: {project_root 상대 경로}
-  -->
-  ![](placeholder)
-  ```
-  뿐이다(레거시 `[GEMINI PROMPT]`도 인식). 따라서 이 스킬은 대상 슬라이드의 `GPT image prompt:`(또는 `Comic panel prompt:`) 텍스트를 **위 블록 형식으로 변환해 임시 스크래치 파일에 삽입한 뒤** `image_gen.py <스크래치.md> <project_root>`를 실행한다. **`project_root`에는 `courses/{course-id}`(과정 디렉터리)를 넘긴다.** `path:`는 이 `project_root` 기준 상대경로인 **`assets/images/chNN/slideN.png`**로 지정한다 — 정본 디렉터리는 `assets/images/chNN/`(CLAUDE.md·디렉터리 규약)이며, 실제로 저장되는 파일은 `courses/{course-id}/assets/images/chNN/slideN.png`가 된다. `storyboard`/`ppt-preview`/`panseo-slide`/`pptx-build`는 모두 원고에 이 `assets/images/chNN/...`(과정 디렉터리 상대) 형식이 병기되어 있다고 가정하고 소비하므로, 여기서 어긋나면 `pptx-build`의 `IMG_PATH_RE`(`assets[/\\]...png|jpg`만 매치)가 이미지 경로를 탐지하지 못해 이미지가 조용히 누락된다.
-  - **주의(전체 파일 스캔 + 파괴적 치환)**: `image_gen.py`는 입력 파일 전체에서 매치되는 블록을 전부 처리하고, 처리한 블록은 원문(프롬프트 포함)을 통째로 지우고 `<img>` 태그로 **치환**해 그 자리에 다시 저장한다. 이 때문에 ① `chNN.md`에 직접 이 블록을 삽입해 실행하면 안 된다(원본 프롬프트가 사라져 스키마의 "프롬프트 원문 보존" 원칙이 깨진다) — 반드시 임시 스크래치 파일에서만 실행한다. ② 스크래치 파일에는 **이번에 요청받은 슬라이드의 프롬프트 1개만** 넣는다 — 다른 슬라이드의 미완 프롬프트까지 같이 넣으면 요청하지 않은 이미지까지 함께 생성돼버린다.
-  - 생성 완료 후: 스크립트가 이동시킨 실제 이미지 경로(`path:`에 지정한 값, 즉 `assets/images/chNN/slideN.png` 형식)를 확인하고, **`chNN.md`의 해당 슬라이드 Visual asset 필드**(`GPT image prompt:` 다음 줄)에 `→ 생성됨: assets/images/chNN/slideN.png`를 병기한다(과정 디렉터리 상대경로 — `courses/{course-id}/` 접두어는 붙이지 않는다). `GPT image prompt:` 원문은 그대로 둔다(재생성 시 근거). 스크래치 파일은 삭제한다.
-- **`pub-d2-diagram` 스킬**: 슬라이드 Visual asset의 `D2 초안`(` ```d2 ` 코드펜스)은 렌더 스크립트(`scripts/render_md_diagrams.py <원고.md> <images_dir> <접두사>`)가 그대로 인식하는 형식이라 별도 변환은 필요 없다. 다만 이 스크립트도 **입력 파일 전체**에서 ` ```d2 ` 블록을 순서대로 찾아 각 블록을 `{접두사}-d{순번}.svg`로 저장한다(순번은 슬라이드 번호가 아니라 파일 내 등장 순서) — 즉 한 슬라이드만 요청해도 파일에 있는 다른 슬라이드의 D2 블록까지 함께 (재)렌더된다(원고 자체는 건드리지 않으므로 image-gen처럼 파괴적이진 않지만, 낭비 및 순번 오인 소지가 있다). 한 슬라이드만 확실히 렌더하려면 해당 ` ```d2 ` 블록만 담은 임시 스크래치 파일에서 실행한다. 렌더가 끝나면 실제 생성된 파일명(`{접두사}-d{순번}.svg`)을 확인해 `D2 diagram:` 다음 줄에 `→ 렌더됨: {실제 파일 경로}`를 병기한다(스키마가 미리 적어둔 `assets/diagrams/chNN_slug.d2` 경로와 실제 출력 파일명이 다를 수 있으므로 반드시 실제 경로를 확인 후 적는다).
-- 두 경우 모두 프롬프트/D2 소스 원문은 지우지 않는다 — 재생성 시 근거가 되므로 그대로 둔다.
-- 사용자가 원하지 않으면 이 단계는 건너뛴다(시각 자산 없이도 확정 가능 — 단, §4 체크리스트는 "생성 완료된 자산"에만 실경로를 요구하므로 미생성 자산이 있어도 체크리스트 실패가 아니다).
+원고확정 시점에 시각 자산이 아직 없어도(프롬프트/D2 소스만 있어도) 확정할 수 있다 — 자산 생성 완료 여부는 §4 확정 체크리스트의 대상이 아니다.
 
 ### 4. 확정
 
@@ -55,7 +42,6 @@ description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반�
 
 - [ ] **스키마 전 필드 무결**: 모든 슬라이드에 8개 필드(Screen/Easy analogy/Practical case/Visual asset/Source/Narration/Practice/Assessment)가 순서대로 존재한다(해당 없음도 `- 없음.`으로 명기, 필드 자체 누락 없음). 슬라이드 번호가 순차적이고 평가 슬라이드의 "관련학습보기" 참조 번호가 실제 슬라이드와 일치한다.
 - [ ] **draft 대비 의도된 변경만 존재**: `manuscripts/chNN_draft.md`와 `chNN.md`를 비교(diff)했을 때 나타나는 모든 차이가 티키타카 루프에서 사용자가 실제로 요청한 수정에 대응한다 — 사용자가 지시하지 않은 슬라이드·필드가 임의로 삭제되거나 축약되어 있지 않다.
-- [ ] **Visual asset 실경로 병기**: §3에서 실제로 생성이 완료된 이미지/다이어그램은 해당 슬라이드 Visual asset 필드에 실제 파일 경로가 병기되어 있다(생성하지 않은 자산까지 요구하지 않는다).
 
 ## repair 규칙
 
@@ -67,12 +53,12 @@ description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반�
 
 - `courses/{course-id}/status.md`의 해당 차시 `원고확정` 칸을 ✅로 갱신한다.
 - "산출물 인덱스"에 `- chNN 원고확정: manuscripts/chNN.md (확정 YYYY-MM-DD)`를 추가한다.
-- "다음 할 일"을 `chNN 코드 작성(practice-code)`으로 갱신한다.
+- "다음 할 일"을 `chNN 시각자산 생성(visual-assets)`으로 갱신한다.
 - 사용자에게 확정 완료와 최종 슬라이드 목록(번호 + 제목)을 요약해 보고한다.
 
 ## 참고
 
 - 원고 스키마 상세: `.claude/skills/manuscript-draft/references/manuscript-schema.md`
 - 골든 예시: `templates/golden/manuscript_golden.md`
-- 시각 자산 생성 엔진: `image-gen`(GPT 이미지), `pub-d2-diagram`(D2 다이어그램 렌더) — 이 스킬은 두 스킬을 호출만 하고 자체 생성 로직을 갖지 않는다. 단, `image-gen`은 스키마 필드(`GPT image prompt:`)를 직접 인식하지 못하므로 §3에 따라 태그 변환(브릿지) 후 스크래치 파일에서 호출한다.
+- 시각 자산 생성: 다음 단계 `visual-assets` 스킬(`.claude/skills/visual-assets/SKILL.md`) 참조 — image-gen/pub-d2-diagram 호출·브릿지 절차·`assets/manifest.json` 갱신 전부 그 스킬이 담당한다(§3).
 - 이 스킬은 대화형 절차 문서이며 TDD 대상이 아니다. 구조 검증은 SKILL.md 필수 키워드 grep(개발 시점 1회성 검증)으로 확인되었고, 실사용 시 품질 검증은 본문 "확정 체크리스트"가 매 실행마다 담당한다.

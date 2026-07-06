@@ -1,13 +1,13 @@
 ---
 name: course-pipeline
-description: 과정 폴더의 `status.md`를 읽어 미완료 단계부터 순서대로 10단계 스킬을 호출하는 오케스트라. "이어서 하자", "다음 단계", "전체 실행", "파이프라인 돌려줘" 요청 시 사용. "자고 일어나서 이어하기"의 핵심 — 어느 단계에서 세션이 끊겨도 status.md만 보고 정확히 이어서 실행한다. 호출 전 선행 단계 ✅ 여부를 확인하고, status.md와 실파일이 어긋나면(파일 없는데 ✅) repair 규칙으로 보고한다. 각 단계 자체의 확정 절차(사용자 확인)는 생략하지 않는다.
+description: 과정 폴더의 `status.md`를 읽어 미완료 단계부터 순서대로 11단계 스킬을 호출하는 오케스트라. "이어서 하자", "다음 단계", "전체 실행", "파이프라인 돌려줘" 요청 시 사용. "자고 일어나서 이어하기"의 핵심 — 어느 단계에서 세션이 끊겨도 status.md만 보고 정확히 이어서 실행한다. 호출 전 선행 단계 ✅ 여부를 확인하고, status.md와 실파일이 어긋나면(파일 없는데 ✅) repair 규칙으로 보고한다. 각 단계 자체의 확정 절차(사용자 확인)는 생략하지 않는다.
 ---
 
 # course-pipeline
 
-10단계 파이프라인(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.1)의 오케스트라 스킬. 이 스킬 자신은 산출물을 만들지 않는다 — `courses/{course-id}/status.md`를 읽어 미완료 첫 단계를 찾고, 그 단계를 소유한 스킬을 `Skill` 도구로 호출한 뒤, 그 스킬의 확정 절차가 끝나면 다음 단계로 넘어가는 **순차 실행 제어**만 담당한다.
+11단계 파이프라인(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A, §3.2)의 오케스트라 스킬. 이 스킬 자신은 산출물을 만들지 않는다 — `courses/{course-id}/status.md`를 읽어 미완료 첫 단계를 찾고, 그 단계를 소유한 스킬을 `Skill` 도구로 호출한 뒤, 그 스킬의 확정 절차가 끝나면 다음 단계로 넘어가는 **순차 실행 제어**만 담당한다.
 
-오케스트라 없이 각 단계 스킬을 단독 호출하는 것도 항상 가능하다(설계 §3.1). 이 스킬은 그 호출 순서를 사용자 대신 관리해 줄 뿐이다.
+오케스트라 없이 각 단계 스킬을 단독 호출하는 것도 항상 가능하다(설계 §3.2). 이 스킬은 그 호출 순서를 사용자 대신 관리해 줄 뿐이다.
 
 ## 단계 순서 ↔ 스킬명 매핑
 
@@ -18,6 +18,7 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 | 과정개요서 (표 위 별도 줄) | `course-outline` | `1.과정개요서.md` |
 | 원고초안 | `manuscript-draft` | `manuscripts/chNN_draft.md` |
 | 원고확정 | `manuscript-final` | `manuscripts/chNN.md` |
+| 시각자산 | `visual-assets` | `assets/images/chNN/`, `assets/diagrams/`, `assets/manifest.json` |
 | 코드 | `practice-code` | `code/chNN/` + 검증 로그 |
 | 스토리보드 | `storyboard` | `storyboards/chNN.html` |
 | PPT프리뷰 | `ppt-preview` | `ppt_previews/chNN.html` |
@@ -37,7 +38,8 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 ### 2. status.md 파싱 → 첫 미완료 단계 식별
 
 - `courses/{course-id}/status.md`를 읽는다.
-- 위 매핑 표의 순서(`과정개요서 → 원고초안 → 원고확정 → 코드 → 스토리보드 → PPT프리뷰 → 판서 → 시뮬 → PPTX → 책`)를 그대로 따라, 각 차시(chNN) 행에서 왼쪽부터 훑어 **첫 번째 ⬜ 또는 🔄 셀**을 찾는다.
+- 위 매핑 표의 순서(`과정개요서 → 원고초안 → 원고확정 → 시각자산 → 코드 → 스토리보드 → PPT프리뷰 → 판서 → 시뮬 → PPTX → 책`)를 그대로 따라, 각 차시(chNN) 행에서 왼쪽부터 훑어 **첫 번째 ⬜ 또는 🔄 셀**을 찾는다.
+  - `시각자산` 칸은 `deferred`도 완료로 간주한다(➖와 동일하게, 뒤 §3 하드 게이트 조건 참조) — `deferred`는 사용자가 "지금은 만들지 않겠다"고 명시적으로 선택한 상태이므로 오케스트라가 임의로 재개하지 않는다(➖ 보류와 같은 취급).
   - ➖(보류) 셀은 완료로 간주하지 않지만 오케스트라가 임의로 재개하지 않는다 — 건너뛰고 그다음 셀을 계속 확인한다. 보류를 재개하려면 사용자가 명시적으로 지시해야 한다.
   - 🔄(진행 중)은 이전 세션에서 사용자 확인 대기 중 끊긴 상태일 수 있다 — 해당 스킬을 다시 호출해 그 지점부터 이어간다(처음부터 재생성하지 않는다. 스킬 자체의 repair 규칙에 맡긴다).
   - 차시가 여러 개면 차시 번호 순(ch01 → ch02 → …)으로 먼저 훑고, 같은 차시 안에서는 열 순서(왼쪽→오른쪽)로 훑는다.
@@ -51,15 +53,18 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 |---|---|
 | 원고초안 (`manuscript-draft`) | 과정개요서 ✅ |
 | 원고확정 (`manuscript-final`) | 원고초안 ✅ |
-| 코드 (`practice-code`) | 원고확정 ✅ |
-| 스토리보드 (`storyboard`) | 원고확정 ✅ |
-| PPT프리뷰 (`ppt-preview`) | 원고확정 ✅ |
-| 판서 (`panseo-slide`) | 원고확정 ✅ (요약 모드) 또는 PPT프리뷰 ✅ (그대로 모드 — 모드는 스킬이 실행 시 사용자에게 물음) |
-| 시뮬 (`edu-sim-builder`) | 원고확정 ✅ |
-| PPTX (`pptx-build`) | 원고확정 ✅ |
-| 책 (`book-build`) | 원고확정 ✅ |
+| 시각자산 (`visual-assets`) | 원고확정 ✅ |
+| 코드 (`practice-code`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| 스토리보드 (`storyboard`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| PPT프리뷰 (`ppt-preview`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| 판서 (`panseo-slide`) | (원고확정 ✅ 요약 모드 / PPT프리뷰 ✅ 그대로 모드 — 모드는 스킬이 실행 시 사용자에게 물음) **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| 시뮬 (`edu-sim-builder`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| PPTX (`pptx-build`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
+| 책 (`book-build`) | 원고확정 ✅ **그리고** 시각자산 ✅ 또는 `deferred`(하드 게이트) |
 
-예: 코드 단계(`practice-code`)를 호출하려는데 해당 차시 `원고확정`이 아직 ⬜/🔄이면, 오케스트라는 `practice-code`를 호출하지 않고 "ch03의 원고확정이 아직 끝나지 않았습니다. 먼저 `manuscript-final`부터 진행할까요?"라고 사용자에게 확인한다.
+**하드 게이트(codex 조건 반영)**: 시각자산이 `✅`도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 코드~책(5~11단계)은 진행하지 않는다 — placeholder로 그냥 넘어가지 않는다. `partial`/`stale`은 완료로 보지 않으므로, 오케스트라는 후속 단계를 호출하지 않고 먼저 `visual-assets`로 돌아가 나머지 슬라이드를 마무리(또는 재생성)하도록 사용자에게 제안한다.
+
+예: 코드 단계(`practice-code`)를 호출하려는데 해당 차시 `원고확정`이 아직 ⬜/🔄이면, 오케스트라는 `practice-code`를 호출하지 않고 "ch03의 원고확정이 아직 끝나지 않았습니다. 먼저 `manuscript-final`부터 진행할까요?"라고 사용자에게 확인한다. `원고확정`은 ✅인데 `시각자산`이 ⬜/🔄/`partial`/`stale`이면 "ch03의 시각자산이 아직 완료(✅)되지 않았거나 명시적 `deferred`가 아닙니다. 먼저 `visual-assets`부터 진행할까요?"라고 확인한다.
 
 ### 4. 단계 스킬 호출
 
@@ -87,13 +92,13 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 
 status.md와 실제 파일이 어긋난 경우(예: 셀이 ✅인데 대응 산출물 파일이 실제로 없음, 또는 경로가 다름) — 오케스트라가 이를 발견하면 **그 단계를 조용히 다시 만들거나 스킵하지 않는다.**
 
-1. 해당 차시의 **표 전체를 인덱스 재검증**한다: 매핑 표의 산출물 경로 규약(`courses/{course-id}/manuscripts/chNN.md`, `storyboards/chNN.html`, `ppt_previews/chNN.html`, `panseo/chNN.html`, `simulators/chNN_*.html`, `pptx/chNN.pptx`, `book/chNN.pdf`, `code/chNN/`)에 따라 ✅로 표시된 모든 셀의 파일이 실제로 존재하는지 하나씩 확인한다.
+1. 해당 차시의 **표 전체를 인덱스 재검증**한다: 매핑 표의 산출물 경로 규약(`courses/{course-id}/manuscripts/chNN.md`, `assets/manifest.json`(+ `assets/images/chNN/`, `assets/diagrams/`), `storyboards/chNN.html`, `ppt_previews/chNN.html`, `panseo/chNN.html`, `simulators/chNN_*.html`, `pptx/chNN.pptx`, `book/chNN.pdf`, `code/chNN/`)에 따라 ✅로 표시된 모든 셀의 파일이 실제로 존재하는지 하나씩 확인한다. `시각자산` 칸이 `deferred`/`partial`이면 해당 상태값이 `assets/manifest.json`의 실제 상태와 일치하는지도 확인한다.
 2. 불일치를 발견하면 **사용자에게 먼저 보고**한다 — 어느 차시·어느 단계가 ✅인데 파일이 없는지(또는 산출물 인덱스 경로가 실물과 다른지) 구체적으로 알린다. 오케스트라가 임의로 ⬜/🔄로 되돌리거나 그 단계를 재실행하지 않는다.
 3. 사용자의 지시에 따라: (a) 실제로 파일이 다른 경로에 있으면 산출물 인덱스만 경로 수정, (b) 정말 산출물이 없으면 해당 셀을 사용자 확인 하에 🔄 또는 ⬜로 되돌리고 그 단계 스킬을 다시 호출한다.
 4. 선행 단계 검사(§3)에서도 동일한 원칙을 적용한다 — 선행 단계가 ✅인데 그 산출물 파일이 없으면, 다음 단계를 호출하기 전에 먼저 이 repair 절차부터 수행한다.
 
 ## 참고
 
-- 파이프라인 표·오케스트라 설계: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.1, §4(디렉터리 구조)
+- 파이프라인 표·오케스트라 설계: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §3.2, §4(디렉터리 구조)
 - status.md 형식: `templates/status_template.md`
-- 이 스킬은 절차 문서이며 TDD 대상이 아니다. 단계 스킬 10종의 산출물 품질은 각 스킬 자신의 "확정 체크리스트"가 담당하고, 이 스킬은 순서·선행 조건·재개 지점의 정확성만 책임진다.
+- 이 스킬은 절차 문서이며 TDD 대상이 아니다. 단계 스킬 11종의 산출물 품질은 각 스킬 자신의 "확정 체크리스트"가 담당하고, 이 스킬은 순서·선행 조건·재개 지점의 정확성만 책임진다.

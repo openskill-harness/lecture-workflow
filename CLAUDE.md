@@ -1,10 +1,10 @@
-# 강의 제작 하네스 v2 — 원고 단일 원천 10단계 파이프라인
+# 강의 제작 하네스 v2 — 원고 단일 원천 11단계 파이프라인
 
 ## 목표
 
 확정 원고(manuscript)를 단일 원천으로 삼아 실습 코드·스토리보드·PPT·판서·시뮬레이터·PPTX·PDF책을 차례로 파생하는 단일 파이프라인으로 개발자 강의를 제작한다. 라인(촬영/오프라인/온라인) 구분과 승인 게이트는 폐기하고, 단계별 확정(생성 → 확인/수정 → 확정 → 다음 단계)으로 진행 상태를 관리한다.
 
-## 파이프라인 (10단계)
+## 파이프라인 (11단계)
 
 각 단계는 독립 스킬이다. 어느 단계에서든 세션을 끝내고 나중에 이어서 실행할 수 있다.
 
@@ -13,19 +13,22 @@
 | 1 | `course-outline` | `1.과정개요서.md` | 대화로 함께 작성 → 확정 |
 | 2 | `manuscript-draft` | `manuscripts/chNN_draft.md` | 생성 → 확인 |
 | 3 | `manuscript-final` | `manuscripts/chNN.md` | 티키타카 수정 → 확정 |
-| 4 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
-| 5 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
-| 6 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
-| 7 | `panseo-slide` | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
-| 8 | `edu-sim-builder` | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
-| 9 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
-| 10 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
+| 4 | `visual-assets` | `assets/images/chNN/`, `assets/diagrams/`, `assets/manifest.json` | 생성(지금/deferred) → 확인 |
+| 5 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
+| 6 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
+| 7 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
+| 8 | `panseo-slide` | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
+| 9 | `edu-sim-builder` | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
+| 10 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
+| 11 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
 
-2~10단계는 차시(chapter) 단위로 반복된다. 차시별로 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택). 오케스트라 스킬 `course-pipeline`은 `status.md`를 읽어 미완료 첫 단계부터 순서대로 스킬을 호출한다(오케스트라 없이 각 단계 스킬 단독 호출도 항상 가능).
+2~11단계는 차시(chapter) 단위로 반복된다. 차시별로 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택). 오케스트라 스킬 `course-pipeline`은 `status.md`를 읽어 미완료 첫 단계부터 순서대로 스킬을 호출한다(오케스트라 없이 각 단계 스킬 단독 호출도 항상 가능).
+
+**시각자산 하드 게이트**: `visual-assets`(4단계)가 ✅ 또는 명시적 `deferred`일 때만 5~11단계(코드~책)를 진행한다. 5~11단계 소비 스킬은 원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로를 읽어 자산을 임베드한다(상세: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3.0-A).
 
 보조 엔진 스킬(파이프라인 단계 아님, 각 단계 스킬이 필요 시 호출):
-- `image-gen` — GPT 이미지 생성·교체
-- `pub-d2-diagram` — D2 모노톤 도형 렌더
+- `image-gen` — GPT 이미지 생성·교체 (주 호출자: `visual-assets`)
+- `pub-d2-diagram` — D2 모노톤 도형 렌더 (주 호출자: `visual-assets`)
 - `panseo-board` — 빈 판서보드, 명시 요청 시만
 - `humanizer` — 책 문체 교정 (Task 13에서 이식 예정, book-build가 사용)
 
@@ -36,6 +39,7 @@
 | "과정 만들자", "개요서" | `course-outline` |
 | "원고 초안" | `manuscript-draft` |
 | "원고 수정", "원고 완성" | `manuscript-final` |
+| "시각자산", "이미지·다이어그램 생성" | `visual-assets` |
 | "실습 코드" | `practice-code` |
 | "스토리보드" | `storyboard` |
 | "PPT 프리뷰" | `ppt-preview` |
@@ -63,7 +67,8 @@ courses/{course-id}/
 ├── book/                      # chNN.pdf, 합본.pdf, 집필 중간 md
 ├── assets/
 │   ├── images/chNN/           # 생성 이미지
-│   └── diagrams/               # D2 소스 + 렌더 PNG
+│   ├── diagrams/               # D2 소스 + 렌더 PNG
+│   └── manifest.json           # 시각자산 SSOT (visual-assets 소유, 슬라이드→경로/해시/상태)
 └── code/chNN/                  # 차시별 실습 코드
 ```
 

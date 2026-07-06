@@ -1,15 +1,18 @@
 ---
 name: pptx-build
-description: 확정 원고(`manuscripts/chNN.md`)를 python-pptx로 16:9 PPTX(`pptx/chNN.pptx`)로 변환하고, 슬라이드마다 Narration을 발표자 노트에 삽입한다. "PPTX 만들어줘", "PPT 완성", "PPTX 빌드" 요청 시 사용. 파이프라인 9단계 — `scripts/build_pptx.py` CLI를 실행해 원고를 직접 파싱한다(HTML 프리뷰를 다시 파싱하지 않음). 확정 원고와 `--assets-root`로 지정한 과정 디렉터리의 `assets/` 하위 이미지 경로를 사용한다.
+description: 확정 원고(`manuscripts/chNN.md`)를 python-pptx로 16:9 PPTX(`pptx/chNN.pptx`)로 변환하고, 슬라이드마다 Narration을 발표자 노트에 삽입한다. "PPTX 만들어줘", "PPT 완성", "PPTX 빌드" 요청 시 사용. 파이프라인 10단계 — `scripts/build_pptx.py` CLI를 실행해 원고를 직접 파싱한다(HTML 프리뷰를 다시 파싱하지 않음). 확정 원고와 `--assets-root`로 지정한 과정 디렉터리의 `assets/` 하위 이미지 경로를 사용한다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 ---
 
 # pptx-build
 
-확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 문법)를 16:9 PPTX(`pptx/chNN.pptx`)로 변환하는 스킬이다. 파이프라인 9단계이며, 빌더는 `scripts/build_pptx.py`(python-pptx 1.0.2, Task 11 스파이크로 notes_slide 동작 검증됨)다.
+확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 문법)를 16:9 PPTX(`pptx/chNN.pptx`)로 변환하는 스킬이다. 파이프라인 10단계이며, 빌더는 `scripts/build_pptx.py`(python-pptx 1.0.2, Task 11 스파이크로 notes_slide 동작 검증됨)다.
+
+**시각자산(4단계)과의 관계(2026-07-06 개정)**: `scripts/build_pptx.py`의 파싱 로직은 바뀌지 않는다 — 원고의 `assets/...png|jpg|jpeg|webp` 경로 패턴(`IMG_PATH_RE`)을 그대로 잡는다. `visual-assets` 단계 완료 후 원고 Visual asset 필드에 병기된 자산 경로(`→ 생성됨:`/`→ 렌더됨:` 다음 줄의 `assets/...` 경로)가 그대로 이 정규식에 매치되므로, 이 스킬은 원고에 이미 병기된 경로를 그대로 사용하기만 하면 된다(별도 manifest 조회 로직 추가 없음).
 
 ## 전제
 
 - `courses/{course-id}/status.md`의 해당 차시 `원고확정`이 ✅여야 한다. 아니면 사용자에게 알리고 중단한다.
+- **하드 게이트**: `시각자산`이 ✅도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 사용자에게 알리고 중단한다 — 먼저 `visual-assets` 스킬로 완료(또는 명시적 보류)해야 한다.
 - `manuscripts/chNN.md`가 존재해야 한다.
 
 ## 핵심 인터페이스 (고정 — 재현성을 위해 변경 시 이 문서와 브리프를 함께 갱신)
@@ -61,5 +64,5 @@ python -c "from pptx import Presentation; prs = Presentation('courses/{course-id
 
 ## 참고
 
-- 빌더는 `ppt_previews/chNN.html`(6단계 산출물)을 소비하지 않는다 — 원고(`manuscripts/chNN.md`)를 직접 파싱한다. HTML 프리뷰는 사람이 보는 미리보기이고, PPTX는 원고 기준의 별도 빌드다.
-- D2 다이어그램을 실제 이미지로 슬라이드에 넣으려면 먼저 `pub-d2-diagram` 스킬로 렌더(svg/png)한 뒤, 원고의 Visual asset 필드에 렌더 결과 png/jpg 경로를 병기해야 이 빌더가 인식한다.
+- 빌더는 `ppt_previews/chNN.html`(7단계 산출물)을 소비하지 않는다 — 원고(`manuscripts/chNN.md`)를 직접 파싱한다. HTML 프리뷰는 사람이 보는 미리보기이고, PPTX는 원고 기준의 별도 빌드다.
+- D2 다이어그램을 실제 이미지로 슬라이드에 넣으려면 먼저 `pub-d2-diagram` 스킬로 렌더(svg/png)한 뒤, 원고의 Visual asset 필드에 렌더 결과 png/jpg 경로를 병기해야 이 빌더가 인식한다. 이 병기는 이제 `visual-assets`(4단계)가 수행한다(§ 전제 참조).

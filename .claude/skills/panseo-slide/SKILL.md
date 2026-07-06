@@ -5,11 +5,15 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 # panseo-slide
 
-파이프라인 7단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표).
-확정 원고 `manuscripts/chNN.md`(3단계) 또는 PPT 프리뷰 `ppt_previews/chNN.html`(6단계)을 입력으로
+파이프라인 8단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표).
+확정 원고 `manuscripts/chNN.md`(3단계) 또는 PPT 프리뷰 `ppt_previews/chNN.html`(7단계)을 입력으로
 받아, 판서 엔진이 내장된 강의 슬라이드 `panseo/chNN.html`과 판서대본 `panseo/chNN_대본.md`를
 만든다. 이 스킬은 하네스의 **판서 엔진 소유 스킬**이다 — 엔진(펜/모눈/선택이동/지우개/판서모드
 전환/전체화면)의 요구 명세는 `reference/engine.md`, 소유 템플릿은 `template/`에 있다.
+
+**시각자산(4단계)과의 관계**: 이 스킬은 `assets/manifest.json`을 직접 읽지 않는다 — 그대로 모드는
+`ppt_previews/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
+그대로 이식하므로 간접 소비다. 요약 모드도 원고를 참고하되 이미지 삽입은 하지 않는다(저밀도 요약 취지).
 
 ## 산출물 (항상 2개)
 

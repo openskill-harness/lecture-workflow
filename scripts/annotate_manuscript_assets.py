@@ -1,10 +1,10 @@
 """원고 Visual asset 필드에 manifest의 확정 자산 경로를 병기(주석).
 
-visual-assets 스테이지의 일부. manifest.json에서 슬라이드별 present 자산을 읽어,
-원고(manuscripts/chNN.md)의 해당 `**Visual asset**` 블록 끝에
-`→ 생성됨: <path>`(이미지) / `→ 렌더됨: <path>`(D2) 한 줄을 삽입한다.
-- 멱등(idempotent): 이미 같은 경로가 병기돼 있으면 건너뛴다.
-- manifest가 SSOT이고 이 주석은 사람이 읽는 보조 표기(+ build_pptx의 IMG_PATH_RE가 잡는 용도).
+visual-assets 스테이지의 일부. manifest.json에서 슬라이드별 주 시각자료(primary)를 읽어,
+원고(manuscripts/chNN.md)의 해당 `**Visual asset**` 블록에서 기존 병기 라인을 모두 제거한 뒤
+primary 자산 한 줄만 다시 넣는다: `→ 생성됨: <path>`(이미지 primary) / `→ 렌더됨: <path>`(D2 primary).
+- strip-and-replace: 재생성으로 primary가 바뀌어도 stale 병기가 남지 않고 항상 primary 하나만 유지된다.
+- manifest가 SSOT이고 이 주석은 사람이 읽는 보조 표기(+ build_pptx가 원고 첫 자산 경로=primary를 잡는 용도).
 
 사용:
   python scripts/annotate_manuscript_assets.py <course_dir> <chNN>

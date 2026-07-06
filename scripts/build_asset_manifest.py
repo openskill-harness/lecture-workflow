@@ -4,13 +4,17 @@
 실제 생성된 자산 파일(assets/images/chNN/, assets/diagrams/)과 대조해
 courses/{id}/assets/manifest.json 을 만든다.
 
+주 시각자료(primary): 기본은 GPT 이미지. 원고 Visual asset에 `주 시각자료: D2` 마커가 있거나
+이미지 프롬프트가 없으면 D2가 primary. image/d2 블록 모두 명시 `primary`(bool)를 갖는다.
+
 manifest 스키마(슬라이드별):
   {
     "slide": 5,
-    "image": {"path": "assets/images/ch01/slide05.png", "prompt_hash": "...", "status": "present|missing"},
-    "d2":    {"path": "assets/diagrams/ch01-slide05-http.png", "d2_hash": "...", "status": "present|missing"}
+    "image": {"path": "assets/images/ch01/slide05.png", "prompt_hash": "...", "status": "present|deferred|missing", "primary": true},
+    "d2":    {"path": "assets/diagrams/ch01-slide05-http.png", "d2_hash": "...", "status": "present|deferred|missing", "primary": false}
   }
-status(자산 단계 전체): present 수 / 예상 수 로 present|partial|missing 판정.
+status(이미지): 파일 present → present / primary 아니거나 `이미지 보류` 마커면 deferred / 그 외 missing.
+status(자산 단계 전체): primary 자산이 present·deferred인 슬라이드 수 / 예상 수 로 present|partial|missing 판정.
 prompt_hash/d2_hash = 원고의 해당 소스 텍스트 SHA1 앞 12자 → 원고 변경 시 stale 감지에 사용.
 
 사용:

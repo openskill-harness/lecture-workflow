@@ -28,7 +28,7 @@
 
 보조 엔진 스킬(파이프라인 단계 아님, 각 단계 스킬이 필요 시 호출):
 - `image-gen` — GPT 이미지 생성·교체 (주 호출자: `visual-assets`)
-- `pub-d2-diagram` — D2 모노톤 도형 렌더 (주 호출자: `visual-assets`)
+- `pub-d2-diagram` — D2 모노톤 도형 렌더 (opt-in 폴백 엔진 — 기본 시각자산은 GPT 이미지, 원고에 `주 시각자료: D2` 마커가 있는 슬라이드에서만 `visual-assets`가 호출)
 - `panseo-board` — 빈 판서보드, 명시 요청 시만
 - `humanizer` — 책 문체 교정 (Task 13에서 이식 예정, book-build가 사용)
 

@@ -54,6 +54,8 @@ description: 확정 원고(`manuscripts/chNN.md`)의 슬라이드를 1:1 카드�
 - (3) placeholder: `slide-preview` 안에 `--line` 테두리의 placeholder 박스를 두고, `deferred`/`missing`이면 원고의 `GPT image prompt:`(또는 `Comic panel prompt:`)/D2 소스 원문을, 재현이 어려운 D2는 골든 Slide 5·8처럼 `.flow`/`.node`/`.arrow`로 흐름을 간단히 재현하거나 `<pre class="asset-code">`로 노출한다(골든 그대로). 실제 픽셀 이미지를 대신 만들지 않는다.
 - 화면 캡처 계획(`Screenshot plan:`)뿐이고 manifest에도 항목이 없으면 캡처 대상 목록을 placeholder 텍스트로 보여준다.
 
+**자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+
 **자산 임베드 안전 여백 (2026-07-06 개정)**: 임베드된 이미지/D2가 `.slide-preview` 셀 가장자리에 닿지 않게, 이미지 전용 셀렉터 `.slide-preview > img`에만 `box-sizing: border-box; padding: clamp(12px, 4%, 32px);`를 적용한다(`object-fit: contain`은 기존 규칙 유지). **`.slide-preview` 자체나 `.flow`/`pre`/`.split` 등 비이미지 위젯에는 padding을 주지 않는다** — 그 컨테이너 안에는 이미지 외에도 순서도·코드·비교 패널이 들어가므로 전역 padding은 레이아웃을 깬다. `%` 단독 padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거: `docs/proposals/2026-07-06_asset-embed-safe-margin.md`(제안 B), codex 조건 2: `docs/reviews/2026-07-06_asset-embed-margin-codex-review.md`.
 
 ### 4. 자립성 검증

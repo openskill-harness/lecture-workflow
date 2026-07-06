@@ -15,6 +15,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 `ppt_previews/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
 그대로 이식하므로 간접 소비다. 요약 모드도 원고를 참고하되 이미지 삽입은 하지 않는다(저밀도 요약 취지).
 
+**자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+
 ## 산출물 (항상 2개)
 
 - `panseo/chNN.html` — 단일 파일. 판서 기능이 내장된 강의 슬라이드. 펜·터치 기기 브라우저에서

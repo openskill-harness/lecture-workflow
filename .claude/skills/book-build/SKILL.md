@@ -35,6 +35,8 @@ description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실�
 - 캐릭터 등장 규칙(2개 챕터 연속 부재 금지)을 지킨다.
 - **자산 해석 규칙(필수, 2026-07-06 개정)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `assets/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `image.status == "present"`이면 `image.path`, (2) 아니고 `d2.status == "present"`이면 `d2.path`, (3) 둘 다 `present`가 아니면(`deferred`/`missing`) 그 장면은 삽화 없이 텍스트만으로 쓴다. 실사용 경로는 `book/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 
+- **자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+
 ### 3. humanizer 패스
 
 `book/chNN_원고.md` 작성 직후 **humanizer 스킬**을 호출해 AI 문체 24패턴(쉼표 과다, 어색한 띄어쓰기, AI 선호 어휘, 대명사·복수형 과다, 구조적 단조로움 등)을 교정한다. 교정 결과로 `book/chNN_원고.md`를 갱신한다.

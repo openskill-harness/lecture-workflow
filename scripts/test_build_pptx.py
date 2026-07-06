@@ -145,3 +145,77 @@ def test_slide_and_field_markers_inside_code_fence_are_ignored():
     assert "## Slide 99." in slides[0]["code"]
     assert slides[0]["narration"] == "진짜 나레이션입니다."
     assert slides[1]["narration"] == "두 번째 나레이션입니다."
+
+
+# --- 안전 여백(fit-in-box) 회귀 테스트 (2026-07-06) ---
+def _make_img(tmp_path, name, w, h):
+    from PIL import Image
+    p = tmp_path / name
+    Image.new("RGB", (w, h), "white").save(p)
+    return p
+
+
+def _manuscript_with_image(rel_path):
+    import textwrap
+    return textwrap.dedent(f"""\
+        # 테스트
+
+        ## Slide 1. 이미지
+        **Screen**
+        - 제목: 이미지 슬라이드
+        **Visual asset**
+        - GPT image prompt: `x`
+        - → 생성됨: {rel_path}
+        **Narration**
+        - 노트.
+        """)
+
+
+def _picture_bounds(pptx_path):
+    from pptx import Presentation
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    prs = Presentation(str(pptx_path))
+    sw, sh = prs.slide_width, prs.slide_height
+    pics = []
+    for s in prs.slides:
+        for sh_ in s.shapes:
+            if sh_.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                pics.append((sh_.left, sh_.top, sh_.width, sh_.height))
+    return sw, sh, pics
+
+
+def test_ultra_tall_image_stays_in_slide(tmp_path):
+    """초세로 이미지(100x2000)가 슬라이드 경계를 넘지 않는다."""
+    (tmp_path / "assets" / "images" / "ch01").mkdir(parents=True)
+    _make_img(tmp_path, "assets/images/ch01/slide01.png", 100, 2000)
+    out = tmp_path / "out.pptx"
+    build_pptx(_manuscript_with_image("assets/images/ch01/slide01.png"), str(out), assets_root=str(tmp_path))
+    sw, sh, pics = _picture_bounds(out)
+    assert len(pics) == 1
+    left, top, w, h = pics[0]
+    assert top + h <= sh, f"세로 오버플로: bottom={top+h} > slide={sh}"
+    assert left + w <= sw, f"가로 오버플로: right={left+w} > slide={sw}"
+
+
+def test_ultra_wide_image_stays_in_slide(tmp_path):
+    """초광폭 이미지(2000x100)가 슬라이드 경계를 넘지 않는다."""
+    (tmp_path / "assets" / "images" / "ch01").mkdir(parents=True)
+    _make_img(tmp_path, "assets/images/ch01/slide01.png", 2000, 100)
+    out = tmp_path / "out.pptx"
+    build_pptx(_manuscript_with_image("assets/images/ch01/slide01.png"), str(out), assets_root=str(tmp_path))
+    sw, sh, pics = _picture_bounds(out)
+    left, top, w, h = pics[0]
+    assert top + h <= sh and left + w <= sw
+
+
+def test_image_leaves_margin_from_slide_edges(tmp_path):
+    """이미지가 슬라이드 가장자리에 닿지 않고 여백을 남긴다."""
+    (tmp_path / "assets" / "images" / "ch01").mkdir(parents=True)
+    _make_img(tmp_path, "assets/images/ch01/slide01.png", 800, 600)
+    out = tmp_path / "out.pptx"
+    build_pptx(_manuscript_with_image("assets/images/ch01/slide01.png"), str(out), assets_root=str(tmp_path))
+    sw, sh, pics = _picture_bounds(out)
+    left, top, w, h = pics[0]
+    # 우측·하단 가장자리에서 최소 여백(0.2in = 182880 EMU)
+    assert sw - (left + w) >= 182880, "우측 여백 부족"
+    assert sh - (top + h) >= 182880, "하단 여백 부족"

@@ -29,25 +29,23 @@ def annotate(course_dir, ch):
     field_re = re.compile(r"^\*\*(Screen|Easy analogy|Practical case|Visual asset|Source|Narration|Practice|Assessment)\*\*")
 
     def va_annotations(slide):
-        """이 슬라이드에 병기할 라인들(present 자산만)."""
+        """이 슬라이드에 병기할 라인 — 주 시각자료(primary)가 present인 경우 그 한 줄만."""
         anns = []
         entry = by_slide.get(slide, {})
         img = entry.get("image", {})
         d2 = entry.get("d2", {})
-        if img.get("status") == "present":
+        if img.get("primary") and img.get("status") == "present":
             anns.append(f"- → 생성됨: {img['path']}")
-        if d2.get("status") == "present":
+        elif d2.get("primary") and d2.get("status") == "present":
             anns.append(f"- → 렌더됨: {d2['path']}")
         return anns
 
+    ANN_RE = re.compile(r"^\s*-\s*→\s*(생성됨|렌더됨)\s*[:：]")
+
     def flush_va(buffer, slide):
-        """Visual asset 블록 buffer 끝에 주석을 삽입(중복 제거)."""
-        anns = va_annotations(slide)
-        existing = "\n".join(buffer)
-        for a in anns:
-            path = a.split(": ", 1)[1]
-            if path not in existing:
-                buffer.append(a)
+        """Visual asset 블록에서 기존 자산 병기 라인을 모두 제거하고 primary 병기만 다시 넣는다."""
+        buffer = [ln for ln in buffer if not ANN_RE.match(ln)]
+        buffer.extend(va_annotations(slide))
         return buffer
 
     va_buffer = []

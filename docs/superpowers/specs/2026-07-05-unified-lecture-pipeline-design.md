@@ -57,6 +57,18 @@
 - 결과: 이후 5~11단계(코드/스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)는 **원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로**를 읽어 자산을 임베드한다(소비 계약, 각 스킬 SKILL.md 참조) — 재동기화 폭포(자산을 나중에 만들어 소비 산출물을 전부 다시 만드는 문제)를 제거하기 위한 핵심 변경.
 - 코드/캡처형 자산(화면 캡처 등 실행 결과가 필요한 자산)은 예외적으로 `practice-code`(5단계) 이후 finalize substage에서 처리한다(image/D2는 원고확정 직후 착수).
 
+#### 자산 임베드 안전 여백 규약 (canonical — 2026-07-06)
+
+시각자산(image/D2)이 소비 산출물(PPTX·스토리보드·PPT프리뷰·판서·책)에 임베드될 때, **컨테이너를 꽉 채우지 않고 여백을 남긴다(fit-in-box).** 자산은 지정 박스 안에 종횡비를 유지한 채(width·height 둘 다 상한) 들어가고 가장자리에 닿지 않는다 — 세로형/광폭 자산이 슬라이드·페이지를 벗어나는 오버플로를 원천 차단한다.
+
+- **정책 상수(canonical)**: `EMBED_SAFE_MARGIN_RATIO = 0.05`.
+- **책임은 소비 스킬에 있다**(자산 생성 스킬 `visual-assets`가 아니라 `storyboard`/`ppt-preview`/`panseo-slide`/`pptx-build`/`book-build`). target별 구현 상수로 반영:
+  - `pptx-build`: `scripts/build_pptx.py`의 `_fit_in_box()` + `PPTX_EMBED_MARGIN`(슬라이드 가장자리 0.5" 여백, `scale=min(box_w/w, box_h/h)` 중앙정렬).
+  - HTML(`storyboard`/`ppt-preview`/`panseo-slide`): 이미지 전용 셀렉터(`.ppt-media > img`, `.slide-preview > img`)에 `box-sizing:border-box; padding: clamp(...); object-fit: contain` — 비이미지 요소(flow/코드블록/split)엔 적용하지 않는다.
+  - `book-build`: `book_base.typ`의 `#let embed-margin-ratio = 0.05` + 이미지 `fit:"contain"` + 본문 높이 기반 max-height clamp(초세로가 페이지를 넘지 않게).
+- fit은 오버플로만 막는다 — 초세로/광폭이 unreadable할 만큼 작아지면 pub-d2-diagram의 종횡비(≤3:1) 경고와 병행해 자산 재배치를 유도한다.
+- 근거: `docs/proposals/2026-07-06_asset-embed-safe-margin.md`, codex 검증 `docs/reviews/2026-07-06_asset-embed-margin-codex-review.md`.
+
 ### 3.1 실습 코드 단계 (`practice-code`)
 
 확정 원고의 `Practice` 필드를 근거로 차시별 실습 코드를 `code/chNN/`에 생성하고 **실제로 실행해 검증**한다(빌드/실행/HTTP 호출 등, 결과는 검증 로그로 남김). 검증 중 원고의 실습 지시와 코드가 어긋나면 원고를 역수정(사용자 확인 후)한다. 이후 단계(스토리보드/PPT/책)의 코드 블록은 이 검증된 코드에서 발췌한다.

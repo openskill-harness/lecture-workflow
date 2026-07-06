@@ -1,7 +1,7 @@
 """build_pptx 파서/빌더 테스트 (pytest)."""
 import textwrap
 from pptx import Presentation
-from build_pptx import parse_manuscript, build_pptx
+from build_pptx import parse_manuscript, build_pptx, build_pptx_from_images
 
 SAMPLE = textwrap.dedent("""\
     # 1차시 원고: 테스트
@@ -31,8 +31,9 @@ SAMPLE = textwrap.dedent("""\
 def test_parse_slide_count_and_titles():
     slides = parse_manuscript(SAMPLE)
     assert len(slides) == 2
-    assert slides[0]["title"] == "표지"
-    assert slides[1]["title"] == "본문"
+    # 표시 제목은 슬라이드 헤더 단어가 아니라 Screen의 `- 제목:` 값을 쓴다.
+    assert slides[0]["title"] == "테스트 강의"
+    assert slides[1]["title"] == "본문 슬라이드"
 
 def test_parse_narration_and_screen():
     slides = parse_manuscript(SAMPLE)
@@ -145,6 +146,151 @@ def test_slide_and_field_markers_inside_code_fence_are_ignored():
     assert "## Slide 99." in slides[0]["code"]
     assert slides[0]["narration"] == "진짜 나레이션입니다."
     assert slides[1]["narration"] == "두 번째 나레이션입니다."
+
+
+# --- Screen 필드 매핑 회귀 테스트 (2026-07-06): 제목=제목라벨, 본문=내용항목만 ---
+FIELD_MAPPING_SAMPLE = textwrap.dedent("""\
+    # 1차시 원고: 테스트
+
+    ## Slide 1. 표지
+    **Screen**
+    - 관련 학습목표: 표지
+    - 제목: 서버 프로그램과 웹 애플리케이션 실행 환경 이해
+    - 부제: 처음부터 보기
+    - 핵심 정의: 웹 애플리케이션은 요청을 처리한다.
+    - 화면: 템플릿 표지 레이아웃 사용
+    **Narration**
+    - 나레이션.
+
+    ## Slide 2. 본문
+    **Screen**
+    - 학습목표: 서버의 역할을 설명한다.
+    - 제목: 서버 프로그램의 기본 역할
+    - 짧은 문구:
+      - 요청을 받는다
+      - 필요한 처리를 한다
+      - 응답을 돌려준다
+    - 핵심 정의: 서버 프로그램은 요청을 처리한다.
+    - 화면: 손님 주방 흐름 일러스트
+    **Narration**
+    - 나레이션.
+
+    ## Slide 3. 목표
+    **Screen**
+    - 제목: 오늘의 학습목표
+    - 학습목표:
+      1. 첫째 목표
+      2. 둘째 목표
+    - 학습내용:
+      1. 첫째 내용
+    - 핵심 정의: 정의 문장.
+    **Narration**
+    - 나레이션.
+    """)
+
+
+def test_title_comes_from_jemok_not_header():
+    slides = parse_manuscript(FIELD_MAPPING_SAMPLE)
+    assert slides[0]["title"] == "서버 프로그램과 웹 애플리케이션 실행 환경 이해"
+    assert slides[1]["title"] == "서버 프로그램의 기본 역할"
+
+
+def test_body_lines_exclude_metadata_labels():
+    slides = parse_manuscript(FIELD_MAPPING_SAMPLE)
+    body = slides[0]["body_lines"]
+    joined = " ".join(body)
+    assert "관련 학습목표" not in joined
+    assert "핵심 정의" not in joined
+    assert "화면" not in joined
+    assert "제목" not in joined
+    # 내용 리스트가 없는 표지는 부제로 폴백한다.
+    assert any("처음부터 보기" in b for b in body)
+
+
+def test_body_lines_use_short_phrase_items():
+    slides = parse_manuscript(FIELD_MAPPING_SAMPLE)
+    assert slides[1]["body_lines"] == ["요청을 받는다", "필요한 처리를 한다", "응답을 돌려준다"]
+
+
+def test_body_lines_prefer_objective_list_over_content_list():
+    slides = parse_manuscript(FIELD_MAPPING_SAMPLE)
+    assert slides[2]["body_lines"] == ["첫째 목표", "둘째 목표"]
+
+
+def test_build_body_excludes_metadata(tmp_path):
+    out = tmp_path / "out.pptx"
+    build_pptx(FIELD_MAPPING_SAMPLE, str(out), assets_root=str(tmp_path))
+    prs = Presentation(str(out))
+    # 슬라이드1 제목 placeholder = 제목 값
+    assert prs.slides[0].shapes.title.text == "서버 프로그램과 웹 애플리케이션 실행 환경 이해"
+    # 어떤 텍스트 상자에도 메타 라벨이 새어 나오지 않는다
+    for slide in prs.slides:
+        for sh in slide.shapes:
+            if sh.has_text_frame and sh is not slide.shapes.title:
+                txt = sh.text_frame.text
+                assert "관련 학습목표" not in txt
+                assert "핵심 정의" not in txt
+                assert "화면:" not in txt
+
+
+# --- 이미지 모드 회귀 테스트 (2026-07-06): preview 렌더 PNG를 전체 배경으로 ---
+IMG_MODE_SAMPLE = textwrap.dedent("""\
+    # 1차시 원고: 테스트
+
+    ## Slide 1. 표지
+    **Screen**
+    - 제목: 첫 장
+    **Narration**
+    - 첫 번째 나레이션.
+
+    ## Slide 2. 본문
+    **Screen**
+    - 제목: 둘째 장
+    **Narration**
+    - 두 번째 나레이션.
+    """)
+
+
+def test_image_mode_full_bleed_and_notes(tmp_path):
+    from PIL import Image
+    img_dir = tmp_path / "render"
+    img_dir.mkdir()
+    for n in (1, 2):
+        Image.new("RGB", (1280, 720), "white").save(img_dir / f"slide{n:02d}.png")
+    out = tmp_path / "out.pptx"
+    n = build_pptx_from_images(IMG_MODE_SAMPLE, str(img_dir), str(out))
+    assert n == 2
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    prs = Presentation(str(out))
+    sw, sh = prs.slide_width, prs.slide_height
+    assert len(prs.slides) == 2
+    for slide in prs.slides:
+        pics = [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+        assert len(pics) == 1
+        p = pics[0]
+        # 전체 배경(풀블리드): 좌상단 0,0 + 슬라이드 전체 크기
+        assert (p.left, p.top, p.width, p.height) == (0, 0, sw, sh)
+    # 나레이션이 노트에 들어간다
+    assert prs.slides[0].notes_slide.notes_text_frame.text == "첫 번째 나레이션."
+    assert prs.slides[1].notes_slide.notes_text_frame.text == "두 번째 나레이션."
+
+
+def test_image_mode_count_mismatch_hard_fails(tmp_path):
+    """렌더 이미지 수 != 원고 슬라이드 수면 기본적으로 빌드 실패(계약 강제)."""
+    import pytest
+    from PIL import Image
+    img_dir = tmp_path / "render"
+    img_dir.mkdir()
+    # 원고는 2슬라이드인데 이미지는 1장 → 불일치
+    Image.new("RGB", (1280, 720), "white").save(img_dir / "slide01.png")
+    out = tmp_path / "out.pptx"
+    with pytest.raises(SystemExit):
+        build_pptx_from_images(IMG_MODE_SAMPLE, str(img_dir), str(out))
+    assert not out.exists()
+    # 명시 완화 시엔 진행
+    n = build_pptx_from_images(IMG_MODE_SAMPLE, str(img_dir), str(out), allow_count_mismatch=True)
+    assert n == 1
+    assert out.exists()
 
 
 # --- 안전 여백(fit-in-box) 회귀 테스트 (2026-07-06) ---

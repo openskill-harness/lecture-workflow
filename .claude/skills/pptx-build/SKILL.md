@@ -1,6 +1,6 @@
 ---
 name: pptx-build
-description: 확정 원고(`manuscripts/chNN.md`)를 python-pptx로 16:9 PPTX(`pptx/chNN.pptx`)로 변환하고, 슬라이드마다 Narration을 발표자 노트에 삽입한다. "PPTX 만들어줘", "PPT 완성", "PPTX 빌드" 요청 시 사용. 파이프라인 10단계 — `scripts/build_pptx.py` CLI를 실행해 원고를 직접 파싱한다(HTML 프리뷰를 다시 파싱하지 않음). 확정 원고와 `--assets-root`로 지정한 과정 디렉터리의 `assets/` 하위 이미지 경로를 사용한다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
+description: 확정 원고(`manuscripts/chNN.md`)를 16:9 PPTX(`pptx/chNN.pptx`)로 변환하고, 슬라이드마다 Narration을 발표자 노트에 삽입한다. "PPTX 만들어줘", "PPT 완성", "PPTX 빌드" 요청 시 사용. 파이프라인 10단계 — 기본은 **이미지 모드**: 승인된 `ppt_previews/chNN.html`을 헤드리스 Chromium으로 렌더한 PNG를 각 장의 전체 배경으로 넣어 미리보기와 픽셀 동일하게 만든다. 대안 **네이티브 모드**(`--from-images` 없이)만 원고를 python-pptx로 직접 파싱한다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 ---
 
 # pptx-build
@@ -95,5 +95,5 @@ python -c "from pptx import Presentation; prs = Presentation('courses/{course-id
 
 ## 참고
 
-- 빌더는 `ppt_previews/chNN.html`(7단계 산출물)을 소비하지 않는다 — 원고(`manuscripts/chNN.md`)를 직접 파싱한다. HTML 프리뷰는 사람이 보는 미리보기이고, PPTX는 원고 기준의 별도 빌드다.
+- **이미지 모드(기본)**는 `ppt_previews/chNN.html`(7단계 산출물)을 렌더해 소비한다 — 발표자 노트만 원고 Narration에서 가져온다. **네이티브 모드(대안)**만 원고(`manuscripts/chNN.md`)를 직접 파싱해 편집 가능한 슬라이드를 조립한다. 어느 모드든 슬라이드 수는 원고 `## Slide` 수와 일치해야 하며, 이미지 모드는 불일치 시 빌드가 실패한다(`--allow-count-mismatch`로만 완화).
 - D2 다이어그램을 실제 이미지로 슬라이드에 넣으려면 먼저 `pub-d2-diagram` 스킬로 렌더(svg/png)한 뒤, 원고의 Visual asset 필드에 렌더 결과 png/jpg 경로를 병기해야 이 빌더가 인식한다. 이 병기는 이제 `visual-assets`(4단계)가 수행한다(§ 전제 참조).

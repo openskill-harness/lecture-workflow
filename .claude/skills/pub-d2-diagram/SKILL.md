@@ -30,9 +30,9 @@ D2 언어로 다이어그램을 작성하고, O'Reilly 모노톤 스타일로 PN
 ### 공통 스타일
 
 - `border-radius: 8` — 모든 사각형 노드
-- `direction: right` — 가로 흐름 기본 (세로 금지)
+- `direction`: **`right`(가로) 또는 `down`(세로) 중 다이어그램에 맞게 명시**. 노드가 3개 이하로 갈라지는 분기형은 `right`, 4개 이상 선형(체인)은 `down`이 종횡비(≤3:1)에 유리하다. dagre는 어느 방향이든 라벨을 깨끗이 배치한다.
 - 화살표 색상: `style.stroke: "#222222"` (인라인 지정)
-- 레이아웃: ELK (`--layout elk`)
+- **레이아웃: dagre (`--layout dagre`)** — ELK 금지. ELK는 엣지 라벨을 연결선/노드 위에 공간 예약 없이 얹어 **라벨-선 겹침·라벨-노드 겹침·글자가 도형 밖으로 넘침**을 유발한다. dagre는 엣지 라벨을 공간 예약 요소(가상 노드)로 취급해 라벨이 선/노드와 겹치지 않고, 노드에 텍스트 여백이 확보된다. (디버그 근거: `docs/reviews/2026-07-06_d2-layout-debug.md`)
 
 ### 01번 전용 (classes 시스템)
 
@@ -54,8 +54,8 @@ classes: {
 D2 → SVG → 색상 치환(흑백) → PNG
 
 ```bash
-# 1. D2 → SVG (ELK 레이아웃, 테마 없음)
-d2 --layout elk --pad 40 input.d2 output.svg
+# 1. D2 → SVG (dagre 레이아웃, 테마 없음)
+d2 --layout dagre --pad 40 input.d2 output.svg
 
 # 2. 테마 잔여 색상 → 흑백 치환
 sed -e 's/#0D32B2/#222222/g' \
@@ -108,15 +108,15 @@ cd projects/사내AI비서_v2/assets/diagrams
 
 ---
 ## 하네스 통합 (강의 제작 하네스 전용, v1.10)
-- 원고 북 빌드의 도형 렌더는 `scripts/render_md_diagrams.py <원고.md> <images_dir> <접두사>` 사용 (ELK + 모노톤 치환, SVG까지 — 원고 계약이 SVG 병기라 PNG/rsvg-convert 불사용).
-- 원고 d2 블록은 위 "디자인 규칙"(3색 모노톤·classes·direction: right)을 따른다 — script-agent 계약은 lecture-harness content-rules (f) 참조.
+- 원고 북 빌드의 도형 렌더는 `scripts/render_md_diagrams.py <원고.md> <images_dir> <접두사>` 사용 (dagre + 모노톤 치환, SVG까지 — 원고 계약이 SVG 병기라 PNG/rsvg-convert 불사용).
+- 원고 d2 블록은 위 "디자인 규칙"(3색 모노톤·classes·direction right|down)을 따른다 — script-agent 계약은 lecture-harness content-rules (f) 참조.
 - Windows: d2는 `C:\Program Files\D2\d2.exe` (brew 지침은 macOS용).
 
 ### Windows 렌더 — PNG 변환 (rsvg-convert 부재 시 정식 경로)
 
 Windows에는 `rsvg-convert`가 없다. `visual-assets`/`pub-d2-diagram` 파이프라인이 PNG(슬라이드·책 임베드용)를 필요로 할 때는 아래 **headless Chromium(playwright) 스크린샷 폴백을 즉흥 수단이 아니라 정식 경로로** 쓴다(`ch01-d2-manifest.md` 파일럿에서 실제로 검증된 방식과 동일).
 
-1. `d2.exe --layout elk --pad 40 input.d2 output.svg` (위 "빌드 파이프라인" 1단계와 동일)
+1. `d2.exe --layout dagre --pad 40 input.d2 output.svg` (위 "빌드 파이프라인" 1단계와 동일)
 2. sed 규칙(위 §"빌드 파이프라인" 2단계 — 0D32B2→222222, F7F8FE/EDF0FD/E3E9FD/EEF1F8→FFFFFF, `streaks-*` fill→FFFFFF)을 SVG에 그대로 적용.
 3. **PNG 변환(고정 값)**: playwright(Python 또는 Node) `chromium.launch()` → `page.goto(f"file:///{svg_path}")` (또는 SVG를 `<img>`로 감싼 임시 HTML을 만들어 로드) → `page.screenshot(path=out_png, omit_background=True)`.
    - **뷰포트**: SVG 자체의 `width`/`height`(또는 `viewBox`) 값을 그대로 뷰포트 크기로 설정한다(`page.set_viewport_size({"width": w, "height": h})`) — 임의 고정 해상도(예: 1920×1080)로 잘라내지 않는다.
@@ -127,7 +127,7 @@ Windows에는 `rsvg-convert`가 없다. `visual-assets`/`pub-d2-diagram` 파이�
 
 ### 종횡비 가이드 — 3:1 권장 (자동 재배치 아님)
 
-D2 다이어그램은 슬라이드(16:9)·책 페이지에 임베드되므로 **가로:세로 3:1 이내**를 권장한다. `direction: right`(가로 흐름) 기본값은 노드 수가 많아지면 가로로 계속 늘어나 극단적으로 납작해질 수 있다(파일럿에서 확인된 실패 사례: 일부 다이어그램이 ~9:1~10:1까지 늘어나 글자가 안 보임).
+D2 다이어그램은 슬라이드(16:9)·책 페이지에 임베드되므로 **가로:세로 3:1 이내**를 권장한다. `direction: right`(가로 흐름)는 노드 수가 많아지면 가로로 계속 늘어나 극단적으로 납작해질 수 있다(파일럿 실패 사례: 일부가 ~9:1~19:1까지 늘어나 글자가 안 보임). 선형(체인) 다이어그램은 `direction: down`으로 두면 세로로 흘러 종횡비가 개선된다 — dagre라 세로여도 라벨 겹침이 없다.
 
 - **hard fail이 아니라 warning + 수정 지침**이다 — 렌더 자체를 실패시키지 않는다. 자동 재배치는 하지 않는다(레이아웃 판단은 사람이 한다).
 - 렌더 후 SVG/PNG의 실제 너비/높이를 확인해 종횡비를 계산한다. 3:1을 넘으면 아래 중 하나로 원고 D2 소스를 고치도록 사용자에게 안내한다:

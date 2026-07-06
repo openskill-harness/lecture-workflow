@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""원고 md의 ```d2 블록 → ELK 레이아웃 + O'Reilly 모노톤 SVG (pub-d2-diagram 파이프라인)."""
+"""원고 md의 ```d2 블록 → dagre 레이아웃 + O'Reilly 모노톤 SVG (pub-d2-diagram 파이프라인).
+
+레이아웃 엔진: dagre. (ELK가 아니다 — ELK는 엣지 라벨을 연결선/노드 위에 공간 예약 없이
+얹어 라벨-선/라벨-노드 겹침을 유발한다. dagre는 엣지 라벨을 공간 예약 요소로 취급해
+설계상 겹치지 않는다. 근거: docs/reviews/2026-07-06_d2-layout-debug.md)
+"""
 import re, subprocess, sys, pathlib
 
 D2 = r"C:\Program Files\D2\d2.exe"
@@ -18,10 +23,12 @@ def main(md_path, img_dir, prefix):
     for i, b in enumerate(blocks, 1):
         if not b.strip():
             print(f"{prefix}-d{i}: FAIL 빈 d2 블록"); fails += 1; continue
-        # 스타일 가드 (strict — 위반은 실패, codex Task0 처방)
+        # 스타일 가드 (strict — 위반은 실패)
         viol = []
-        if "direction: right" not in b:
-            viol.append("direction: right 누락")
+        # direction은 명시하되 right/down 둘 다 허용. 선형(체인) 다이어그램은 down이
+        # 종횡비에 유리하고, dagre가 어느 방향이든 라벨을 깨끗이 배치한다.
+        if "direction: right" not in b and "direction: down" not in b:
+            viol.append("direction 선언 필요 (right 또는 down)")
         bad = [f for f in re.findall(r'fill:\s*"?([#\w]+)"?', b)
                if f.lower() not in ALLOWED_FILLS]
         if bad:
@@ -30,7 +37,7 @@ def main(md_path, img_dir, prefix):
             print(f"{prefix}-d{i}: FAIL " + "; ".join(viol)); fails += 1; continue
         d2f = img / f"{prefix}-d{i}.d2"; svgf = img / f"{prefix}-d{i}.svg"
         d2f.write_text(b, encoding="utf-8")
-        r = subprocess.run([D2, "--layout", "elk", "--pad", "40", str(d2f), str(svgf)],
+        r = subprocess.run([D2, "--layout", "dagre", "--pad", "40", str(d2f), str(svgf)],
                            capture_output=True, text=True)
         if r.returncode != 0:
             err = (r.stderr.strip().splitlines() or ["(stderr 없음)"])[-1]
@@ -42,7 +49,7 @@ def main(md_path, img_dir, prefix):
             svg = svg.replace(src, dst)
         svg = STREAKS.sub("fill:#FFFFFF", svg)
         svgf.write_text(svg, encoding="utf-8")
-        print(f"{prefix}-d{i}: OK (elk+mono)")
+        print(f"{prefix}-d{i}: OK (dagre+mono)")
     print(f"blocks={len(blocks)} fails={fails}")
     return 1 if fails else 0
 

@@ -127,268 +127,281 @@
   /* ===================== ppt-preview 슬라이드/캔버스 스타일 (그대로 모드 이식) ===================== */
   /* 원본: ppt_previews/ch01.html <style> — 페이지 레벨 규칙(*, body, header, h1, main)은 제외.
      :root 변수 6개(--ink/--muted/--line/--green/--blue/--soft)는 엔진과 충돌 방지를 위해
-     --ppt- 접두사로 리네임(선언부 + var() 참조부 + 슬라이드 인라인 style의 var() 참조부 모두). */
+     --ppt- 접두사로 리네임(선언부 + var() 참조부 모두). 2026-07-06 실자산 반영 재이식. */
     :root {
-      --ppt-ink: #17202a;
-      --ppt-muted: #5d6875;
-      --ppt-line: #d9dee7;
-      --ppt-green: #5aa05a;
-      --ppt-blue: #2f6fcb;
-      --ppt-soft: #f5f7fa;
-    }
-
-    
-
-    
-    .ppt-slide {
-      width: min(1120px, calc(100vw - 36px));
-    }
-    .ppt-canvas {
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #fff;
-      border: 1px solid #cdd5df;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 12px 28px rgba(28, 38, 54, .12);
-      padding: 42px 48px;
-      position: relative;
-    }
-    .lesson-label {
-      margin: 0 0 10px;
-      color: #3b6f43;
-      font-size: 16px;
-      font-weight: 700;
-    }
-    .ppt-canvas h2 {
-      margin: 0;
-      font-size: 34px;
-      line-height: 1.22;
-      letter-spacing: 0;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-    }
-    .ppt-two-col,
-    .ppt-code-layout {
-      display: grid;
-      grid-template-columns: .78fr 1.22fr;
-      gap: 32px;
-      height: calc(100% - 92px);
-      margin-top: 28px;
-      align-items: stretch;
-    }
-    .image-canvas .ppt-two-col {
-      grid-template-columns: .7fr 1.3fr;
-    }
-    .ppt-copy {
-      display: flex;
-      align-items: center;
-    }
-    .ppt-copy ul {
-      margin: 0;
-      padding-left: 24px;
-      font-size: 22px;
-      line-height: 1.44;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-    }
-    .ppt-copy li { margin: 0 0 10px; }
-    .ppt-media {
-      min-width: 0;
-      border: 1px solid var(--ppt-line);
-      border-radius: 8px;
-      background: #f8fafc;
-      overflow: hidden;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
-    }
-    .ppt-media img,
-    .cover-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      display: block;
-      background: #fff;
-    }
-    .cover-canvas {
-      display: grid;
-      grid-template-columns: .95fr 1.05fr;
-      gap: 34px;
-      align-items: center;
-      padding: 44px 52px;
-    }
-    .cover-text h2 {
-      font-size: 40px;
-      line-height: 1.2;
-      margin-bottom: 18px;
-      word-break: keep-all;
-      overflow-wrap: break-word;
-    }
-    .cover-text p:last-child {
-      font-size: 24px;
-      line-height: 1.45;
-      color: #3c4653;
-    }
-    .cover-image {
-      height: 100%;
-      border-radius: 10px;
-      overflow: hidden;
-      border: 1px solid var(--ppt-line);
-      background: #fff;
-    }
-    .code-canvas .ppt-code-layout {
-      grid-template-columns: .58fr 1.42fr;
-    }
-    .code-canvas .ppt-media {
-      align-items: stretch;
-    }
-    pre {
-      width: 100%;
-      margin: 0;
-      padding: 18px;
-      background: #101820;
-      color: #e8f2ff;
-      overflow: auto;
-      font-size: 15px;
-      line-height: 1.45;
-      font-family: Consolas, "Courier New", monospace;
-    }
-    code { font-family: Consolas, "Courier New", monospace; }
-    .flow {
-      width: 100%;
-      padding: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      background: linear-gradient(180deg, #fff, #f7f9fb);
-    }
-    .node {
-      min-width: 118px;
-      padding: 16px 18px;
-      border: 2px solid #111;
-      border-radius: 10px;
-      background: #fff;
-      text-align: center;
-      font-weight: 800;
-      font-size: 20px;
-      white-space: pre-line;
-    }
-    .node.input { background: #f0f0f0; }
-    .node.key {
-      border-width: 3px;
-      background: #f8f8f8;
-      clip-path: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
-      border-radius: 0;
-    }
-    .arrow {
-      font-size: 28px;
-      color: #222;
-      font-weight: 800;
-      align-self: center;
-    }
-    .split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      width: 100%;
-      padding: 24px;
-      align-items: stretch;
-    }
-    .panel {
-      border: 1px solid var(--ppt-line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 22px;
-    }
-    .panel h4 { margin: 0 0 16px; font-size: 24px; }
-    .panel p { margin: 8px 0; font-size: 21px; }
-    .old { border-top: 7px solid #8b96a5; }
-    .new { border-top: 7px solid var(--ppt-green); }
-    .ide {
-      width: 100%;
-      display: grid;
-      grid-template-columns: 230px 1fr;
-      background: #1f252d;
-      color: #dce6f2;
-      font-family: Consolas, "Courier New", monospace;
-      min-height: 100%;
-    }
-    .tree {
-      padding: 18px;
-      border-right: 1px solid #39424e;
-      background: #252c35;
-      font-size: 13px;
-      white-space: pre-line;
-    }
-    .editor { padding: 18px; min-width: 0; }
-    .editor .tab {
-      display: inline-block;
-      margin-bottom: 12px;
-      padding: 7px 12px;
-      border-radius: 6px 6px 0 0;
-      background: #344052;
-      color: #fff;
-      font-size: 13px;
-    }
-    .browser {
-      width: 100%;
-      background: #fff;
-      padding: 28px;
-    }
-    .bar {
-      height: 38px;
-      border: 1px solid #cfd6df;
-      border-radius: 19px;
-      display: flex;
-      align-items: center;
-      padding: 0 18px;
-      color: #344054;
-      background: #f7f9fc;
-      font-family: Consolas, "Courier New", monospace;
-    }
-    .result {
-      margin-top: 70px;
-      text-align: center;
-      font-size: 44px;
-      font-weight: 800;
-      color: #202b38;
-    }
-    .assessment-canvas,
-    .sources-canvas {
-      display: flex;
-      flex-direction: column;
-    }
-    .ppt-question,
-    .ppt-source-list {
-      margin-top: 28px;
-      flex: 1;
-      display: flex;
-      align-items: stretch;
-    }
-    .question {
-      padding: 26px;
-      width: 100%;
-      background: #fff;
-      border: 1px solid var(--ppt-line);
-      border-radius: 8px;
-    }
-    .question h4 {
-      margin: 0 0 20px;
-      font-size: 27px;
-      line-height: 1.38;
-    }
-    .choice {
-      margin: 11px 0;
-      padding: 13px 16px;
-      border: 1px solid var(--ppt-line);
-      border-radius: 8px;
-      background: #fafafa;
-      font-size: 22px;
-    }
-  
+          --ppt-ink: #17202a;
+          --ppt-muted: #5d6875;
+          --ppt-line: #d9dee7;
+          --ppt-green: #5aa05a;
+          --ppt-blue: #2f6fcb;
+          --ppt-soft: #f5f7fa;
+        }
+        .ppt-slide {
+          width: min(1120px, calc(100vw - 36px));
+        }
+        .ppt-canvas {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          background: #fff;
+          border: 1px solid #cdd5df;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 12px 28px rgba(28, 38, 54, .12);
+          padding: 42px 48px;
+          position: relative;
+        }
+        .lesson-label {
+          margin: 0 0 10px;
+          color: #3b6f43;
+          font-size: 16px;
+          font-weight: 700;
+        }
+        .ppt-canvas h2 {
+          margin: 0;
+          font-size: 34px;
+          line-height: 1.22;
+          letter-spacing: 0;
+          word-break: keep-all;
+          overflow-wrap: break-word;
+        }
+        .ppt-two-col,
+        .ppt-code-layout {
+          display: grid;
+          grid-template-columns: .78fr 1.22fr;
+          gap: 32px;
+          height: calc(100% - 92px);
+          margin-top: 28px;
+          align-items: stretch;
+        }
+        .image-canvas .ppt-two-col {
+          grid-template-columns: .7fr 1.3fr;
+        }
+        .ppt-copy {
+          display: flex;
+          align-items: center;
+        }
+        .ppt-copy ul {
+          margin: 0;
+          padding-left: 24px;
+          font-size: 22px;
+          line-height: 1.44;
+          word-break: keep-all;
+          overflow-wrap: break-word;
+        }
+        .ppt-copy li { margin: 0 0 8px; }
+        .ppt-media {
+          min-width: 0;
+          border: 1px solid var(--ppt-line);
+          border-radius: 8px;
+          background: #f8fafc;
+          overflow: hidden;
+          display: flex;
+          align-items: stretch;
+          justify-content: center;
+        }
+        .ppt-media img,
+        .cover-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          display: block;
+          background: #fff;
+        }
+        .cover-canvas {
+          display: grid;
+          grid-template-columns: .95fr 1.05fr;
+          gap: 34px;
+          align-items: center;
+          padding: 44px 52px;
+        }
+        .cover-text h2 {
+          font-size: 40px;
+          line-height: 1.2;
+          margin-bottom: 18px;
+          word-break: keep-all;
+          overflow-wrap: break-word;
+        }
+        .cover-text p:last-child {
+          font-size: 24px;
+          line-height: 1.45;
+          color: #3c4653;
+        }
+        .cover-image {
+          height: 100%;
+          border-radius: 10px;
+          overflow: hidden;
+          border: 1px solid var(--ppt-line);
+          background: #fff;
+        }
+        .code-canvas .ppt-code-layout {
+          grid-template-columns: .58fr 1.42fr;
+        }
+        .code-canvas .ppt-media {
+          align-items: stretch;
+        }
+        pre {
+          width: 100%;
+          margin: 0;
+          padding: 18px;
+          background: #101820;
+          color: #e8f2ff;
+          overflow: auto;
+          font-size: 15px;
+          line-height: 1.45;
+          font-family: Consolas, "Courier New", monospace;
+        }
+        code { font-family: Consolas, "Courier New", monospace; }
+        .flow {
+          width: 100%;
+          padding: 26px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+          background: linear-gradient(180deg, #fff, #f7f9fb);
+        }
+        .node {
+          min-width: 118px;
+          padding: 16px 18px;
+          border: 2px solid #111;
+          border-radius: 10px;
+          background: #fff;
+          text-align: center;
+          font-weight: 800;
+          font-size: 20px;
+          white-space: pre-line;
+        }
+        .node.input { background: #f0f0f0; }
+        .node.key {
+          border-width: 3px;
+          background: #f8f8f8;
+          clip-path: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
+          border-radius: 0;
+        }
+        .arrow {
+          font-size: 28px;
+          color: #222;
+          font-weight: 800;
+          align-self: center;
+        }
+        .split {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+          width: 100%;
+          padding: 24px;
+          align-items: stretch;
+        }
+        .panel {
+          border: 1px solid var(--ppt-line);
+          border-radius: 8px;
+          background: #fff;
+          padding: 22px;
+        }
+        .panel h4 { margin: 0 0 16px; font-size: 24px; }
+        .panel p { margin: 8px 0; font-size: 21px; }
+        .old { border-top: 7px solid #8b96a5; }
+        .new { border-top: 7px solid var(--ppt-green); }
+        .ide {
+          width: 100%;
+          display: grid;
+          grid-template-columns: 230px 1fr;
+          background: #1f252d;
+          color: #dce6f2;
+          font-family: Consolas, "Courier New", monospace;
+          min-height: 100%;
+        }
+        .tree {
+          padding: 18px;
+          border-right: 1px solid #39424e;
+          background: #252c35;
+          font-size: 13px;
+          white-space: pre-line;
+        }
+        .editor { padding: 18px; min-width: 0; }
+        .editor .tab {
+          display: inline-block;
+          margin-bottom: 12px;
+          padding: 7px 12px;
+          border-radius: 6px 6px 0 0;
+          background: #344052;
+          color: #fff;
+          font-size: 13px;
+        }
+        .browser {
+          width: 100%;
+          background: #fff;
+          padding: 28px;
+        }
+        .bar {
+          height: 38px;
+          border: 1px solid #cfd6df;
+          border-radius: 19px;
+          display: flex;
+          align-items: center;
+          padding: 0 18px;
+          color: #344054;
+          background: #f7f9fc;
+          font-family: Consolas, "Courier New", monospace;
+        }
+        .result {
+          margin-top: 70px;
+          text-align: center;
+          font-size: 44px;
+          font-weight: 800;
+          color: #202b38;
+        }
+        .assessment-canvas,
+        .sources-canvas {
+          display: flex;
+          flex-direction: column;
+        }
+        .ppt-question,
+        .ppt-source-list {
+          margin-top: 28px;
+          flex: 1;
+          display: flex;
+          align-items: stretch;
+        }
+        .question {
+          padding: 26px;
+          width: 100%;
+          background: #fff;
+          border: 1px solid var(--ppt-line);
+          border-radius: 8px;
+        }
+        .question h4 {
+          margin: 0 0 20px;
+          font-size: 27px;
+          line-height: 1.38;
+        }
+        .choice {
+          margin: 11px 0;
+          padding: 13px 16px;
+          border: 1px solid var(--ppt-line);
+          border-radius: 8px;
+          background: #fafafa;
+          font-size: 22px;
+        }
+        /* 이미지와 나란히 놓이는 좁은 칼럼용 question/choice 압축 (출력 계약의 클래스는 유지, 크기만 축소) */
+        .ppt-copy .question {
+          padding: 18px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          height: 100%;
+        }
+        .ppt-copy .question h4 {
+          margin: 0 0 12px;
+          font-size: 20px;
+          line-height: 1.32;
+        }
+        .ppt-copy .choice {
+          margin: 6px 0;
+          padding: 8px 12px;
+          font-size: 16px;
+        }
 
   /* ===================== 그대로 모드 중앙 정렬 규칙 ===================== */
   .step.embed{align-items:center; padding:4vh 4vw;}
@@ -400,9 +413,9 @@
   <div id="content">
 
   <!-- ===================== STEPS START ===================== -->
-  <!-- 그대로 모드: ppt_previews/ch01.html의 26개 .ppt-slide 캔버스를 순서 보존 이식 -->
+  <!-- 그대로 모드: ppt_previews/ch01.html의 26개 .ppt-slide 캔버스(실자산 이미지 반영, 2026-07-06 재이식)를 순서 보존 이식 -->
 
-    <section class="step active embed">
+<section class="step active embed">
       <section class="ppt-slide" id="ppt-slide-1" data-slide="1">
       <div class="ppt-canvas cover-canvas">
         <div class="cover-text">
@@ -410,22 +423,19 @@
           <h2>서버 프로그램과 웹 애플리케이션 실행 환경 이해</h2>
           <p>Spring Boot가 웹 애플리케이션을 실행하는 방식을 처음부터 보기</p>
         </div>
-        <div class="cover-image" style="display:flex;align-items:center;justify-content:center;padding:20px;text-align:center;background:var(--ppt-soft);color:var(--ppt-muted);font-size:15px;line-height:1.4;">이미지 미생성 — 프롬프트: 노트북 브라우저와 작은 Spring Boot 서버 상자가 화살표로 연결된 교육용 일러스트</div>
+        <div class="cover-image"><img src="../assets/images/ch01/slide01.png" alt="노트북 브라우저와 Spring Boot 서버가 화살표로 연결된 표지 일러스트"></div>
       </div>
     </section>
     </section>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-2" data-slide="2">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>전자정부 표준프레임워크 5.0도 Spring Boot 실행 환경을 전제로 확장되고 있다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>eGovFrame v5.0.0: SpringBoot 3.5.6 지원 + 실행환경 OSS 업그레이드</li><li>Spring AI RAG, Kubernetes/Istio 운영환경 가이드 포함</li><li>심플홈페이지 BackEnd: JSP 중심에서 BackEnd/FrontEnd 분리로</li></ul></div>
-          <div class="ppt-media"><div class="split">
-            <div class="panel old"><h4>eGovFrame 5.0 이슈</h4><p>SpringBoot 3.5.6</p><p>Spring AI RAG 예제</p><p>클라우드 운영 가이드</p></div>
-            <div class="panel new"><h4>오늘 배울 흐름</h4><p>요청 → 내장 서버</p><p>→ Controller</p><p>→ 응답</p></div>
-          </div></div>
+          <div class="ppt-copy"><ul><li>eGovFrame v5.0.0: SpringBoot 3.5.6 지원 + OSS 업그레이드</li><li>Spring AI RAG, K8s/Istio 운영환경 가이드 포함</li><li>심플홈페이지 BackEnd/FrontEnd 분리 예시</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide02.png" alt="전자정부 표준프레임워크 5.0 이슈와 오늘 배울 요청-응답 실행 흐름을 연결한 카드형 일러스트"></div>
         </div>
       </div>
     </section>
@@ -433,12 +443,12 @@
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-3" data-slide="3">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
-        <h2>오늘은 “요청이 들어와 응답이 나가기까지”를 본다</h2>
+        <h2>오늘은 "요청이 들어와 응답이 나가기까지"를 본다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>서버 프로그램의 역할을 설명할 수 있다.</li><li>웹 서버와 웹 애플리케이션 서버의 차이를 구분할 수 있다.</li><li>Spring Boot 애플리케이션이 내장 서버와 자동 설정으로 실행되는 흐름을 설명할 수 있다.</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">서버 역할</div><div class="arrow">→</div><div class="node">HTTP 요청/응답</div><div class="arrow">→</div><div class="node key">Spring Boot 실행</div></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide03.png" alt="학습목표 3개와 학습내용 3개를 같은 순서로 연결한 3단계 학습 흐름 일러스트"></div>
         </div>
       </div>
     </section>
@@ -451,7 +461,7 @@
         <h2>서버 프로그램의 기본 역할</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>요청을 받는다</li><li>필요한 처리를 한다</li><li>응답을 돌려준다</li></ul></div>
-          <div class="ppt-media" style="align-items:center;justify-content:center;padding:20px;text-align:center;color:var(--ppt-muted);font-size:15px;line-height:1.4;">이미지 미생성 — 프롬프트: 식당 주방 비유(손님→주문서→주방→완성된 음식) 4단계 일러스트</div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide04.png" alt="식당 주방 비유로 표현한 손님-주문서-주방-완성된 음식 4단계 일러스트"></div>
         </div>
       </div>
     </section>
@@ -459,12 +469,12 @@
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-5" data-slide="5">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>HTTP 요청과 응답</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>Request: 브라우저가 서버에 보내는 메시지</li><li>Response: 서버가 브라우저에 돌려주는 메시지</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">HTTP 요청<br>GET /hello</div><div class="arrow">→</div><div class="node">Spring Boot 서버</div><div class="arrow">→</div><div class="node key">200 OK<br>Hello</div></div></div>
+          <div class="ppt-media"><img src="../assets/diagrams/ch01-slide05-http.png" alt="브라우저, HTTP 요청 GET /hello, Spring Boot 서버, HTTP 응답 200 OK로 이어지는 D2 흐름도"></div>
         </div>
       </div>
     </section>
@@ -472,16 +482,12 @@
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-6" data-slide="6">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>요청과 응답은 구조가 있다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>왼쪽: 요청 예시 GET /hello HTTP/1.1</li><li>오른쪽: 응답 예시 HTTP/1.1 200 OK</li></ul></div>
-          <div class="ppt-media"><div class="split"><pre><code>GET /hello HTTP/1.1
-Host: localhost:8080</code></pre><pre><code>HTTP/1.1 200 OK
-Content-Type: text/plain
-
-Hello Spring Boot</code></pre></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide06.png" alt="HTTP 요청 메시지와 응답 메시지를 나란히 보여주는 2단 코드 패널 일러스트"></div>
         </div>
       </div>
     </section>
@@ -489,12 +495,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-7" data-slide="7">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>웹 서버의 대표 역할</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>HTML, CSS, JS, 이미지 전달</li><li>정적 파일 처리에 강함</li><li>필요하면 WAS로 요청 전달</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">웹 서버</div><div class="arrow">→</div><div class="node input">HTML<br>CSS<br>이미지</div></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide07.png" alt="웹 서버가 정적 파일을 직접 처리하고 동적 요청은 WAS로 넘기는 구조 일러스트"></div>
         </div>
       </div>
     </section>
@@ -502,12 +508,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-8" data-slide="8">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>WAS는 동적인 요청을 처리한다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>로그인</li><li>게시글 등록</li><li>주문 처리</li><li>데이터베이스 연동</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">WAS<br>애플리케이션 로직</div><div class="arrow">→</div><div class="node input">DB</div><div class="arrow">→</div><div class="node">동적 응답</div></div></div>
+          <div class="ppt-media"><img src="../assets/diagrams/ch01-slide08-was.png" alt="정적 리소스는 웹 서버가, 동적 비즈니스 요청은 WAS가 DB와 연동해 처리하는 역할 비교 D2 다이어그램"></div>
         </div>
       </div>
     </section>
@@ -515,12 +521,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-9" data-slide="9">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>전통적인 배포 흐름</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>Tomcat 설치</li><li>WAR 파일 배포</li><li>서버 설정 관리</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">개발 코드</div><div class="arrow">→</div><div class="node">배포 파일</div><div class="arrow">→</div><div class="node key">외부 Tomcat</div><div class="arrow">→</div><div class="node">실행</div></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide09.png" alt="개발 코드가 WAR 파일로 패키징되어 외부 Tomcat에서 실행되는 전통적인 배포 흐름 일러스트"></div>
         </div>
       </div>
     </section>
@@ -528,12 +534,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-10" data-slide="10">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Spring Boot는 내장 서버로 바로 실행된다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>애플리케이션 실행</li><li>내장 Tomcat 시작</li><li>요청 처리 준비 완료</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">개발자<br>main()</div><div class="arrow">→</div><div class="node key">Spring<br>컨테이너 시작</div><div class="arrow">→</div><div class="node">내장 Tomcat<br>시작</div><div class="arrow">→</div><div class="node input">localhost:8080<br>요청 대기</div></div></div>
+          <div class="ppt-media"><img src="../assets/diagrams/ch01-slide10-embedded.png" alt="개발자의 main() 실행부터 SpringApplication.run, 내장 Tomcat 시작, localhost:8080 요청 대기까지 이어지는 D2 흐름도"></div>
         </div>
       </div>
     </section>
@@ -541,12 +547,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-11" data-slide="11">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Auto-configuration은 기본 설정을 자동으로 잡아준다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>Web MVC starter 있음</li><li>Spring MVC/Tomcat 설정 추정</li><li>개발자는 핵심 코드에 집중</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">Web MVC<br>스타터</div><div class="arrow">→</div><div class="node key">Spring Boot<br>자동 설정</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node">내장 Tomcat</div></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide11.png" alt="Web MVC 스타터가 Spring Boot 자동 설정을 거쳐 Spring MVC와 내장 Tomcat 구성을 준비하는 일러스트"></div>
         </div>
       </div>
     </section>
@@ -554,15 +560,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-12" data-slide="12">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>실무에서는 실행 환경 단순화가 큰 장점이다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>설정 먼저: 서버 설치·포트·배포 오류로 지친 모습</li><li>실행 먼저: Spring Boot App 실행 후 바로 확인</li></ul></div>
-          <div class="ppt-media"><div class="split">
-            <div class="panel old"><h4>설정 먼저</h4><p>서버 설치</p><p>런타임 등록</p><p>배포 경로 확인</p></div>
-            <div class="panel new"><h4>실행 먼저</h4><p>Gradle 프로젝트 import</p><p>Run As Spring Boot App</p><p>localhost 확인</p></div>
-          </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide12.png" alt="외부 서버 설정에 지친 개발자와 Spring Boot App 실행으로 바로 확인하는 개발자를 비교한 2컷 일러스트"></div>
         </div>
       </div>
     </section>
@@ -570,12 +573,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-13" data-slide="13">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>/hello에 응답하는 가장 작은 서버</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>프로젝트명: ch01-hello-server</li><li>주소: <a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></li><li>응답: Hello Spring Boot</li></ul></div>
-          <div class="ppt-media"><div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide13.png" alt="STS4 실습 캡처 순서를 미션 보드처럼 보여주는 일러스트"></div>
         </div>
       </div>
     </section>
@@ -583,25 +586,12 @@ Hello Spring Boot</code></pre></div></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-14" data-slide="14">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>Spring Starter Project 생성</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>STS4 New &gt; Spring Starter Project 화면 캡처</li><li>Group: com.example</li><li>Artifact: ch01-hello-server</li><li>Name: ch01-hello-server</li></ul></div>
-          <div class="ppt-media"><div class="ide">
-            <div class="tree">Spring Starter Project
-
-Name: ch01-hello-server
-Type: Gradle
-Spring Boot: 4.1.0
-Java: 21
-Packaging: Jar
-Package: com.example.ch01</div>
-            <div class="editor"><div class="tab">New Spring Starter Project</div><pre><code>Group     com.example
-Artifact  ch01-hello-server
-Package   com.example.ch01
-Dependency: Spring Web MVC</code></pre></div>
-          </div></div>
+          <div class="ppt-copy"><ul><li>Group: com.example</li><li>Artifact: ch01-hello-server</li><li>Package: com.example.ch01</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide14.png" alt="STS4 Spring Starter Project 생성 화면 일러스트"></div>
         </div>
       </div>
     </section>
@@ -609,12 +599,12 @@ Dependency: Spring Web MVC</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-15" data-slide="15">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">실습</p>
         <h2>Web MVC 스타터는 웹 서버 실행의 힌트가 된다</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>Dependencies에서 Spring Web MVC 선택</li><li>스타터가 자동 설정의 단서가 된다</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">Web MVC<br>스타터</div><div class="arrow">→</div><div class="node key">Spring Boot<br>자동 설정</div><div class="arrow">→</div><div class="node">Spring MVC<br>내장 Tomcat</div></div></div>
+          <div class="ppt-media"><img src="../assets/diagrams/ch01-slide15-webmvc.png" alt="Web MVC 스타터에서 Spring Boot 자동 설정을 거쳐 Spring MVC와 내장 Tomcat으로 이어지는 D2 다이어그램"></div>
         </div>
       </div>
     </section>
@@ -626,20 +616,8 @@ Dependency: Spring Web MVC</code></pre></div>
         <p class="lesson-label">실습</p>
         <h2>요청을 받을 Controller 만들기</h2>
         <div class="ppt-code-layout">
-          <div class="ppt-copy"><ul><li>HelloController.java 코드 크게 표시</li><li>핵심 강조: @RestController, @GetMapping(&quot;/hello&quot;)</li></ul></div>
-          <div class="ppt-media"><pre><code>package com.example.ch01;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class HelloController {
-
-    @GetMapping(&quot;/hello&quot;)
-    public String hello() {
-        return &quot;Hello Spring Boot&quot;;
-    }
-}</code></pre></div>
+          <div class="ppt-copy"><ul><li>HelloController.java 핵심 강조</li><li>@RestController, @GetMapping("/hello")</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide16.png" alt="HelloController.java 코드 패널에서 @RestController, @GetMapping(&quot;/hello&quot;), 반환 문자열을 강조한 일러스트"></div>
         </div>
       </div>
     </section>
@@ -651,19 +629,8 @@ public class HelloController {
         <p class="lesson-label">실습</p>
         <h2>시작점은 main()이다</h2>
         <div class="ppt-code-layout">
-          <div class="ppt-copy"><ul><li>Ch01HelloServerApplication.java 코드</li><li>SpringApplication.run(...) 강조</li></ul></div>
-          <div class="ppt-media"><pre><code>package com.example.ch01;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class Ch01HelloServerApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Ch01HelloServerApplication.class, args);
-    }
-}</code></pre></div>
+          <div class="ppt-copy"><ul><li>Ch01HelloServerApplication.java</li><li>SpringApplication.run(...) 강조</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide17.png" alt="Spring Boot 애플리케이션 시작점 코드 패널에서 main()과 SpringApplication.run을 강조한 일러스트"></div>
         </div>
       </div>
     </section>
@@ -671,23 +638,12 @@ public class Ch01HelloServerApplication {
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-18" data-slide="18">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>실행하면 내장 서버가 열린다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>STS4 Run As &gt; Spring Boot App 캡처</li><li>Console의 Started 로그 캡처</li><li>Tomcat started on port 8080에 하이라이트</li></ul></div>
-          <div class="ppt-media"><div class="ide">
-            <div class="tree">ch01-hello-server
-  src/main/java
-    com.example.ch01
-      Ch01HelloServerApplication.java
-      HelloController.java
-  build.gradle</div>
-            <div class="editor"><div class="tab">Console</div><pre><code>:: Spring Boot :: (v4.1.0)
-Tomcat initialized with port 8080
-Tomcat started on port 8080
-Started Ch01HelloServerApplication</code></pre></div>
-          </div></div>
+          <div class="ppt-copy"><ul><li>Run As &gt; Spring Boot App 실행</li><li>Console의 Started 로그</li><li>Tomcat started on port 8080</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide18.png" alt="STS4 Run As Spring Boot App 실행 화면과 콘솔 시작 로그, 8080 포트 하이라이트 일러스트"></div>
         </div>
       </div>
     </section>
@@ -695,12 +651,12 @@ Started Ch01HelloServerApplication</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-19" data-slide="19">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>브라우저가 요청하고 서버가 응답한다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>주소창: <a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></li><li>화면 결과: Hello Spring Boot</li><li>옆에 요청-응답 미니 화살표</li></ul></div>
-          <div class="ppt-media"><div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div></div>
+          <div class="ppt-copy"><ul><li>주소창: <a href="http://localhost:8080/hello" target="_blank" rel="noreferrer">http://localhost:8080/hello</a></li><li>화면 결과: Hello Spring Boot</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide19.png" alt="브라우저 주소창에 localhost:8080/hello를 입력하고 Hello Spring Boot 응답이 표시된 화면 일러스트"></div>
         </div>
       </div>
     </section>
@@ -708,12 +664,12 @@ Started Ch01HelloServerApplication</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-20" data-slide="20">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>/hello 요청은 어디로 흘러갈까?</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>다섯 단계로 이어지는 요청-응답 경로</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저<br>/hello</div><div class="arrow">→</div><div class="node key">내장 Tomcat</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node key">HelloController</div><div class="arrow">→</div><div class="node input">응답</div></div></div>
+          <div class="ppt-media"><img src="../assets/diagrams/ch01-slide20-flow.png" alt="브라우저 /hello 요청이 내장 Tomcat, Spring MVC, HelloController를 거쳐 응답으로 돌아가는 D2 흐름도"></div>
         </div>
       </div>
     </section>
@@ -721,16 +677,12 @@ Started Ch01HelloServerApplication</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-21" data-slide="21">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>서버가 안 보일 때 어디부터 볼까?</h2>
         <div class="ppt-two-col">
           <div class="ppt-copy"><ul><li>서버 실행 실패</li><li>404 Not Found</li><li>응답 문자열이 예상과 다름</li></ul></div>
-          <div class="ppt-media"><div class="split" style="grid-template-columns: 1fr 1fr 1fr;">
-            <div class="panel"><h4>1. 실행 로그</h4><p>Started 메시지 확인</p></div>
-            <div class="panel"><h4>2. URL</h4><p>/hello 오타 확인</p></div>
-            <div class="panel"><h4>3. Controller 코드</h4><p>@GetMapping 경로 확인</p></div>
-          </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide21.png" alt="실행 로그, URL, Controller 코드, 포트 확인 순서를 보여주는 문제 진단 체크리스트 일러스트"></div>
         </div>
       </div>
     </section>
@@ -738,12 +690,12 @@ Started Ch01HelloServerApplication</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-22" data-slide="22">
-      <div class="ppt-canvas standard-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">1차시 · 서버 프로그램과 웹 애플리케이션 실행 환경 이해</p>
         <h2>브라우저 요청은 서버 프로그램의 코드로 이어진다</h2>
         <div class="ppt-two-col">
-          <div class="ppt-copy"><ul><li>브라우저</li><li>HTTP 요청</li><li>내장 Tomcat</li><li>Spring MVC</li><li>Controller</li><li>HTTP 응답</li></ul></div>
-          <div class="ppt-media"><div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">HTTP<br>요청</div><div class="arrow">→</div><div class="node key">내장<br>Tomcat</div><div class="arrow">→</div><div class="node">Spring<br>MVC</div><div class="arrow">→</div><div class="node key">Controller</div><div class="arrow">→</div><div class="node input">HTTP<br>응답</div></div></div>
+          <div class="ppt-copy"><ul><li>브라우저</li><li>HTTP 요청</li><li>내장 Tomcat</li><li>Spring MVC</li></ul></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide22.png" alt="브라우저 요청이 HTTP, 내장 Tomcat, Spring MVC, Controller를 거쳐 응답으로 이어지는 일러스트"></div>
         </div>
       </div>
     </section>
@@ -751,59 +703,71 @@ Started Ch01HelloServerApplication</code></pre></div>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-23" data-slide="23">
-      <div class="ppt-canvas assessment-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">평가하기</p>
         <h2>문제풀기 1</h2>
-        <div class="ppt-question"><div class="question">
-            <h4>내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</h4>
-            <div class="choice">1. 브라우저가 자동으로 Tomcat을 설치한다.</div>
-            <div class="choice">2. Web MVC 스타터와 자동 설정으로 실행 환경을 구성한다.</div>
-            <div class="choice">3. 모든 Java 프로그램은 8080 포트를 연다.</div>
-            <div class="choice">4. Controller가 데이터베이스를 자동 생성한다.</div>
-          </div></div>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><div class="question">
+              <h4>내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</h4>
+              <div class="choice">1. 브라우저가 자동으로 Tomcat을 설치한다.</div>
+              <div class="choice">2. Web MVC 스타터와 자동 설정으로 실행 환경을 구성한다.</div>
+              <div class="choice">3. 모든 Java 프로그램은 8080 포트를 연다.</div>
+              <div class="choice">4. Controller가 데이터베이스를 자동 생성한다.</div>
+            </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide23.png" alt="내장 Tomcat이 시작되는 이유를 묻는 평가 문제 화면 일러스트"></div>
+        </div>
       </div>
     </section>
     </section>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-24" data-slide="24">
-      <div class="ppt-canvas assessment-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">평가하기</p>
         <h2>문제풀기 2</h2>
-        <div class="ppt-question"><div class="question">
-            <h4>HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다.</h4>
-            <div class="choice">O</div><div class="choice">X</div>
-          </div></div>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><div class="question">
+              <h4>HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다.</h4>
+              <div class="choice">O</div><div class="choice">X</div>
+            </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide24.png" alt="요청과 응답 정의를 묻는 O/X 평가 문제 화면 일러스트"></div>
+        </div>
       </div>
     </section>
     </section>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-25" data-slide="25">
-      <div class="ppt-canvas assessment-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">평가하기</p>
         <h2>문제풀기 3</h2>
-        <div class="ppt-question"><div class="question">
-            <h4>웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다.</h4>
-            <div class="choice">O</div><div class="choice">X</div>
-          </div></div>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><div class="question">
+              <h4>웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다.</h4>
+              <div class="choice">O</div><div class="choice">X</div>
+            </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide25.png" alt="웹 서버와 WAS 역할 구분을 묻는 O/X 평가 문제 화면 일러스트"></div>
+        </div>
       </div>
     </section>
     </section>
 
     <section class="step embed">
       <section class="ppt-slide" id="ppt-slide-26" data-slide="26">
-      <div class="ppt-canvas sources-canvas">
+      <div class="ppt-canvas image-canvas">
         <p class="lesson-label">참고자료</p>
         <h2>참고자료</h2>
-        <div class="ppt-source-list"><div class="question">
-            <h4>참고자료</h4>
-            <div class="choice">Spring Boot 공식 문서</div>
-            <div class="choice">Spring Boot 첫 애플리케이션 튜토리얼</div>
-            <div class="choice">Spring Tools 공식 페이지</div>
-            <div class="choice">MDN HTTP Overview</div>
-            <div class="choice">eGovFrame 심플홈페이지 BackEnd GitHub</div>
-          </div></div>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><div class="question">
+              <h4>참고자료</h4>
+              <div class="choice">Spring Boot 공식 문서</div>
+              <div class="choice">Spring Boot 첫 애플리케이션 튜토리얼</div>
+              <div class="choice">Spring Tools 공식 페이지</div>
+              <div class="choice">MDN HTTP Overview</div>
+              <div class="choice">eGovFrame 심플홈페이지 BackEnd GitHub</div>
+            </div></div>
+          <div class="ppt-media"><img src="../assets/images/ch01/slide26.png" alt="참고 문서, GitHub, 웹사이트, 튜토리얼을 나타내는 아이콘 4종 일러스트"></div>
+        </div>
       </div>
     </section>
     </section>

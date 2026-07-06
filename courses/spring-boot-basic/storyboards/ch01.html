@@ -315,14 +315,14 @@
       <p>이 HTML은 최종 PPT가 아니라, 강사가 슬라이드 화면과 나레이션을 함께 검수하기 위한 상세 스토리보드입니다. 실제 PPT에서는 제공된 양식 PPTX의 표지, 학습열기, 본문, 적용하기, 평가하기, 참고자료 레이아웃에 맞춰 옮깁니다.</p>
       <p class="small">실습 기준: JDK 21 / Spring Boot 4.1.0 / Gradle / Spring Tools for Eclipse 5.2.0 이상</p>
       <p class="small">실습코드: <code>practice-code/ch01-hello-server</code> / D2 원본: <code>assets/diagrams</code> / GPT 이미지: <code>assets/images/ch01</code></p>
-      <p class="small">이미지·D2 렌더 자산은 아직 생성 전이므로, 슬라이드 미리보기에는 생성 프롬프트를 담은 placeholder 박스 또는 D2 소스/흐름도 재현을 사용합니다.</p>
+      <p class="small">슬라이드 미리보기는 <code>assets/manifest.json</code> 기준 확정 자산을 그대로 삽입했습니다(GPT 이미지 21장 + D2 다이어그램 5장). 프롬프트/D2 소스 원문은 각 카드의 "시각 자료" 패널에서 확인할 수 있습니다.</p>
     </section>
 
     <section class="slide detailed" id="slide-1">
       <div class="slide-head"><h2>Slide 1. 표지</h2><span class="tag">GPT image</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="placeholder-img"><div class="placeholder-label">GPT image 미생성 - 생성 프롬프트만 표시</div><code>A clean educational illustration of a beginner developer looking at a laptop browser connected to a small Spring Boot server box, simple lines, bright classroom style, no text, 16:9 slide composition. Place the learner on the left or lower-left, the browser in the center, and a compact server box on the right. Use arrows to show connection without adding readable labels.</code><code>초보 개발자가 노트북 브라우저를 보고 있고, 그 브라우저가 작은 Spring Boot 서버 상자와 연결되어 있는 밝은 교육용 일러스트. 글자는 넣지 않고, 첫 차시 도입용으로 단순하고 친근하게 구성한다. 학습자는 왼쪽 또는 하단, 브라우저는 중앙, Spring Boot 서버 상자는 오른쪽에 배치한다. 글자는 넣지 않고 연결 화살표만으로 브라우저와 서버가 이어진다는 느낌을 준다.</code></div>
+          <img src="../assets/images/ch01/slide01.png" alt="표지">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -365,7 +365,7 @@
       <div class="slide-head"><h2>Slide 2. 최신 이슈로 학습 열기: 전자정부 표준프레임워크도 Spring Boot 흐름을 강화하고 있다</h2><span class="tag">current issue</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="split"><div class="panel old"><h4>전자정부 표준프레임워크 v5.0 이슈</h4><p>SpringBoot 3.5.6 지원</p><p>Spring AI 기반 RAG 예제</p><p>K8s/Istio/OTel 운영환경 가이드</p></div><div class="panel new"><h4>오늘 배울 실행 흐름</h4><p>요청</p><p>&rarr; 내장 서버</p><p>&rarr; Controller</p><p>&rarr; 응답</p></div></div>
+          <img src="../assets/images/ch01/slide02.png" alt="최신 이슈로 학습 열기: 전자정부 표준프레임워크도 Spring Boot 흐름을 강화하고 있다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -408,7 +408,7 @@
       <div class="slide-head"><h2>Slide 3. 오늘의 학습 목표</h2><span class="tag">roadmap</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">서버 역할</div><div class="arrow">→</div><div class="node">HTTP 요청/응답</div><div class="arrow">→</div><div class="node key">Spring Boot 실행</div></div>
+          <img src="../assets/images/ch01/slide03.png" alt="오늘의 학습 목표">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -451,7 +451,7 @@
       <div class="slide-head"><h2>Slide 4. 서버 프로그램은 요청을 받아 결과를 돌려주는 일꾼이다</h2><span class="tag">GPT image</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="placeholder-img"><div class="placeholder-label">GPT image 미생성 - 생성 프롬프트만 표시</div><code>A friendly restaurant kitchen analogy for server program: customer sends an order ticket, kitchen processes it, waiter returns a dish. Educational, flat illustration, no text, 16:9. Show four clear stages: customer, order ticket, kitchen/server program, completed dish/response. Use a single left-to-right flow and avoid text-heavy labels.</code><code>서버 프로그램을 식당 주방에 비유한 16:9 교육용 일러스트. 손님이 주문서를 보내고, 주방이 처리하고, 직원이 완성된 음식을 돌려주는 흐름을 글자 없이 표현한다. 손님, 주문서, 주방/서버 프로그램, 완성된 음식/응답의 4단계를 왼쪽에서 오른쪽으로 보여준다. 글자는 최소화하고 흐름이 한눈에 보이게 한다.</code></div>
+          <img src="../assets/images/ch01/slide04.png" alt="서버 프로그램은 요청을 받아 결과를 돌려주는 일꾼이다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -498,7 +498,7 @@
       <div class="slide-head"><h2>Slide 5. HTTP는 브라우저와 서버가 주고받는 약속이다</h2><span class="tag">D2 fallback</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">HTTP 요청<br>GET /hello</div><div class="arrow">→</div><div class="node">Spring Boot 서버</div><div class="arrow">→</div><div class="node key">200 OK<br>Hello</div></div>
+          <img src="../assets/diagrams/ch01-slide05-http.png" alt="HTTP는 브라우저와 서버가 주고받는 약속이다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -571,11 +571,7 @@ response -&gt; screen: "응답 표시"</code></pre></div>
       <div class="slide-head"><h2>Slide 6. HTTP 메시지는 사람이 읽을 수 있는 구조를 가진다</h2><span class="tag">HTTP visual</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="split"><pre><code>GET /hello HTTP/1.1
-Host: localhost:8080</code></pre><pre><code>HTTP/1.1 200 OK
-Content-Type: text/plain
-
-Hello Spring Boot</code></pre></div>
+          <img src="../assets/images/ch01/slide06.png" alt="HTTP 메시지는 사람이 읽을 수 있는 구조를 가진다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -622,7 +618,7 @@ Hello Spring Boot</code></pre></div>
       <div class="slide-head"><h2>Slide 7. 웹 서버는 정적 파일을 빠르게 전달하는 문지기다</h2><span class="tag">mock visual</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">웹 서버</div><div class="arrow">→</div><div class="node input">HTML<br>CSS<br>이미지</div></div>
+          <img src="../assets/images/ch01/slide07.png" alt="웹 서버는 정적 파일을 빠르게 전달하는 문지기다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -665,7 +661,7 @@ Hello Spring Boot</code></pre></div>
       <div class="slide-head"><h2>Slide 8. WAS는 실행 중인 애플리케이션 로직을 처리한다</h2><span class="tag">D2 fallback</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node key">WAS<br>애플리케이션 로직</div><div class="arrow">→</div><div class="node input">DB</div><div class="arrow">→</div><div class="node">동적 응답</div></div>
+          <img src="../assets/diagrams/ch01-slide08-was.png" alt="WAS는 실행 중인 애플리케이션 로직을 처리한다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -731,7 +727,7 @@ web -&gt; browser: "정적 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 9. 과거 방식: 서버를 따로 설치하고 애플리케이션을 올렸다</h2><span class="tag">scenario</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">개발 코드</div><div class="arrow">→</div><div class="node">배포 파일</div><div class="arrow">→</div><div class="node key">외부 Tomcat</div><div class="arrow">→</div><div class="node">실행</div></div>
+          <img src="../assets/images/ch01/slide09.png" alt="과거 방식: 서버를 따로 설치하고 애플리케이션을 올렸다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -774,7 +770,7 @@ web -&gt; browser: "정적 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 10. Spring Boot 방식: 애플리케이션이 서버를 품고 실행된다</h2><span class="tag">D2 fallback</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">개발자</div><div class="arrow">→</div><div class="node key">main()<br>SpringApplication.run</div><div class="arrow">→</div><div class="node">Spring 컨테이너 시작</div><div class="arrow">→</div><div class="node key">내장 Tomcat 시작</div><div class="arrow">→</div><div class="node input">localhost:8080<br>요청 대기</div></div>
+          <img src="../assets/diagrams/ch01-slide10-embedded.png" alt="Spring Boot 방식: 애플리케이션이 서버를 품고 실행된다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -838,7 +834,7 @@ tomcat -&gt; ready: "서버 준비 완료"</code></pre></div>
       <div class="slide-head"><h2>Slide 11. 자동 설정은 “상황을 보고 기본 준비를 해주는 도우미”다</h2><span class="tag">D2 fallback</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">Web MVC<br>스타터</div><div class="arrow">→</div><div class="node key">Spring Boot<br>자동 설정</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node">내장 Tomcat</div></div>
+          <img src="../assets/images/ch01/slide11.png" alt="자동 설정은 “상황을 보고 기본 준비를 해주는 도우미”다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -885,7 +881,7 @@ tomcat -&gt; ready: "서버 준비 완료"</code></pre></div>
       <div class="slide-head"><h2>Slide 12. 실무 중간 사례: “서버 설치부터 하라”는 말이 줄어든다</h2><span class="tag">comic mock</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="split"><div class="panel old"><h4>설정 먼저</h4><p>서버 설치</p><p>런타임 등록</p><p>배포 경로 확인</p></div><div class="panel new"><h4>실행 먼저</h4><p>Gradle 프로젝트 import</p><p>Run As Spring Boot App</p><p>localhost 확인</p></div></div>
+          <img src="../assets/images/ch01/slide12.png" alt="실무 중간 사례: “서버 설치부터 하라”는 말이 줄어든다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -928,7 +924,7 @@ tomcat -&gt; ready: "서버 준비 완료"</code></pre></div>
       <div class="slide-head"><h2>Slide 13. 실습 준비: 오늘 만들 가장 작은 서버 프로그램</h2><span class="tag">practice goal</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div>
+          <img src="../assets/images/ch01/slide13.png" alt="실습 준비: 오늘 만들 가장 작은 서버 프로그램">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -971,17 +967,7 @@ tomcat -&gt; ready: "서버 준비 완료"</code></pre></div>
       <div class="slide-head"><h2>Slide 14. 실습 1: Spring Starter Project 만들기</h2><span class="tag">Spring Tools mock</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="ide"><div class="tree">Spring Starter Project
-
-Name: ch01-hello-server
-Type: Gradle
-Spring Boot: 4.1.0
-Java: 21
-Packaging: Jar
-Package: com.example.ch01</div><div class="editor"><div class="tab">New Spring Starter Project</div><pre><code>Group     com.example
-Artifact  ch01-hello-server
-Package   com.example.ch01
-Dependency: Spring Web MVC</code></pre></div></div>
+          <img src="../assets/images/ch01/slide14.png" alt="실습 1: Spring Starter Project 만들기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1024,35 +1010,7 @@ Dependency: Spring Web MVC</code></pre></div></div>
       <div class="slide-head"><h2>Slide 15. 실습 2: Web MVC 스타터 추가하기</h2><span class="tag">Gradle code</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <pre><code>plugins {
-    id 'java'
-    id 'org.springframework.boot' version '4.1.0'
-    id 'io.spring.dependency-management' version '1.1.7'
-}
-
-group = 'com.example'
-version = '0.0.1-SNAPSHOT'
-description = 'Lesson 1 Spring Boot hello server practice code'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
-
-tasks.named('test') {
-    useJUnitPlatform()
-}</code></pre>
+          <img src="../assets/diagrams/ch01-slide15-webmvc.png" alt="실습 2: Web MVC 스타터 추가하기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1114,19 +1072,7 @@ boot -&gt; tomcat: "서버 실행 구성"</code></pre></div>
       <div class="slide-head"><h2>Slide 16. 실습 3: HelloController 작성하기</h2><span class="tag">Java code</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <pre><code>package com.example.ch01;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class HelloController {
-
-    @GetMapping(&quot;/hello&quot;)
-    public String hello() {
-        return &quot;Hello Spring Boot&quot;;
-    }
-}</code></pre>
+          <img src="../assets/images/ch01/slide16.png" alt="실습 3: HelloController 작성하기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1185,18 +1131,7 @@ public class HelloController {
       <div class="slide-head"><h2>Slide 17. 실습 4: main 메서드가 애플리케이션을 시작한다</h2><span class="tag">Java code</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <pre><code>package com.example.ch01;
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-@SpringBootApplication
-public class Ch01HelloServerApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(Ch01HelloServerApplication.class, args);
-    }
-}</code></pre>
+          <img src="../assets/images/ch01/slide17.png" alt="실습 4: main 메서드가 애플리케이션을 시작한다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1254,15 +1189,7 @@ public class Ch01HelloServerApplication {
       <div class="slide-head"><h2>Slide 18. 실습 5: Spring Boot App으로 실행하기</h2><span class="tag">Spring Tools mock</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="ide"><div class="tree">ch01-hello-server
-  src/main/java
-    com.example.ch01
-      Ch01HelloServerApplication.java
-      HelloController.java
-  build.gradle</div><div class="editor"><div class="tab">Console</div><pre><code>:: Spring Boot :: (v4.1.0)
-Tomcat initialized with port 8080
-Tomcat started on port 8080
-Started Ch01HelloServerApplication</code></pre></div></div>
+          <img src="../assets/images/ch01/slide18.png" alt="실습 5: Spring Boot App으로 실행하기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1309,7 +1236,7 @@ Started Ch01HelloServerApplication</code></pre></div></div>
       <div class="slide-head"><h2>Slide 19. 실습 6: 브라우저에서 `/hello` 호출하기</h2><span class="tag">browser mock</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="browser"><div class="bar">http://localhost:8080/hello</div><div class="result">Hello Spring Boot</div></div>
+          <img src="../assets/images/ch01/slide19.png" alt="실습 6: 브라우저에서 `/hello` 호출하기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1356,7 +1283,7 @@ Started Ch01HelloServerApplication</code></pre></div></div>
       <div class="slide-head"><h2>Slide 20. 요청이 코드까지 도착하는 전체 그림</h2><span class="tag">D2 fallback</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">브라우저<br>/hello</div><div class="arrow">→</div><div class="node key">내장 Tomcat</div><div class="arrow">→</div><div class="node">Spring MVC</div><div class="arrow">→</div><div class="node key">HelloController</div><div class="arrow">→</div><div class="node input">응답</div></div>
+          <img src="../assets/diagrams/ch01-slide20-flow.png" alt="요청이 코드까지 도착하는 전체 그림">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1421,7 +1348,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 21. 적용하기: 어디에서 문제가 났는지 찾아보기</h2><span class="tag">checklist</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="split"><div class="panel"><h4>1. 실행 로그</h4><p>Started 메시지 확인</p></div><div class="panel"><h4>2. URL</h4><p>/hello 오타 확인</p></div><div class="panel"><h4>3. 코드</h4><p>@GetMapping 경로 확인</p></div><div class="panel"><h4>4. 포트</h4><p>8080 사용 여부 확인</p></div></div>
+          <img src="../assets/images/ch01/slide21.png" alt="적용하기: 어디에서 문제가 났는지 찾아보기">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1468,7 +1395,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 22. 문제풀기 준비: 핵심 흐름을 다시 보고 답한다</h2><span class="tag">summary</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="flow"><div class="node input">브라우저</div><div class="arrow">→</div><div class="node">HTTP</div><div class="arrow">→</div><div class="node key">Spring Boot</div><div class="arrow">→</div><div class="node">Controller</div><div class="arrow">→</div><div class="node input">응답</div></div>
+          <img src="../assets/images/ch01/slide22.png" alt="문제풀기 준비: 핵심 흐름을 다시 보고 답한다">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1515,7 +1442,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 23. 문제풀기 1: 사지선다형</h2><span class="tag">assessment</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="question"><h4>내장 Tomcat이 시작되는 이유로 가장 적절한 것은?</h4><div class="choice">1. 브라우저가 자동으로 Tomcat을 설치한다.</div><div class="choice">2. Web MVC 스타터와 자동 설정으로 실행 환경을 구성한다.</div><div class="choice">3. 모든 Java 프로그램은 8080 포트를 연다.</div><div class="choice">4. Controller가 데이터베이스를 자동 생성한다.</div></div>
+          <img src="../assets/images/ch01/slide23.png" alt="문제풀기 1: 사지선다형">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1562,7 +1489,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 24. 문제풀기 2: 진위형</h2><span class="tag">assessment</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="question"><h4>HTTP에서 브라우저가 서버에 보내는 메시지를 요청, 서버가 브라우저로 돌려주는 메시지를 응답이라고 한다.</h4><div class="choice">O</div><div class="choice">X</div></div>
+          <img src="../assets/images/ch01/slide24.png" alt="문제풀기 2: 진위형">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1609,7 +1536,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 25. 문제풀기 3: 진위형</h2><span class="tag">assessment</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="question"><h4>웹 서버는 항상 데이터베이스 조회와 비즈니스 로직 실행을 직접 담당하며, WAS는 정적 파일만 전달한다.</h4><div class="choice">O</div><div class="choice">X</div></div>
+          <img src="../assets/images/ch01/slide25.png" alt="문제풀기 3: 진위형">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">
@@ -1656,7 +1583,7 @@ response -&gt; browser: "HTTP 응답"</code></pre></div>
       <div class="slide-head"><h2>Slide 26. 참고자료</h2><span class="tag">sources</span></div>
       <div class="slide-body">
         <div class="slide-preview">
-          <div class="question"><h4>참고자료</h4><div class="choice">Spring Boot 공식 문서</div><div class="choice">Spring Boot 4.1.0 시스템 요구사항</div><div class="choice">Spring Boot 첫 애플리케이션 튜토리얼</div><div class="choice">Spring Tools 공식 페이지</div><div class="choice">MDN HTTP Overview</div><div class="choice">전자정부 표준프레임워크 v5.0.0 안내</div><div class="choice">eGovFrame 심플홈페이지 BackEnd GitHub</div></div>
+          <img src="../assets/images/ch01/slide26.png" alt="참고자료">
         </div>
         <aside class="lecture-panel">
           <section class="lecture-block">

@@ -1,0 +1,267 @@
+{
+  "chapter": "ch01",
+  "overall_status": "present",
+  "visual_slides_covered": 26,
+  "visual_slides_total": 26,
+  "slides": [
+    {
+      "slide": 1,
+      "image": {
+        "path": "assets/images/ch01/slide01.png",
+        "prompt_hash": "208c2e2156cd",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 2,
+      "image": {
+        "path": "assets/images/ch01/slide02.png",
+        "prompt_hash": "809d420b9336",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 3,
+      "image": {
+        "path": "assets/images/ch01/slide03.png",
+        "prompt_hash": "d15a5b192f0b",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 4,
+      "image": {
+        "path": "assets/images/ch01/slide04.png",
+        "prompt_hash": "e7d114f0dda2",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 5,
+      "d2": {
+        "path": "assets/diagrams/ch01-slide05-http.png",
+        "d2_hash": "aca763898ae3",
+        "status": "present"
+      },
+      "image": {
+        "path": "assets/images/ch01/slide05.png",
+        "prompt_hash": "44a87e02ad35",
+        "status": "deferred",
+        "primary": false
+      }
+    },
+    {
+      "slide": 6,
+      "image": {
+        "path": "assets/images/ch01/slide06.png",
+        "prompt_hash": "89e893eeb90d",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 7,
+      "image": {
+        "path": "assets/images/ch01/slide07.png",
+        "prompt_hash": "adeb1782fdc5",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 8,
+      "d2": {
+        "path": "assets/diagrams/ch01-slide08-was.png",
+        "d2_hash": "09131a2024a8",
+        "status": "present"
+      },
+      "image": {
+        "path": "assets/images/ch01/slide08.png",
+        "prompt_hash": "992668b099dd",
+        "status": "deferred",
+        "primary": false
+      }
+    },
+    {
+      "slide": 9,
+      "image": {
+        "path": "assets/images/ch01/slide09.png",
+        "prompt_hash": "f6530804dee8",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 10,
+      "d2": {
+        "path": "assets/diagrams/ch01-slide10-embedded.png",
+        "d2_hash": "e3c68946ad34",
+        "status": "present"
+      },
+      "image": {
+        "path": "assets/images/ch01/slide10.png",
+        "prompt_hash": "b881b81b5833",
+        "status": "deferred",
+        "primary": false
+      }
+    },
+    {
+      "slide": 11,
+      "image": {
+        "path": "assets/images/ch01/slide11.png",
+        "prompt_hash": "8aa0efb689c1",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 12,
+      "image": {
+        "path": "assets/images/ch01/slide12.png",
+        "prompt_hash": "5ca87bd88c48",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 13,
+      "image": {
+        "path": "assets/images/ch01/slide13.png",
+        "prompt_hash": "12bd847e5fd2",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 14,
+      "image": {
+        "path": "assets/images/ch01/slide14.png",
+        "prompt_hash": "a4d0ce6b68ca",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 15,
+      "d2": {
+        "path": "assets/diagrams/ch01-slide15-webmvc.png",
+        "d2_hash": "1ca3767f01d7",
+        "status": "present"
+      },
+      "image": {
+        "path": "assets/images/ch01/slide15.png",
+        "prompt_hash": "151271558f7b",
+        "status": "deferred",
+        "primary": false
+      }
+    },
+    {
+      "slide": 16,
+      "image": {
+        "path": "assets/images/ch01/slide16.png",
+        "prompt_hash": "395403922699",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 17,
+      "image": {
+        "path": "assets/images/ch01/slide17.png",
+        "prompt_hash": "b56c6a2898e4",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 18,
+      "image": {
+        "path": "assets/images/ch01/slide18.png",
+        "prompt_hash": "d3b429ec7acc",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 19,
+      "image": {
+        "path": "assets/images/ch01/slide19.png",
+        "prompt_hash": "b625b4e101b4",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 20,
+      "d2": {
+        "path": "assets/diagrams/ch01-slide20-flow.png",
+        "d2_hash": "df2d560e7f22",
+        "status": "present"
+      },
+      "image": {
+        "path": "assets/images/ch01/slide20.png",
+        "prompt_hash": "ab82080d9aaa",
+        "status": "deferred",
+        "primary": false
+      }
+    },
+    {
+      "slide": 21,
+      "image": {
+        "path": "assets/images/ch01/slide21.png",
+        "prompt_hash": "2209911979e7",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 22,
+      "image": {
+        "path": "assets/images/ch01/slide22.png",
+        "prompt_hash": "1a9c203199cf",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 23,
+      "image": {
+        "path": "assets/images/ch01/slide23.png",
+        "prompt_hash": "b848cae126d0",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 24,
+      "image": {
+        "path": "assets/images/ch01/slide24.png",
+        "prompt_hash": "1a7f78796fa7",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 25,
+      "image": {
+        "path": "assets/images/ch01/slide25.png",
+        "prompt_hash": "6e83660d1634",
+        "status": "present",
+        "primary": true
+      }
+    },
+    {
+      "slide": 26,
+      "image": {
+        "path": "assets/images/ch01/slide26.png",
+        "prompt_hash": "a4950a872e6b",
+        "status": "present",
+        "primary": true
+      }
+    }
+  ]
+}

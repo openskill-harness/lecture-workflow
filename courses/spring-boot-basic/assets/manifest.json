@@ -45,13 +45,14 @@
       "d2": {
         "path": "assets/diagrams/ch01-slide05-http.png",
         "d2_hash": "aca763898ae3",
-        "status": "present"
+        "status": "present",
+        "primary": false
       },
       "image": {
         "path": "assets/images/ch01/slide05.png",
-        "prompt_hash": "44a87e02ad35",
-        "status": "deferred",
-        "primary": false
+        "prompt_hash": "b82629b156f3",
+        "status": "present",
+        "primary": true
       }
     },
     {
@@ -77,13 +78,14 @@
       "d2": {
         "path": "assets/diagrams/ch01-slide08-was.png",
         "d2_hash": "09131a2024a8",
-        "status": "present"
+        "status": "present",
+        "primary": false
       },
       "image": {
         "path": "assets/images/ch01/slide08.png",
-        "prompt_hash": "992668b099dd",
-        "status": "deferred",
-        "primary": false
+        "prompt_hash": "0a5e04a9d6d1",
+        "status": "present",
+        "primary": true
       }
     },
     {
@@ -100,13 +102,14 @@
       "d2": {
         "path": "assets/diagrams/ch01-slide10-embedded.png",
         "d2_hash": "e3c68946ad34",
-        "status": "present"
+        "status": "present",
+        "primary": false
       },
       "image": {
         "path": "assets/images/ch01/slide10.png",
-        "prompt_hash": "b881b81b5833",
-        "status": "deferred",
-        "primary": false
+        "prompt_hash": "2fd9338d25d1",
+        "status": "present",
+        "primary": true
       }
     },
     {
@@ -150,13 +153,14 @@
       "d2": {
         "path": "assets/diagrams/ch01-slide15-webmvc.png",
         "d2_hash": "1ca3767f01d7",
-        "status": "present"
+        "status": "present",
+        "primary": false
       },
       "image": {
         "path": "assets/images/ch01/slide15.png",
-        "prompt_hash": "151271558f7b",
-        "status": "deferred",
-        "primary": false
+        "prompt_hash": "314b7b33a6a1",
+        "status": "present",
+        "primary": true
       }
     },
     {
@@ -200,13 +204,14 @@
       "d2": {
         "path": "assets/diagrams/ch01-slide20-flow.png",
         "d2_hash": "df2d560e7f22",
-        "status": "present"
+        "status": "present",
+        "primary": false
       },
       "image": {
         "path": "assets/images/ch01/slide20.png",
-        "prompt_hash": "ab82080d9aaa",
-        "status": "deferred",
-        "primary": false
+        "prompt_hash": "c7b84b8661b3",
+        "status": "present",
+        "primary": true
       }
     },
     {

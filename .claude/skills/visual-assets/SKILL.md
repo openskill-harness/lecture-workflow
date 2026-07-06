@@ -44,9 +44,9 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
   - 완료(또는 부분 완료 확인) 후에만 다음 단계로 넘어간다.
 - 완료 후 **스크래치 파일은 삭제한다**(원고·course_dir에 잔재를 남기지 않는다).
 
-### 3. D2 렌더
+### 3. D2 렌더 (opt-in — 원고에 `주 시각자료: D2` 마커가 있거나 이미지 프롬프트가 없는 슬라이드만)
 
-- 원고의 ` ```d2 ` 코드펜스는 `pub-d2-diagram`의 `scripts/render_md_diagrams.py <원고.md> <images_dir> <접두사>`가 그대로 인식한다(변환 불필요) — ELK 레이아웃 + 모노톤 치환까지 자동, **SVG로 저장**한다.
+- **기본값은 GPT 이미지다.** 슬라이드에 이미지 프롬프트가 있으면 그 슬라이드는 §2(이미지)로 처리하고 D2는 렌더하지 않는다(원고에 D2 코드펜스가 남아 있어도 폴백 소스로만 보존). D2를 그 슬라이드의 주 시각자료로 쓰려면 원고 Visual asset 필드에 `- 주 시각자료: D2` 한 줄을 넣는다(그때만 아래 렌더를 수행).
 - 이 스크립트의 파일명은 파일 내 D2 블록 **등장 순서**(`{접두사}-d{i}.svg`)로 매겨진다 — 슬라이드 번호 기반이 아니다. 반면 `build_asset_manifest.py`(§4)와 기존 소비 계약은 `assets/diagrams/{chNN}-slide{NN}-{요지}.png` 형식(슬라이드 번호 포함, PNG)을 기대한다(`courses/spring-boot-basic/assets/diagrams/ch01-slide05-http.png` 등 기존 실사례 참고). 따라서:
   1. 렌더된 `{접두사}-d{i}.svg`를 원고 순서와 대조해 어느 슬라이드에 대응하는지 확인한다.
   2. `pub-d2-diagram` SKILL.md의 "Windows 렌더" 절(headless Chromium 스크린샷, 고정 뷰포트/스케일/투명배경)에 따라 SVG → PNG로 변환한다.
@@ -57,7 +57,9 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
 
 - `python scripts/build_asset_manifest.py courses/{course-id} chNN` 를 실행한다(레포 루트 스크립트, 수정하지 않고 그대로 호출).
 - 결과 `courses/{course-id}/assets/manifest.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`)가 담긴다.
-- D2가 있는 슬라이드는 이미지가 없어도 스크립트가 자동으로 `image.status = "deferred"`(primary=false) 처리한다 — D2가 그 슬라이드의 주 시각자료이므로 이미지 중복 생성이 불필요하다는 뜻이다. 이 슬라이드는 결핍(missing)으로 세지 않는다.
+- **기본은 이미지 primary**: 이미지 프롬프트가 있으면 `image.primary = true`, D2는 있어도 `d2.primary = false`(폴백 소스로 보존). `주 시각자료: D2` 마커가 있는 슬라이드만 `d2.primary = true`가 되고 이미지가 `deferred`로 강등된다. 이미지 프롬프트가 없는 D2-only 슬라이드는 D2가 primary다.
+- **이미지 미생성 처리**: 이미지가 primary인데 아직 안 만들었으면 `missing`(하드 게이트가 막음)이다. 의도적으로 나중으로 미루려면 원고 Visual asset 필드에 `- 이미지 보류` 한 줄을 넣어라 — 그러면 `deferred`로 표기되어 커버로 인정된다.
+- **원고 자산 병기**: `python scripts/annotate_manuscript_assets.py <course_dir> <chNN>`는 이제 슬라이드별 primary 자산 한 줄만 병기하고 옛 병기 라인은 제거한다(build_pptx가 원고 첫 경로를 임베드하므로 primary가 유일 경로여야 한다).
 - 최상위 `overall_status`(present/partial/missing)와 `visual_slides_covered`/`visual_slides_total`를 확인해 §6·§7 판단의 근거로 삼는다.
 
 ### 5. 원고 주석 (보조 — SSOT 아님)
@@ -91,7 +93,7 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 - [ ] **파일 실존·용량**: manifest에 `status: "present"`로 표시된 모든 자산(`image`/`d2`)이 실제로 파일로 존재하고 크기 > 0 바이트다.
 - [ ] **커버 안 된 시각 슬라이드 0**: Visual asset 필드가 있는 슬라이드 중 `present`도 `deferred`도 아닌(`missing`) 슬라이드가 0개다. 남아 있다면 사용자에게 구체적으로(어느 슬라이드) 보고하고 생성/보류 여부를 재확인한다.
 - [ ] **브릿지 위생**: 스크래치 파일이 실행 후 삭제됐고, 원고 `chNN.md`에는 image-gen용 HTML 주석 블록이 남아 있지 않다.
-- [ ] **D2 파일명 계약**: D2 렌더 산출물이 `assets/diagrams/{chNN}-slide{NN}-*.png` 형식(슬라이드 번호 포함, PNG)으로 저장돼 있다(§3 리네임 누락 없음).
+- [ ] **D2 파일명 계약(opt-in 슬라이드 한정)**: `주 시각자료: D2`로 실제 렌더한 D2 산출물이 있다면 `assets/diagrams/{chNN}-slide{NN}-*.png` 형식으로 저장돼 있다. 이미지 primary 슬라이드는 D2 렌더가 없어도 무방하다.
 
 ## repair 규칙
 

@@ -552,8 +552,12 @@ def fix_typst_content(text: str, image_border_preset: str = "plain", use_image_v
         else:
             return f'#auto-image("{path}", max-width: {max_w}{style_param})'
 
+    # image("path") 뿐 아니라 Pandoc이 캡션 있을 때 내는 image("path", alt: "...") 도 매치.
+    # alt는 따옴표 문자열로 정확히 매치(`"[^"]*"`) — alt 안에 "main()" 같은 괄호가 있어도
+    # 매치가 깨지지 않는다. 안 그러면 캡션 달린 도형이 auto-image(여백·max-height clamp)를
+    # 우회해 안전 여백 정책을 못 받는다 (2026-07-06 fix).
     text = re.sub(
-        r'#figure\(image\("([^"]+)"\)\s*,\s*caption:\s*\[([^\]]*)\]\s*\)',
+        r'#figure\(image\("([^"]+)"(?:,\s*alt:\s*"[^"]*")?\)\s*,\s*caption:\s*\[([^\]]*)\]\s*\)',
         fix_figure_image, text
     )
 

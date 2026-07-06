@@ -66,6 +66,8 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Screen/Visual asset 필드�
 - (2) D2: 그 렌더 결과(svg/png)를 동일하게 삽입한다. 재현이 필요하면 골든처럼 `.flow`/`.node`/`.arrow`로 간단히 재현한다.
 - (3) placeholder: `--line` 테두리의 placeholder 박스를 두고 프롬프트 원문을 짧게 표시한다 — 실제 픽셀 이미지를 대신 만들지 않는다.
 
+**자산 임베드 안전 여백 (2026-07-06 개정)**: 임베드된 이미지/D2가 `.ppt-media` 셀 가장자리에 닿지 않게, 이미지 전용 셀렉터 `.ppt-media > img`에만 `box-sizing: border-box; padding: clamp(10px, 4%, 28px);`를 적용한다(`object-fit: contain`은 기존 규칙 유지). **`.ppt-media`/`.cover-image` 자체나 `.flow`/`pre`/`.split` 등 비이미지 위젯에는 patting을 주지 않는다** — 그 컨테이너 안에는 이미지 외에도 순서도·코드·비교 패널이 들어가므로 전역 padding은 레이아웃을 깬다. `%` 단독 padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거: `docs/proposals/2026-07-06_asset-embed-safe-margin.md`(제안 B), codex 조건 2: `docs/reviews/2026-07-06_asset-embed-margin-codex-review.md`.
+
 ### 4. 자립성 검증
 
 - 외부 CDN·웹폰트·스크립트 참조를 넣지 않는다. 이미지도 로컬 상대경로만 사용한다.

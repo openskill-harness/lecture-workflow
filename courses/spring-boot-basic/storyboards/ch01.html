@@ -85,6 +85,11 @@
       display: block;
       background: #fff;
     }
+    /* asset-embed-safe-margin (2026-07-06): 이미지 전용 안전 여백. 근거: docs/proposals/2026-07-06_asset-embed-safe-margin.md, codex 조건: docs/reviews/2026-07-06_asset-embed-margin-codex-review.md */
+    .slide-preview > img {
+      box-sizing: border-box;
+      padding: clamp(12px, 4%, 32px);
+    }
     .lecture-panel {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));

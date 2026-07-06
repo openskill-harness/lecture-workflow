@@ -188,43 +188,74 @@
   text(fill: rgb("#2563eb"))[#it]
 }
 
+// ── 임베드 안전 여백 정책 (공통 규약) ──
+// 근거: docs/proposals/2026-07-06_asset-embed-safe-margin.md §2-C,
+//       docs/reviews/2026-07-06_asset-embed-margin-codex-review.md 승인 조건 3·4
+// 정책값 1곳(공통 EMBED_SAFE_MARGIN_RATIO=0.05)의 Typst 구현 상수. 값을 바꿀 땐 여기만 수정.
+#let embed-margin-ratio = 0.05
+
+// 페이지 본문(콘텐츠 영역) 높이 — 위 #set page 값(257mm, margin top 20mm/bottom 28mm)에서 파생.
+// #set page의 height/margin을 바꾸면 이 값도 함께 갱신해야 한다(이미지 max-height 계산의 기준).
+#let page-content-height = 257mm - 20mm - 28mm  // 209mm
+
 // ── 자동 크기 조절 이미지 ──
-// 남은 페이지 공간을 감지하여 이미지 크기를 자동으로 조절합니다.
+// 남은 페이지 공간(space-scale)과 페이지 본문 높이 상한(page-cap-scale)을 함께 고려해 이미지 크기를 조절합니다.
 // max-width: 이미지 최대 너비 비율 (0.0~1.0)
+// max-height-ratio: 이미지 최대 높이 비율 — page-content-height 기준 (0.7~0.85 권장, 70%는 과보수이므로 기본값 0.8)
 // style: 이미지 테두리 프리셋
 //   "plain"          — 효과 없음 (기본값)
 //   "bordered"       — 프라이머리 컬러(#2563eb) 테두리
 //   "shadow"         — 오른쪽/아래 그림자 효과
 //   "bordered-shadow" — 프라이머리 테두리 + 그림자
 //   "minimal"        — 얇은 회색 테두리
-// 이미지가 남은 공간보다 크면 자동 축소, 너무 작아지면 다음 페이지로 넘김
-#let auto-image(path, alt: none, max-width: 0.7, style: "plain") = layout(size => context {
-  let target-width = size.width * max-width
+// max-height-ratio 상한은 새 페이지로 넘어가도 항상 적용되어(수학적으로) 페이지를 넘치지 않는다.
+// width·height 둘 다 명시적으로 상한을 둔 뒤 fit: "contain"으로 종횡비를 보존한 채 박스 안에 넣는다(캡션 높이 별도 확보).
+#let auto-image(path, alt: none, max-width: 0.7, max-height-ratio: 0.8, style: "plain") = layout(size => context {
+  // 안전 여백(embed-margin-ratio)만큼 박스 자체를 줄여 자산이 텍스트 폭 경계에 닿지 않게 한다
+  let target-width = size.width * max-width * (1 - embed-margin-ratio)
   let img = image(path, width: target-width)
   let img-size = measure(img)
   let caption-h = if alt != none { 28pt } else { 0pt }
-  let needed = img-size.height + caption-h + 24pt
 
-  let final-width = if needed > size.height and size.height > 120pt {
-    // 남은 공간에 맞게 축소 시도
+  // 페이지 본문 높이 기준 최대 허용 높이(안전 여백 반영) — 어느 페이지에 놓이든 이 한도를 넘지 않는다
+  let max-img-height = page-content-height * max-height-ratio * (1 - embed-margin-ratio)
+
+  // 1) 남은 공간(size.height) 기준 축소 비율 (기존 로직)
+  let space-scale = if size.height > 120pt {
     let available = size.height - caption-h - 24pt
-    let ratio = available / img-size.height
-    if ratio >= 0.5 {
-      target-width * ratio
+    if img-size.height > available {
+      available / img-size.height
     } else {
-      target-width  // 너무 작아지면 원래 크기 (다음 페이지로)
+      1.0
     }
   } else {
-    target-width
+    1.0
   }
 
-  // 스타일별 이미지 래핑
+  // 2) 페이지 본문 높이 상한 기준 축소 비율 (신규 — 새 페이지에서도 항상 적용, floor 없이 항상 강제)
+  let page-cap-scale = if img-size.height > max-img-height {
+    max-img-height / img-size.height
+  } else {
+    1.0
+  }
+
+  // 두 제약 중 더 타이트한 쪽을 적용 — max-height clamp가 항상 우선 보장되도록(오버플로 0 보장)
+  let final-scale = calc.min(space-scale, page-cap-scale)
+  let final-width = target-width * final-scale
+  let final-height = img-size.height * final-scale
+
+  // ⚠️ 경고 표시 조건: final-scale < 0.5 면 원본 대비 절반 미만으로 축소된 것 —
+  // 초세로형(종횡비가 낮은) D2/이미지일 가능성이 높다. 자동 축소는 오버플로 방지를 위해 그대로 유지하되,
+  // 이 경우 D2 재배치(가로 분할·2단 구성) 또는 전면 그림(별도 페이지 배치)을 검토할 것.
+  let show-scale-warning = final-scale < 0.5
+
+  // 스타일별 이미지 래핑 (width·height 둘 다 지정 + fit: "contain"으로 왜곡 없이 박스 안에 맞춤)
   let styled-img = if style == "bordered" {
     block(
       stroke: 2pt + rgb("#2563eb"),
       radius: 4pt,
       clip: true,
-      image(path, width: final-width)
+      image(path, width: final-width, height: final-height, fit: "contain")
     )
   } else if style == "shadow" {
     block(
@@ -236,7 +267,7 @@
       ),
       radius: 4pt,
       clip: true,
-      image(path, width: final-width)
+      image(path, width: final-width, height: final-height, fit: "contain")
     )
   } else if style == "bordered-shadow" {
     block(
@@ -248,23 +279,29 @@
       ),
       radius: 4pt,
       clip: true,
-      image(path, width: final-width)
+      image(path, width: final-width, height: final-height, fit: "contain")
     )
   } else if style == "minimal" {
     block(
       stroke: 0.5pt + rgb("#e5e7eb"),
       radius: 2pt,
       clip: true,
-      image(path, width: final-width)
+      image(path, width: final-width, height: final-height, fit: "contain")
     )
   } else {
-    image(path, width: final-width)
+    image(path, width: final-width, height: final-height, fit: "contain")
   }
 
-  if alt != none {
+  let body = if alt != none {
     figure(styled-img, caption: [#alt])
   } else {
     align(center, styled-img)
+  }
+
+  if show-scale-warning {
+    body + v(2pt) + align(center, text(7.5pt, fill: rgb("#b45309"), style: "italic")[⚠ 세로 비율이 커 축소됨 — D2 재배치/전면 그림 배치 검토 권장])
+  } else {
+    body
   }
 })
 

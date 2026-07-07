@@ -24,7 +24,7 @@
 
 2~11단계는 차시(chapter) 단위로 반복된다. 차시별로 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택). 오케스트라 스킬 `course-pipeline`은 `status.md`를 읽어 미완료 첫 단계부터 순서대로 스킬을 호출한다(오케스트라 없이 각 단계 스킬 단독 호출도 항상 가능).
 
-**시각자산 하드 게이트**: `visual-assets`(4단계)가 ✅ 또는 명시적 `deferred`일 때만 5~11단계(코드~책)를 진행한다. 5~11단계 소비 스킬은 원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로를 읽어 자산을 임베드한다(상세: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3.0-A).
+**시각자산 하드 게이트**: `visual-assets`(4단계)가 ✅ 또는 명시적 `deferred`일 때만 5~11단계(코드~책)를 진행한다. 5~11단계 소비 스킬은 원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로를 읽어 자산을 임베드한다. 단 `pptx-build`만은 예외로, `annotate_manuscript_assets.py`가 manifest primary를 원고에 되써준 **공식 브릿지 표기**를 읽는다(브릿지 = manifest primary 불변식; 상세: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3.0-A).
 
 보조 엔진 스킬(파이프라인 단계 아님, 각 단계 스킬이 필요 시 호출):
 - `image-gen` — GPT 이미지 생성·교체 (주 호출자: `visual-assets`)

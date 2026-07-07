@@ -7,9 +7,15 @@ description: 확정 원고(`manuscripts/chNN.md`)를 16:9 PPTX(`pptx/chNN.pptx`)
 
 확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물, manuscript-schema 문법)를 16:9 PPTX(`pptx/chNN.pptx`)로 변환하는 스킬이다. 파이프라인 10단계이며, 빌더는 `scripts/build_pptx.py`(python-pptx 1.0.2, Task 11 스파이크로 notes_slide 동작 검증됨)다.
 
-**시각자산(4단계)과의 관계(2026-07-06 개정)**: `scripts/build_pptx.py`의 파싱 로직은 바뀌지 않는다 — 원고의 `assets/...png|jpg|jpeg|webp` 경로 패턴(`IMG_PATH_RE`)을 그대로 잡는다. `visual-assets` 단계 완료 후 원고 Visual asset 필드에 병기된 자산 경로(`→ 생성됨:`/`→ 렌더됨:` 다음 줄의 `assets/...` 경로)가 그대로 이 정규식에 매치되므로, 이 스킬은 원고에 이미 병기된 경로를 그대로 사용하기만 하면 된다(별도 manifest 조회 로직 추가 없음).
-
-**자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다). (pptx-build는 원고를 파싱해 첫 자산 경로를 임베드한다 — annotate가 primary만 병기하므로 그 경로가 곧 primary다. D2 primary 슬라이드는 원고에 `주 시각자료: D2` 마커가 있어야 annotate가 D2 경로를 병기한다.)
+**시각자산 SSOT와의 관계 — annotate 브릿지 계약**: `assets/manifest.json`이 시각자산 SSOT이고, `pptx-build`는
+그 SSOT를 **직접 읽지 않는다** — 대신 `visual-assets` 단계의 `annotate_manuscript_assets.py`가 manifest의
+primary 자산 경로를 원고 Visual asset 필드에 되써준 **공식 브릿지 표기**(`→ 생성됨:`/`→ 렌더됨:` 다음 줄의
+`assets/...` 경로)를 읽는다. `scripts/build_pptx.py`의 `IMG_PATH_RE`가 이 브릿지 라인을 매치한다.
+- 이것이 계약상 허용되는 유일한 "원고 경로 읽기"다: annotate가 strip-and-replace로 항상 primary 한 줄만
+  남기므로, 브릿지 라인 = manifest primary가 보장된다. **따라서 pptx-build 실행 전 반드시 annotate가 최신
+  manifest 기준으로 돌아 있어야 한다**(visual-assets 완료 시 자동 수행). manifest만 바꾸고 annotate를 안 돌리면
+  pptx와 다른 소비자가 갈라지므로, 하드게이트(시각자산 ✅) 안에 annotate 실행이 포함됨을 전제한다.
+- 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`), `주 시각자료: D2` 마커가 있는 슬라이드만 D2 PNG.
 
 ## 전제
 

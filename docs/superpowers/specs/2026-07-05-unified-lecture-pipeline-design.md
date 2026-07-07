@@ -55,6 +55,11 @@
 - 생성 완료 자산 경로를 원고 Visual asset 필드에 `→ 생성됨:`/`→ 렌더됨:`으로 주석(사람이 읽는 보조 표기)하는 동시에, **`assets/manifest.json`을 SSOT로 갱신**한다 — 슬라이드별 `{ image: {status, path, prompt_hash}, d2: {status, path, d2_hash} }` 구조. 슬라이드별 status는 `present`(실자산 존재) / `deferred`(사용자가 나중으로 선택, placeholder 유지) / `missing`(아직 미확정) 중 하나(`scripts/build_asset_manifest.py`, `.claude/skills/visual-assets/SKILL.md` §4 실제 구현 기준). 이와 별개로 status.md `시각자산` 열(차시 전체 요약)은 `✅`/`deferred`/`partial`/`stale` 4가지 값을 쓴다(§4, `templates/status_template.md` 참조) — 원고가 재수정되어 해시가 어긋난 상태는 이 status.md 칸에 `stale`로 표기된다.
 - **해시 기반 부분 재생성**: 원고 Visual asset의 프롬프트/D2 소스가 바뀌면 그 슬라이드의 해시만 불일치 → `visual-assets`가 그 슬라이드 자산만 재생성한다(전체 재생성 금지, `.claude/skills/visual-assets/SKILL.md` §7). 후속 산출물(스토리보드 등)도 그 슬라이드만 다시 만들면 된다.
 - 결과: 이후 5~11단계(코드/스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)는 **원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로**를 읽어 자산을 임베드한다(소비 계약, 각 스킬 SKILL.md 참조) — 재동기화 폭포(자산을 나중에 만들어 소비 산출물을 전부 다시 만드는 문제)를 제거하기 위한 핵심 변경.
+  단, `pptx-build`는 예외적으로 manifest를 직독하지 않고 `annotate_manuscript_assets.py`가 원고에 되써준
+  primary 경로(공식 브릿지 표기)를 읽는다. annotate는 manifest primary에서만 파생되고 strip-and-replace로
+  primary 한 줄만 유지하므로 브릿지 라인 = manifest primary가 불변식으로 보장된다. 이 브릿지가 SSOT 계약을
+  깨지 않는 유일 조건은 "pptx-build 실행 전 annotate가 최신 manifest로 돌아 있을 것"이며, 이는 시각자산 ✅
+  하드게이트 안에 포함된다.
 - 코드/캡처형 자산(화면 캡처 등 실행 결과가 필요한 자산)은 예외적으로 `practice-code`(5단계) 이후 finalize substage에서 처리한다(image/D2는 원고확정 직후 착수).
 
 #### 자산 임베드 안전 여백 규약 (canonical — 2026-07-06)

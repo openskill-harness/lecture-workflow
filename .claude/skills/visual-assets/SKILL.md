@@ -124,5 +124,5 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 - D2 엔진: `.claude/skills/pub-d2-diagram/SKILL.md`(Windows 렌더·종횡비 절 포함) + `scripts/render_md_diagrams.py`
 - 원고 스키마(Visual asset 하위 유형): `.claude/skills/manuscript-draft/references/manuscript-schema.md` §4
 - 기존 실사례(수동으로 이 절차를 먼저 밟아본 파일럿): `courses/spring-boot-basic/assets/manifest.json`, `courses/spring-boot-basic/assets/diagrams/ch01-d2-manifest.md`
-- **범위 밖(별도 반영 대상)**: `status.md`의 `시각자산` 열 신설(제안 C), `CLAUDE.md`/설계 문서/`course-pipeline` 매핑 표에 이 스킬을 11단계 파이프라인으로 편입(제안 D), 소비 스킬(storyboard/ppt-preview/pptx-build/panseo-slide/book-build)의 "manifest 우선 소비" 계약 전환(제안 E 조건 4) — 이 스킬은 이 변경들이 아직 반영되지 않은 상태에서도 단독으로 동작하도록 §1·§5·§6에서 방어적으로 서술했다.
+- **범위 밖(별도 반영 대상)**: `status.md`의 `시각자산` 열 신설(제안 C), `CLAUDE.md`/설계 문서/`course-pipeline` 매핑 표에 이 스킬을 11단계 파이프라인으로 편입(제안 D). 소비 스킬의 "manifest 우선 소비" 계약 전환(제안 E 조건 4)은 완료됐으며, `pptx-build`만 annotate 브릿지로 계약화됐다(스펙 §3.0-A, §5 참조).
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

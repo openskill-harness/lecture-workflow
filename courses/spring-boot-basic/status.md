@@ -4,18 +4,18 @@
 
 | 차시 | 원고초안 | 원고확정 | 시각자산 | 코드 | 스토리보드 | PPT프리뷰 | 판서 | 시뮬 | PPTX | 책 |
 |---|---|---|---|---|---|---|---|---|---|---|
-| ch01 | ✅ | ✅ | 🔄 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| ch01 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 기호: ⬜ 미착수 / 🔄 진행 중(사용자 확인 대기 포함) / ✅ 확정 / ➖ 보류(사유는 아래)
 시각자산 전용 상태값: `deferred`(placeholder 유지) / `partial`(일부 생성) / `stale`(원고 변경으로 재생성 필요)
 
-> ch01 전 단계는 2026-07-06 자율 생성 + 자가검증 완료. **아침 사용자 검토 대기**. 파이프라인 11단계(visual-assets 신설) 재설계 후 새 순서로 재빌드됨.
+> ch01 전 단계는 2026-07-06 자율 생성 + 자가검증 완료. **사용자 육안 검토 완료 — 시각자산 확정(2026-07-07)**. 파이프라인 11단계(visual-assets 신설) 재설계 후 새 순서로 재빌드됨.
 
-다음 할 일: ch01 GPT 이미지 재빌드 전 소비물(스토리보드·PPT프리뷰·판서·PPTX·책) 완료 — 사용자 육안 검토 대기(확정 시 시각자산 ✅).
+다음 할 일: ch01 11단계(원고~책) 전 구간 완료, 시각자산 포함 전 칸 ✅ — ch02 착수 또는 과정 완주 여부 판단.
 
 ## 산출물 인덱스
 - ch01 확정원고: manuscripts/ch01.md (26슬라이드, 자산 경로 병기, 채택 2026-07-06)
-- ch01 시각자산: assets/manifest.json (SSOT, 26/26 커버 — GPT 이미지 26 primary), assets/images/ch01/slide*.png(26), assets/diagrams/ch01-slide{05,08,10,15,20}-*.png(5, D2 opt-in 폴백 소스로 보존·미임베드) — 2026-07-07 D2→GPT 전환
+- ch01 시각자산: assets/manifest.json (SSOT, 26/26 커버 — GPT 이미지 26 primary), assets/images/ch01/slide*.png(26), assets/diagrams/ch01-slide{05,08,10,15,20}-*.png(5, D2 opt-in 폴백 소스로 보존·미임베드) — 2026-07-07 D2→GPT 전환 — 시각자산 확정 2026-07-07
 - ch01 실습코드: code/ch01/final/ (검증 로그: validation.log — gradle test 통과, /hello 200, /helo 404 재현)
 - ch01 스토리보드: storyboards/ch01.html (26카드, 실자산 26/26 임베드)
 - ch01 PPT프리뷰: ppt_previews/ch01.html (16:9 26캔버스, DOM 계약, 실자산 26/26)

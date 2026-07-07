@@ -1,6 +1,6 @@
 ---
 name: manuscript-verify
-description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프로토콜·API·버전)을 외부 권위 문서 + Source 교차확인으로 적대적 검증해 근거부 리포트(`verification/chNN_verify.md`)를 내는 비차단 온디맨드 스킬. "원고 검증", "기술 검증", "팩트체크", "사실 확인" 요청 시 사용. 파이프라인 3.5단계(원고확정 직후, 온디맨드) — 하드 게이트가 아니며 원고를 자동 수정하지 않는다(수정은 사용자가 manuscript-final로). 비유·의견·서사는 검증 대상이 아니다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 기술 주장(정의·프로토콜·API·버전)을 외부 권위 문서 + Source 교차확인으로 적대적 검증해 근거부 리포트(`outputs/11_검증/chNN_verify.md`)를 내는 비차단 온디맨드 스킬. "원고 검증", "기술 검증", "팩트체크", "사실 확인" 요청 시 사용. 파이프라인 3.5단계(원고확정 직후, 온디맨드) — 하드 게이트가 아니며 원고를 자동 수정하지 않는다(수정은 사용자가 manuscript-final로). 비유·의견·서사는 검증 대상이 아니다.
 ---
 
 # manuscript-verify
@@ -32,7 +32,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프�
 
 ## 3. 리포트 집계
 
-- 판정을 모아 `courses/{id}/verification/chNN_verify.md`를 만든다. 포맷은 `references/report-template.md`를 따른다.
+- 판정을 모아 `courses/{id}/outputs/11_검증/chNN_verify.md`를 만든다. 포맷은 `references/report-template.md`를 따른다.
 - **"반박(조치 대상)"과 "검증불가(사람 판단 필요)"를 분리**한다 — 오탐이 조치 목록을 오염시키지 않게. "검증불가"는 오류가 아니라 사람 판단 항목이다.
 - 의심 요약(반박 N건·검증불가 Z건·미검증 W건)을 사용자에게 보고한다.
 
@@ -48,7 +48,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프�
 - [ ] **근거 첨부**: "반박"·"지지" 판정에 인용 가능한 근거(URL + 인용문)가 붙어 있다. 근거 없는 판정은 "검증불가"로 내렸다.
 - [ ] **분리 표기**: 리포트가 "반박(조치)"과 "검증불가(사람 판단)"를 분리했다.
 - [ ] **미검증 명시**: 상한 등으로 못 돌린 주장을 리포트에 명시했다.
-- [ ] **비파괴**: 원고(`manuscripts/chNN.md`)를 수정하지 않았다.
+- [ ] **비파괴**: 원고(`outputs/02_원고/chNN.md`)를 수정하지 않았다.
 
 ## 참고
 

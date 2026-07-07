@@ -27,17 +27,17 @@
 
 | # | 스킬 | 산출물 | 확정 방식 |
 |---|------|--------|-----------|
-| 1 | `course-outline` | `1.과정개요서.md` | 대화로 함께 작성 → 확정 |
-| 2 | `manuscript-draft` | `manuscripts/chNN_draft.md` | 생성 → 확인 |
-| 3 | `manuscript-final` | `manuscripts/chNN.md` | 티키타카 수정 → 확정 |
-| 4 | `visual-assets` (신규) | `assets/images/chNN/`, `assets/diagrams/`, `assets/manifest.json` | 생성(지금/deferred 선택) → 확인 |
-| 5 | `practice-code` | `code/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
-| 6 | `storyboard` | `storyboards/chNN.html` (라이트) | 확인 |
-| 7 | `ppt-preview` | `ppt_previews/chNN.html` (라이트) | 확인 |
-| 8 | `panseo-slide` (재작성) | `panseo/chNN.html` + `panseo/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
-| 9 | `edu-sim-builder` (재작성) | `simulators/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
-| 10 | `pptx-build` | `pptx/chNN.pptx` | 확인 |
-| 11 | `book-build` | `book/chNN.pdf`, 완주 시 `book/합본.pdf` | 확인 |
+| 1 | `course-outline` | `outputs/01_과정개요서.md` | 대화로 함께 작성 → 확정 |
+| 2 | `manuscript-draft` | `outputs/02_원고/chNN_draft.md` | 생성 → 확인 |
+| 3 | `manuscript-final` | `outputs/02_원고/chNN.md` | 티키타카 수정 → 확정 |
+| 4 | `visual-assets` (신규) | `outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`, `outputs/03_시각자산/manifest.json` | 생성(지금/deferred 선택) → 확인 |
+| 5 | `practice-code` | `outputs/04_코드/chNN/` + 실행 검증 로그 | 실행 검증 통과 → 확인 |
+| 6 | `storyboard` | `outputs/05_스토리보드/chNN.html` (라이트) | 확인 |
+| 7 | `ppt-preview` | `outputs/06_PPT프리뷰/chNN.html` (라이트) | 확인 |
+| 8 | `panseo-slide` (재작성) | `outputs/07_판서/chNN.html` + `outputs/07_판서/chNN_대본.md` | 모드 선택 → 생성 → 확인 |
+| 9 | `edu-sim-builder` (재작성) | `outputs/08_시뮬/chNN_{주제}.html` | 대상 슬라이드 질문 → 생성 → 확인 |
+| 10 | `pptx-build` | `outputs/09_PPTX/chNN.pptx` | 확인 |
+| 11 | `book-build` | `outputs/10_책/chNN.pdf`, 완주 시 `outputs/10_책/합본.pdf` | 확인 |
 
 - 2~11단계는 차시(chapter) 단위로 반복된다. 차시별로 단계를 완주할 수도, 단계별로 전 차시를 훑을 수도 있다(사용자 선택).
 - 1차시를 파일럿으로 완성해 형식을 검증한 뒤 나머지 차시로 확장한다.
@@ -49,11 +49,11 @@
 
 원고확정 직후, 소비 산출물(코드~책) 앞에 놓인다. 책임:
 
-- 확정 원고의 Visual asset 필드를 스캔해 이미지 프롬프트를 image-gen의 `[IMAGE PROMPT]` 태그로 자동 변환(브릿지 내장) 후 image-gen 실행 → `assets/images/chNN/`. `` ```d2 `` 블록은 pub-d2-diagram으로 렌더 → `assets/diagrams/`.
+- 확정 원고의 Visual asset 필드를 스캔해 이미지 프롬프트를 image-gen의 `[IMAGE PROMPT]` 태그로 자동 변환(브릿지 내장) 후 image-gen 실행 → `outputs/03_시각자산/images/chNN/`. `` ```d2 `` 블록은 pub-d2-diagram으로 렌더 → `outputs/03_시각자산/diagrams/`.
 - 슬라이드마다 "지금 생성" 또는 "나중에(`deferred`, placeholder 유지)"를 사용자에게 명시적으로 선택받는다 — image-gen 지연(장당 1~2분, 직렬)을 고려해 백그라운드 배치 + 진행 표시로 처리한다.
-- 생성 완료 자산 경로를 원고 Visual asset 필드에 `→ 생성됨:`/`→ 렌더됨:`으로 주석(사람이 읽는 보조 표기)하는 동시에, **`assets/manifest.json`을 SSOT로 갱신**한다 — 슬라이드별 `{ image: {status, path, prompt_hash}, d2: {status, path, d2_hash} }` 구조. 슬라이드별 status는 `present`(실자산 존재) / `deferred`(사용자가 나중으로 선택, placeholder 유지) / `missing`(아직 미확정) / `stale`(프롬프트 변경으로 재생성 필요) 중 하나(`scripts/build_asset_manifest.py`, `.claude/skills/visual-assets/SKILL.md` §4 실제 구현 기준). 이와 별개로 status.md `시각자산` 열(차시 전체 요약)은 `✅`/`deferred`/`partial`/`stale` 4가지 값을 쓴다(§4, `templates/status_template.md` 참조) — 원고가 재수정되어 해시가 어긋난 상태는 이 status.md 칸에 `stale`로 표기된다.
+- 생성 완료 자산 경로를 원고 Visual asset 필드에 `→ 생성됨:`/`→ 렌더됨:`으로 주석(사람이 읽는 보조 표기)하는 동시에, **`outputs/03_시각자산/manifest.json`을 SSOT로 갱신**한다 — 슬라이드별 `{ image: {status, path, prompt_hash}, d2: {status, path, d2_hash} }` 구조. 슬라이드별 status는 `present`(실자산 존재) / `deferred`(사용자가 나중으로 선택, placeholder 유지) / `missing`(아직 미확정) / `stale`(프롬프트 변경으로 재생성 필요) 중 하나(`scripts/build_asset_manifest.py`, `.claude/skills/visual-assets/SKILL.md` §4 실제 구현 기준). 이와 별개로 status.md `시각자산` 열(차시 전체 요약)은 `✅`/`deferred`/`partial`/`stale` 4가지 값을 쓴다(§4, `templates/status_template.md` 참조) — 원고가 재수정되어 해시가 어긋난 상태는 이 status.md 칸에 `stale`로 표기된다.
 - **해시 기반 부분 재생성**: 원고 Visual asset의 프롬프트/D2 소스가 바뀌면 그 슬라이드의 해시만 불일치 → `visual-assets`가 그 슬라이드 자산만 재생성한다(전체 재생성 금지, `.claude/skills/visual-assets/SKILL.md` §7). 후속 산출물(스토리보드 등)도 그 슬라이드만 다시 만들면 된다.
-- 결과: 이후 5~11단계(코드/스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)는 **원고 프롬프트 텍스트가 아니라 `assets/manifest.json`의 확정 경로**를 읽어 자산을 임베드한다(소비 계약, 각 스킬 SKILL.md 참조) — 재동기화 폭포(자산을 나중에 만들어 소비 산출물을 전부 다시 만드는 문제)를 제거하기 위한 핵심 변경.
+- 결과: 이후 5~11단계(코드/스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)는 **원고 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`의 확정 경로**를 읽어 자산을 임베드한다(소비 계약, 각 스킬 SKILL.md 참조) — 재동기화 폭포(자산을 나중에 만들어 소비 산출물을 전부 다시 만드는 문제)를 제거하기 위한 핵심 변경.
   단, `pptx-build`는 예외적으로 manifest를 직독하지 않고 `annotate_manuscript_assets.py`가 원고에 되써준
   primary 경로(공식 브릿지 표기)를 읽는다. annotate는 manifest primary에서만 파생되고 strip-and-replace로
   primary 한 줄만 유지하므로 브릿지 라인 = manifest primary가 불변식으로 보장된다. 이 브릿지가 SSOT 계약을
@@ -75,7 +75,7 @@
 
 ### 3.1 실습 코드 단계 (`practice-code`)
 
-확정 원고의 `Practice` 필드를 근거로 차시별 실습 코드를 `code/chNN/`에 생성하고 **실제로 실행해 검증**한다(빌드/실행/HTTP 호출 등, 결과는 검증 로그로 남김). 검증 중 원고의 실습 지시와 코드가 어긋나면 원고를 역수정(사용자 확인 후)한다. 이후 단계(스토리보드/PPT/책)의 코드 블록은 이 검증된 코드에서 발췌한다.
+확정 원고의 `Practice` 필드를 근거로 차시별 실습 코드를 `outputs/04_코드/chNN/`에 생성하고 **실제로 실행해 검증**한다(빌드/실행/HTTP 호출 등, 결과는 검증 로그로 남김). 검증 중 원고의 실습 지시와 코드가 어긋나면 원고를 역수정(사용자 확인 후)한다. 이후 단계(스토리보드/PPT/책)의 코드 블록은 이 검증된 코드에서 발췌한다.
 
 ### 3.2 오케스트라 스킬 `course-pipeline`
 
@@ -85,24 +85,38 @@
 
 ## 4. 디렉터리 구조
 
+산출물은 `outputs/` 아래 **파이프라인 진행 순서 번호 + 한글 이름** 폴더로 모인다 — 탐색기에서
+제작 순서 그대로 정렬되어 산출물을 한눈에 볼 수 있게 하기 위해서다. 상태(`status.md`)와
+입력(`research/`)은 과정 루트에 남는다. 폴더 번호는 표시 순서이며 단계 번호와 1:1은 아니다
+(원고초안·확정이 `02_원고/`를 공유, 검증(3.5단계)은 온디맨드라 마지막 배치).
+
 ```
 courses/{course-id}/
-├── status.md                 # 단계×차시 진행 상태 (재개용)
-├── 1.과정개요서.md            # 1단계 확정 산출물
-├── research/                 # 개요서 단계의 리서치 md (서브에이전트 산출)
-├── manuscripts/              # chNN_draft.md → chNN.md (확정)
-├── storyboards/              # chNN.html
-├── ppt_previews/             # chNN.html
-├── panseo/                   # chNN.html + chNN_대본.md
-├── simulators/               # chNN_{주제}.html
-├── pptx/                     # chNN.pptx
-├── book/                     # chNN.pdf, 합본.pdf, 집필 중간 md
-├── assets/
-│   ├── images/chNN/          # 생성 이미지
-│   ├── diagrams/             # D2 소스 + 렌더 PNG
-│   └── manifest.json         # 시각자산 SSOT (슬라이드→경로/해시/상태, visual-assets 소유)
-└── code/chNN/                # 차시별 실습 코드
+├── status.md                  # 단계×차시 진행 상태 (재개용)
+├── research/                  # 개요서 단계의 리서치 md (서브에이전트 산출)
+└── outputs/
+    ├── 01_과정개요서.md        # 1단계 확정 산출물
+    ├── 02_원고/               # chNN_draft.md → chNN.md (확정)
+    ├── 03_시각자산/
+    │   ├── images/chNN/       # 생성 이미지
+    │   ├── diagrams/          # D2 소스 + 렌더 PNG
+    │   ├── ppt_render/chNN/   # pptx-build 이미지 모드의 프리뷰 렌더 PNG
+    │   └── manifest.json      # 시각자산 SSOT (슬라이드→경로/해시/상태, visual-assets 소유)
+    ├── 04_코드/chNN/          # 차시별 실습 코드
+    ├── 05_스토리보드/          # chNN.html
+    ├── 06_PPT프리뷰/          # chNN.html
+    ├── 07_판서/               # chNN.html + chNN_대본.md
+    ├── 08_시뮬/               # chNN_{주제}.html
+    ├── 09_PPTX/               # chNN.pptx
+    ├── 10_책/                 # chNN.pdf, 합본.pdf, 집필 중간 md
+    └── 11_검증/               # chNN_verify.md (manuscript-verify, 온디맨드)
 ```
+
+산출물 간 상대 참조(HTML 임베드 등)는 `outputs/` 내부 형제 관계라 깊이가 일정하다
+(예: `outputs/05_스토리보드/chNN.html`에서 `../03_시각자산/images/...`). 스크립트는
+`scripts/course_layout.py`로 경로를 결정한다 — `outputs/`가 없고 루트에 `manuscripts/`가 있는
+과정은 루트 평면 배치로 해석하므로(과정 산출물은 규약 변경 시 이관하지 않는다), 그런 과정도
+같은 스크립트·repair 로직으로 동작한다.
 
 `status.md` 형식: 차시×단계 체크 테이블 + "다음 할 일" + **산출물 인덱스/보류 섹션** (Registry 폐기의 경량 대체 — codex 검증 반영). 예:
 
@@ -116,15 +130,17 @@ courses/{course-id}/
 다음 할 일: ch01 PPT프리뷰 사용자 확인 대기
 
 ## 산출물 인덱스 (자동 갱신)
-- ch01 원고: manuscripts/ch01.md (확정 2026-07-05)
-- ch01 코드: code/ch01/ (검증 로그: code/ch01/validation.log)
+- ch01 원고: outputs/02_원고/ch01.md (확정 2026-07-05)
+- ch01 코드: outputs/04_코드/ch01/ (검증 로그: outputs/04_코드/ch01/validation.log)
 …
 
 ## 보류/누락
 - ch01 시뮬레이터: 사용자가 3차시 이후로 보류 (2026-07-05)
 ```
 
-산출물 경로는 디렉터리 규약으로 고정되므로 인덱스는 확정 일자·검증 로그·보류 사유만 추가로 기록한다.
+산출물 인덱스에는 **실경로**와 확정 일자(·검증 로그·보류 사유)를 기록한다. 이 실경로가
+✅↔실파일 대조(repair)의 1차 기준이다 — 신규 산출물은 위 디렉터리 규약 경로로 만들되,
+배치가 다른 과정(규약 변경 이전 생성)도 인덱스 경로로 동일하게 검증된다.
 
 ## 5. 과정개요서 대화 흐름 (`course-outline`)
 
@@ -135,7 +151,7 @@ courses/{course-id}/
 5. 과정목표 1개 — 후보 3개 제시, 사용자가 선택하거나 직접 제안.
 6. 세부 학습목표 N개 — 각각 후보 3개 제시.
 7. 과정 차시 수/차시명/차시내용을 함께 정리.
-8. 개요서 초안 생성 → 확인·수정 → `1.과정개요서.md` 확정.
+8. 개요서 초안 생성 → 확인·수정 → `outputs/01_과정개요서.md` 확정.
 
 개요서에는 NCS 능력단위요소 연계(해당 시), 차시별 강의 흐름, 실습 도메인의 연속성(예: 하나의 Todo 도메인으로 이어가기)을 담는다.
 
@@ -156,18 +172,18 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - **차시당 평가 문항**: 4지선다 1개 + 진위형 2개 (정답·해설 포함).
 - **초안 원칙**: 압축하지 않는다. 차시당 30분 초과 허용. 덜어내기는 사용자가 완성 단계(티키타카)에서 한다.
 - 초안(`chNN_draft.md`) 확정 후 사용자와의 반복 수정을 거쳐 `chNN.md`로 완성 확정.
-- **시각 자산 생성과의 분리(2026-07-06 개정)**: `manuscript-final`은 Visual asset 필드의 프롬프트/D2 소스 문구를 다듬는 것까지만 책임진다. 실제 이미지/D2 렌더 생성과 `→ 생성됨:`/`→ 렌더됨:` 병기, `assets/manifest.json` 갱신은 원고확정 **다음** 단계인 `visual-assets`(§3.0-A)가 전담한다 — 원고확정 시점에는 자산이 아직 없어도 확정할 수 있다.
+- **시각 자산 생성과의 분리(2026-07-06 개정)**: `manuscript-final`은 Visual asset 필드의 프롬프트/D2 소스 문구를 다듬는 것까지만 책임진다. 실제 이미지/D2 렌더 생성과 `→ 생성됨:`/`→ 렌더됨:` 병기, `outputs/03_시각자산/manifest.json` 갱신은 원고확정 **다음** 단계인 `visual-assets`(§3.0-A)가 전담한다 — 원고확정 시점에는 자산이 아직 없어도 확정할 수 있다.
 
 ## 7. 판서슬라이드 (`panseo-slide` 재작성)
 
 기존 판서 엔진(펜/모눈 격자/사각형 선택 이동/획 객체 이동/지우개/빈 칠판 판서모드 전환)은 유지하되, 스킬을 재작성하여 입력 모드 2개를 정식 지원한다:
 
 - **요약 모드**: 확정 원고를 판서용으로 요약한 저밀도 슬라이드 생성 (판서 여백 확보).
-- **그대로 모드**: `ppt_previews/chNN.html`의 슬라이드 내용을 그대로 가져오고 판서 기능 레이어만 얹음.
+- **그대로 모드**: `outputs/06_PPT프리뷰/chNN.html`의 슬라이드 내용을 그대로 가져오고 판서 기능 레이어만 얹음.
 
 실행 시 사용자에게 모드를 묻는다. 판서대본도 함께 생성한다. 기존 "복사본 + 하네스 통합 재정의 섹션" 방식은 폐기하고 스킬 본문을 직접 새로 쓴다. `panseo-board`(빈 칠판 단독)는 명시 요청 시 사용하는 보조 스킬로 유지한다.
 
-**시각 자산 소비(2026-07-06 개정)**: 그대로 모드는 `ppt_previews/chNN.html`의 DOM(이미지 포함)을 그대로 이식하므로, 실자산 여부는 그 상위 단계인 `ppt-preview`가 `assets/manifest.json`을 읽어 이미 반영한 상태를 그대로 물려받는다(panseo-slide 자신이 manifest를 직접 읽지 않는다 — 간접 소비).
+**시각 자산 소비(2026-07-06 개정)**: 그대로 모드는 `outputs/06_PPT프리뷰/chNN.html`의 DOM(이미지 포함)을 그대로 이식하므로, 실자산 여부는 그 상위 단계인 `ppt-preview`가 `outputs/03_시각자산/manifest.json`을 읽어 이미 반영한 상태를 그대로 물려받는다(panseo-slide 자신이 manifest를 직접 읽지 않는다 — 간접 소비).
 
 ## 8. 시뮬레이터 (`edu-sim-builder` 재작성)
 
@@ -178,11 +194,11 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 
 ## 9. PPTX 자동 생성 (`pptx-build`)
 
-- python-pptx 기반. 원고(`chNN.md`)와 `ppt_previews/chNN.html`을 기준으로 16:9 슬라이드 생성.
+- python-pptx 기반. 원고(`chNN.md`)와 `outputs/06_PPT프리뷰/chNN.html`을 기준으로 16:9 슬라이드 생성.
 - 슬라이드 본문: 제목, 짧은 문구, 이미지(assets), D2 렌더 PNG, 핵심 코드.
 - **발표자 노트에 Narration 삽입** — python-pptx의 `notes_slide` API가 발표자 노트를 정식 지원한다(codex가 blocker로 지적했으나 과대평가로 판단). 다만 구현 초기에 "슬라이드 1장 + 노트 삽입 + PowerPoint에서 열어 확인" spike를 먼저 수행해 확정한다.
 - 강의장에서 바로 쓸 수 있는 실제 .pptx가 목표.
-- **시각 자산과의 관계(2026-07-06 개정)**: `pptx-build`의 기본은 **이미지 모드**로 바뀌었다(제안 `2026-07-06_pptx-image-mode.md` 반영): 승인된 `ppt_previews/chNN.html`을 `render_preview_slides.py`로 렌더한 PNG를 각 장 전체 배경으로 넣는다. 원고를 python-pptx로 직접 파싱하는 방식은 대안 **네이티브 모드**(`--from-images` 미지정)로 남아 있으며, 그 모드는 annotate 브릿지 경로(§3.0-A)를 정규식으로 잡는다. 이제 `visual-assets`(4단계)가 원고확정 직후 실행되므로, `pptx-build`가 호출되는 시점엔 원고에 이미 실자산 경로가 병기되어 있는 것이 정상 경로다(과거처럼 placeholder만 있는 상태로 넘어와 재빌드가 필요한 상황이 줄어든다).
+- **시각 자산과의 관계(2026-07-06 개정)**: `pptx-build`의 기본은 **이미지 모드**로 바뀌었다(제안 `2026-07-06_pptx-image-mode.md` 반영): 승인된 `outputs/06_PPT프리뷰/chNN.html`을 `render_preview_slides.py`로 렌더한 PNG를 각 장 전체 배경으로 넣는다. 원고를 python-pptx로 직접 파싱하는 방식은 대안 **네이티브 모드**(`--from-images` 미지정)로 남아 있으며, 그 모드는 annotate 브릿지 경로(§3.0-A)를 정규식으로 잡는다. 이제 `visual-assets`(4단계)가 원고확정 직후 실행되므로, `pptx-build`가 호출되는 시점엔 원고에 이미 실자산 경로가 병기되어 있는 것이 정상 경로다(과거처럼 placeholder만 있는 상태로 넘어와 재빌드가 필요한 상황이 줄어든다).
 
 ## 10. PDF책 (`book-build`) — lecture-book-workflow 이식
 
@@ -201,11 +217,11 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 
 **책 품질 통제 (codex 검증 반영)**: humanizer 문체 교정 외에, 집필 후 편집 검토 패스를 둔다 — ① 원고 사실성 보존(기술 서술이 원고·출처와 어긋나지 않는지), ② 기술 개념 누락(원고의 핵심 개념·실습·평가가 책에 모두 반영됐는지), ③ 과도한 소설화 방지(이야기가 기술 설명을 잠식하지 않는지). 원본 저장소의 writer → illustrator → editor 순환 구조에서 editor 역할을 이 체크리스트로 이식한다.
 
-출력: 차시 완성 시 `book/chNN.pdf`, 과정 완주 시 `book/합본.pdf`(목차·표지 포함 1권).
+출력: 차시 완성 시 `outputs/10_책/chNN.pdf`, 과정 완주 시 `outputs/10_책/합본.pdf`(목차·표지 포함 1권).
 
 참조 clone 위치(재사용): scratchpad의 `lecture-book-workflow/` — 구현 시 필요한 파일만 저장소로 복사.
 
-**시각 자산 소비(2026-07-06 개정)**: 이미지·D2 PNG 삽입 시 원고에 병기된 프롬프트 텍스트가 아니라 `assets/manifest.json`에서 해당 슬라이드의 확정 경로(image가 `present`면 그 path, 없고 d2가 `present`면 그 path)를 읽어 참조한다. 둘 다 `present`가 아니면(`deferred`/`missing`) 해당 장면은 삽화 없이 텍스트만으로 진행한다.
+**시각 자산 소비(2026-07-06 개정)**: 이미지·D2 PNG 삽입 시 원고에 병기된 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`에서 해당 슬라이드의 확정 경로(image가 `present`면 그 path, 없고 d2가 `present`면 그 path)를 읽어 참조한다. 둘 다 `present`가 아니면(`deferred`/`missing`) 해당 장면은 삽화 없이 텍스트만으로 진행한다.
 
 ## 11. 삭제 / 보존 / 이동
 

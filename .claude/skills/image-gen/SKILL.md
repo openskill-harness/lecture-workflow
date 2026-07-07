@@ -10,7 +10,7 @@ description: "[IMAGE PROMPT] 플레이스홀더를 Codex(GPT) CLI 이미지로 �
 
 ## 백엔드
 - **Codex CLI**(구독 로그인, API 키 불필요). 헤드리스 호출: `node <npm-global>/@openai/codex/bin/codex.js exec --json --skip-git-repo-check -` (프롬프트 stdin). 평문 `codex exec "..."`는 non-TTY에서 실패.
-- 생성 PNG는 `~/.codex/generated_images/{thread_id}/ig_*.png`에 저장됨(thread_id는 JSONL `thread.started`에서 파싱) → 스크립트가 플레이스홀더의 `path:`(project_root 상대)가 가리키는 곳으로 이동. (구 문서의 "assets/CH{N}/ 고정" 서술은 stale — 코드는 path: 기준. 강의 하네스 표준: `courses/{id}/images/`)
+- 생성 PNG는 `~/.codex/generated_images/{thread_id}/ig_*.png`에 저장됨(thread_id는 JSONL `thread.started`에서 파싱) → 스크립트가 플레이스홀더의 `path:`(project_root 상대)가 가리키는 곳으로 이동. 경로는 전적으로 `path:` 기준이며, 강의 하네스 표준 위치는 `courses/{id}/outputs/03_시각자산/images/chNN/`(호출자 visual-assets가 지정).
 
 ## 사용
 ```bash

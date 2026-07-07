@@ -6,13 +6,13 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 # panseo-slide
 
 파이프라인 8단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표).
-확정 원고 `manuscripts/chNN.md`(3단계) 또는 PPT 프리뷰 `ppt_previews/chNN.html`(7단계)을 입력으로
-받아, 판서 엔진이 내장된 강의 슬라이드 `panseo/chNN.html`과 판서대본 `panseo/chNN_대본.md`를
+확정 원고 `outputs/02_원고/chNN.md`(3단계) 또는 PPT 프리뷰 `outputs/06_PPT프리뷰/chNN.html`(7단계)을 입력으로
+받아, 판서 엔진이 내장된 강의 슬라이드 `outputs/07_판서/chNN.html`과 판서대본 `outputs/07_판서/chNN_대본.md`를
 만든다. 이 스킬은 하네스의 **판서 엔진 소유 스킬**이다 — 엔진(펜/모눈/선택이동/지우개/판서모드
 전환/전체화면)의 요구 명세는 `reference/engine.md`, 소유 템플릿은 `template/`에 있다.
 
-**시각자산(4단계)과의 관계**: 이 스킬은 `assets/manifest.json`을 직접 읽지 않는다 — 그대로 모드는
-`ppt_previews/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
+**시각자산(4단계)과의 관계**: 이 스킬은 `outputs/03_시각자산/manifest.json`을 직접 읽지 않는다 — 그대로 모드는
+`outputs/06_PPT프리뷰/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
 그대로 이식하므로 간접 소비다. 요약 모드도 원고를 참고하되 이미지 삽입은 하지 않는다(저밀도 요약 취지).
 
 (이 스킬은 manifest를 직독하지 않는다: 그대로 모드는 ppt-preview HTML을 그대로 이어받아 이미 임베드된
@@ -21,9 +21,9 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 산출물 (항상 2개)
 
-- `panseo/chNN.html` — 단일 파일. 판서 기능이 내장된 강의 슬라이드. 펜·터치 기기 브라우저에서
+- `outputs/07_판서/chNN.html` — 단일 파일. 판서 기능이 내장된 강의 슬라이드. 펜·터치 기기 브라우저에서
   바로 열림.
-- `panseo/chNN_대본.md` — 슬라이드별 판서 지시 + 대본.
+- `outputs/07_판서/chNN_대본.md` — 슬라이드별 판서 지시 + 대본.
 
 ## 0. 모드 질문 (필수, 매 실행마다 먼저)
 
@@ -32,15 +32,15 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 - **요약 모드** — 확정 원고를 판서 여백이 있는 저밀도 슬라이드로 요약한다. 화면 하단 1/3은 비워
   둔다.
-- **그대로 모드** — `ppt_previews/chNN.html`의 각 `.ppt-slide` 캔버스 내용을 그대로 이식하고 판서
+- **그대로 모드** — `outputs/06_PPT프리뷰/chNN.html`의 각 `.ppt-slide` 캔버스 내용을 그대로 이식하고 판서
   레이어만 추가한다(캔버스는 요약하지 않는다).
 
 ## 1. 시작 — 전제 확인
 
 - 대상 차시 `courses/{course-id}/status.md`를 읽는다.
-- **요약 모드**: `manuscripts/chNN.md`가 없거나 `원고확정`이 ✅가 아니면 사용자에게 알리고
+- **요약 모드**: `outputs/02_원고/chNN.md`가 없거나 `원고확정`이 ✅가 아니면 사용자에게 알리고
   중단한다.
-- **그대로 모드**: `ppt_previews/chNN.html`이 없거나 `PPT프리뷰`가 ✅가 아니면 사용자에게 알리고
+- **그대로 모드**: `outputs/06_PPT프리뷰/chNN.html`이 없거나 `PPT프리뷰`가 ✅가 아니면 사용자에게 알리고
   중단한다.
 - **하드게이트**: 두 모드 공통으로 해당 차시 `시각자산`이 ✅ 또는 `deferred`가 아니면(⬜/🔄/`partial`/`stale`)
   사용자에게 알리고 중단한다 — 먼저 `visual-assets`를 완료(또는 명시 보류)해야 한다.
@@ -55,13 +55,13 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 | 모드 | 템플릿 | 이유 |
 |------|--------|------|
 | 요약 모드 | `template/board_template.html` (다크 네이비) | 판서 대비가 좋은 원래 정체성. 저밀도 컷 + 넓은 판서 여백에 어울림 |
-| 그대로 모드 | `template/board_template_light.html` (라이트) | `ppt_previews/chNN.html`이 라이트 팔레트라 이질감 없이 이식됨 |
+| 그대로 모드 | `template/board_template_light.html` (라이트) | `outputs/06_PPT프리뷰/chNN.html`이 라이트 팔레트라 이질감 없이 이식됨 |
 
-`panseo/chNN.html`로 복사한다.
+`outputs/07_판서/chNN.html`로 복사한다.
 
 ## 3. 요약 모드 절차
 
-1. 원고 `manuscripts/chNN.md`의 `## Slide N.` 블록마다 `.step` 컷을 하나씩 만든다. **컷 수는
+1. 원고 `outputs/02_원고/chNN.md`의 `## Slide N.` 블록마다 `.step` 컷을 하나씩 만든다. **컷 수는
    원고 슬라이드 수와 반드시 같다.**
 2. 각 컷은 핵심 1~2줄 + 키워드만(문장 3줄 이상 금지). `reference/components.md`의 컴포넌트
    (도발질문·썸네일피드·게이지·번호리스트·초대 등)를 그대로 붙여 쓴다.
@@ -74,7 +74,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 4. 그대로 모드 절차
 
-1. `ppt_previews/chNN.html`을 읽어 `<section class="ppt-slide" data-slide="N">` 블록을
+1. `outputs/06_PPT프리뷰/chNN.html`을 읽어 `<section class="ppt-slide" data-slide="N">` 블록을
    `data-slide` 오름차순으로 전부 추출한다. 개수·연번은 `ppt-preview` 확정 체크리스트가 이미
    보장하지만 재확인한다(1부터 연번, 누락·중복 없음).
 2. 블록마다: `<section class="ppt-slide" data-slide="N">...` 태그와 그 **직계 자식**
@@ -88,10 +88,10 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
    </section>
    ```
    `.ppt-canvas`가 `.ppt-slide`의 직계 자식인지 확인하고 파싱한다(이 경로가 안전하다).
-3. 이미지 경로: `panseo/`와 `ppt_previews/`는 과정 루트 기준 같은 깊이(1단계 하위)이므로
-   원고에 적힌 상대경로(`../assets/images/chNN/...`)를 **그대로** 쓸 수 있다. 디렉터리 깊이가
+3. 이미지 경로: `outputs/07_판서/`와 `outputs/06_PPT프리뷰/`는 과정 루트 기준 같은 깊이(1단계 하위)이므로
+   원고에 적힌 상대경로(`../03_시각자산/images/chNN/...`)를 **그대로** 쓸 수 있다. 디렉터리 깊이가
    다르면 상대경로를 재계산한다.
-4. 라이트 템플릿의 `<style>` 뒤에 `ppt_previews/chNN.html`의 `<style>` 중 **슬라이드/캔버스
+4. 라이트 템플릿의 `<style>` 뒤에 `outputs/06_PPT프리뷰/chNN.html`의 `<style>` 중 **슬라이드/캔버스
    관련 규칙만** 복사해 붙인다: `.ppt-slide`, `.ppt-canvas`와 그 하위 모든 위젯 클래스(예:
    `.cover-canvas`/`.cover-text`/`.cover-image`, `.standard-canvas`, `.image-canvas`/
    `.ppt-two-col`/`.ppt-media`, `.flow`/`.node`/`.arrow`, `.split`/`.panel`/`.old`/`.new`,
@@ -111,7 +111,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
    (엔진의 `.step` 기본 규칙은 좌측 정렬이라, 그대로 모드에서 16:9 캔버스를 가운데 두기 위한
    추가 규칙이다. 다른 엔진 규칙은 건드리지 않는다.)
 
-   **자산 임베드 안전 여백 (2026-07-06 개정)**: `ppt_previews/chNN.html`에서 이식한 `.ppt-media img,
+   **자산 임베드 안전 여백 (2026-07-06 개정)**: `outputs/06_PPT프리뷰/chNN.html`에서 이식한 `.ppt-media img,
    .cover-image img` 규칙에 이어, 이미지 전용 셀렉터 `.ppt-media > img`에만
    `box-sizing: border-box; padding: clamp(10px, 4%, 28px);`를 추가해 이미지가 셀 가장자리에
    닿지 않게 한다(`object-fit: contain`은 유지). `.ppt-media`/`.cover-image` 자체나 `.flow`/`pre`/
@@ -124,7 +124,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 5. 판서 대본 생성 (공통, 모드 무관)
 
-`panseo/chNN_대본.md`를 `reference/script_guide.md` 형식으로 슬라이드 수만큼 작성한다:
+`outputs/07_판서/chNN_대본.md`를 `reference/script_guide.md` 형식으로 슬라이드 수만큼 작성한다:
 
 ```
 ## 슬라이드 N — {제목}
@@ -138,7 +138,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
   `data-slide` 순서)와 정확히 1:1.
 - "판서" 항목: 요약 모드는 컷에 못 담은 세부(도형·수식·화살표), 그대로 모드는 이미 화면에 있는
   내용 중 강조·부연할 부분(밑줄/원/화살표)을 짧게 적는다.
-- "대본" 항목: 확정 원고 `manuscripts/chNN.md`의 해당 `Slide N` Narration/Easy analogy 필드를
+- "대본" 항목: 확정 원고 `outputs/02_원고/chNN.md`의 해당 `Slide N` Narration/Easy analogy 필드를
   근거로 구어체로 쓴다(그대로 모드도 원고를 참고한다 — 시각 구성만 ppt-preview에서 가져올 뿐,
   말할 내용의 원천은 항상 원고다).
 - 톤·인용 규칙(비유 먼저, 하나의 이야기, 인용구는 실제 출처만)은 `reference/script_guide.md`를
@@ -146,11 +146,11 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 6. 확정
 
-사용자에게 `panseo/chNN.html`을 브라우저로 열어 보여주고(펜 기기 없으면 마우스로 최소 조작
+사용자에게 `outputs/07_판서/chNN.html`을 브라우저로 열어 보여주고(펜 기기 없으면 마우스로 최소 조작
 확인) 확인을 받은 뒤:
 
 - `courses/{course-id}/status.md`의 해당 차시 `판서` 칸을 ✅로 갱신한다.
-- "산출물 인덱스"에 `- chNN 판서: panseo/chNN.html + panseo/chNN_대본.md (확정 YYYY-MM-DD, 모드:
+- "산출물 인덱스"에 `- chNN 판서: outputs/07_판서/chNN.html + outputs/07_판서/chNN_대본.md (확정 YYYY-MM-DD, 모드:
   {요약|그대로})`를 추가한다.
 - "다음 할 일"을 `chNN 시뮬레이터 필요 여부 확인(edu-sim-builder)`로 갱신한다.
 
@@ -160,11 +160,11 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
   선택 이동/✋ 획 객체 이동/파괴적 지우개/판서모드 전환/전체화면)을 브라우저(Playwright 또는
   사용자 육안)로 실제 조작해 확인했다.
 - [ ] **슬라이드 수 일치** — 요약 모드: `.step` 수 = 원고 `## Slide N.` 블록 수. 그대로 모드:
-  `.step`으로 이식된 `data-slide` 개수 = `ppt_previews/chNN.html`의 `[data-slide]` 개수, 값이
+  `.step`으로 이식된 `data-slide` 개수 = `outputs/06_PPT프리뷰/chNN.html`의 `[data-slide]` 개수, 값이
   1부터 연번.
-- [ ] **대본 슬라이드 번호 정합** — `panseo/chNN_대본.md`의 `## 슬라이드 N` 번호가 1부터
-  연번이고 `panseo/chNN.html`의 컷 수와 정확히 같다.
-- [ ] **`node --check`** — `panseo/chNN.html`의 `<script>` 문법 통과(엔진을 그대로 복사했으면
+- [ ] **대본 슬라이드 번호 정합** — `outputs/07_판서/chNN_대본.md`의 `## 슬라이드 N` 번호가 1부터
+  연번이고 `outputs/07_판서/chNN.html`의 컷 수와 정확히 같다.
+- [ ] **`node --check`** — `outputs/07_판서/chNN.html`의 `<script>` 문법 통과(엔진을 그대로 복사했으면
   항상 통과 — 실패하면 복사 중 스크립트를 실수로 건드렸다는 뜻).
 - [ ] **자립성** — 외부 CDN·웹폰트·스크립트 참조 없이 파일 하나로 브라우저에서 바로 열린다.
 
@@ -194,7 +194,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md`
 - status.md 형식: `templates/status_template.md`
 - 파이프라인 표·디렉터리 구조: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`
-  §3(7단계), §4(`panseo/chNN.html` 경로 규약), §7(이 스킬의 재작성 배경)
+  §3(7단계), §4(`outputs/07_판서/chNN.html` 경로 규약), §7(이 스킬의 재작성 배경)
 - 빈 칠판만 필요하면(명시 요청 시): `panseo-board` 스킬 — 동일 엔진을 쓰지만 슬라이드 없이 칠판만
   낸다.
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 3(구조 검증) grep으로 SKILL.md 자체를 확인했고,

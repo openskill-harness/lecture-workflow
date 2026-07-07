@@ -1,11 +1,11 @@
 ---
 name: storyboard
-description: 확정 원고(`manuscripts/chNN.md`)의 슬라이드를 1:1 카드로 펼친 라이트 테마 강사용 스토리보드 `storyboards/chNN.html`을 만든다. "스토리보드 만들어줘" 요청 시 사용. 카드 상단에 슬라이드 화면 미리보기(Screen 필드 재현, `assets/manifest.json`에 실자산이 있으면 삽입/없으면 프롬프트 placeholder), 하단에 Easy analogy/Practical case/Visual asset/Source/Narration/Practice/Assessment를 라벨링된 패널로 배치한다. 디자인 규범은 `templates/golden/storyboard_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md 스토리보드 칸을 ✅로 갱신한다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 슬라이드를 1:1 카드로 펼친 라이트 테마 강사용 스토리보드 `outputs/05_스토리보드/chNN.html`을 만든다. "스토리보드 만들어줘" 요청 시 사용. 카드 상단에 슬라이드 화면 미리보기(Screen 필드 재현, `outputs/03_시각자산/manifest.json`에 실자산이 있으면 삽입/없으면 프롬프트 placeholder), 하단에 Easy analogy/Practical case/Visual asset/Source/Narration/Practice/Assessment를 라벨링된 패널로 배치한다. 디자인 규범은 `templates/golden/storyboard_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md 스토리보드 칸을 ✅로 갱신한다.
 ---
 
 # storyboard
 
-확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물)의 슬라이드를 **1:1 카드**로 펼쳐 강사가 화면 구성과 나레이션을 함께 검수할 수 있는 상세 스토리보드 `storyboards/chNN.html`을 만드는 스킬이다. 파이프라인 6단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표)이며, 이 단계의 산출물은 이후 `ppt-preview`/`panseo-slide`/`edu-sim-builder`가 슬라이드 화면 감각을 참고하는 레퍼런스가 된다. 선행 단계는 원고확정(3단계) + 시각자산(4단계, `visual-assets`) — 시각자산이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
+확정 원고 `outputs/02_원고/chNN.md`(`manuscript-final` 산출물)의 슬라이드를 **1:1 카드**로 펼쳐 강사가 화면 구성과 나레이션을 함께 검수할 수 있는 상세 스토리보드 `outputs/05_스토리보드/chNN.html`을 만드는 스킬이다. 파이프라인 6단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표)이며, 이 단계의 산출물은 이후 `ppt-preview`/`panseo-slide`/`edu-sim-builder`가 슬라이드 화면 감각을 참고하는 레퍼런스가 된다. 선행 단계는 원고확정(3단계) + 시각자산(4단계, `visual-assets`) — 시각자산이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 
 **디자인 규범(golden)**: `templates/golden/storyboard_golden.html` — GPT가 만든 ch01 스토리보드로, 이 파일의 CSS 변수와 구조가 그대로 규범이다. **새 색상표·다크 테마를 도입하지 않는다.**
 
@@ -18,10 +18,10 @@ description: 확정 원고(`manuscripts/chNN.md`)의 슬라이드를 1:1 카드�
 
 ### 1. 시작 — 확정 원고 확인
 
-- `manuscripts/chNN.md`가 없거나 `status.md`의 해당 차시 `원고확정`이 ✅가 아니면 사용자에게 알리고 중단한다(미확정 원고로 스토리보드를 만들지 않는다).
+- `outputs/02_원고/chNN.md`가 없거나 `status.md`의 해당 차시 `원고확정`이 ✅가 아니면 사용자에게 알리고 중단한다(미확정 원고로 스토리보드를 만들지 않는다).
 - **하드 게이트**: `status.md`의 해당 차시 `시각자산`이 ✅도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 사용자에게 알리고 중단한다 — 먼저 `visual-assets` 스킬로 시각자산을 완료(또는 명시적 보류)해야 한다.
 - `courses/{course-id}/status.md`의 해당 차시 `스토리보드` 칸을 🔄로 갱신한다.
-- 처음 만드는 차시면 `templates/golden/storyboard_golden.html`의 `<style>` 블록 전체를 그대로 가져와 `storyboards/chNN.html`의 뼈대로 삼는다(변수명·클래스명·값을 임의로 바꾸지 않는다). `<header>`의 제목/부제만 이번 차시 정보(회차명 등)로 교체하고, 상단 "제작 기준" 안내문(legend 섹션)도 골든 문구를 참고해 이번 차시에 맞게 고친다.
+- 처음 만드는 차시면 `templates/golden/storyboard_golden.html`의 `<style>` 블록 전체를 그대로 가져와 `outputs/05_스토리보드/chNN.html`의 뼈대로 삼는다(변수명·클래스명·값을 임의로 바꾸지 않는다). `<header>`의 제목/부제만 이번 차시 정보(회차명 등)로 교체하고, 상단 "제작 기준" 안내문(legend 섹션)도 골든 문구를 참고해 이번 차시에 맞게 고친다.
 
 ### 2. 슬라이드 1:1 카드화
 
@@ -43,37 +43,37 @@ description: 확정 원고(`manuscripts/chNN.md`)의 슬라이드를 1:1 카드�
 
 ### 3. 이미지/다이어그램 자산 연결 (manifest 기반, 2026-07-06 개정)
 
-**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `assets/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
+**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
 
 1. `image.status == "present"`이면 `image.path`를 사용한다.
 2. 아니고 `d2.status == "present"`이면 `d2.path`를 사용한다.
 3. 둘 다 `present`가 아니면(`deferred`/`missing`) placeholder로 처리한다.
 
-- (1) 이미지 경로: `slide-preview` 안에 `<img src="{상대경로}" alt="...">`로 삽입한다. `storyboards/chNN.html`은 `courses/{course-id}/storyboards/` 아래 있으므로, manifest의 `assets/images/chNN/...` 경로는 골든 실제 참조 패턴(`../assets/images/ch01/...`)처럼 한 단계 상위로 올려 상대경로를 맞춘다. 원고에 병기된 `→ 생성됨:` 문구는 사람이 읽는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
+- (1) 이미지 경로: `slide-preview` 안에 `<img src="{상대경로}" alt="...">`로 삽입한다. manifest의 경로는 과정 루트 기준이므로 **소비 파일(`outputs/05_스토리보드/chNN.html`) 위치 기준으로 재계산**한다(문자열 접두 부착이 아니라 `os.path.relpath` 상당의 계산) — `outputs/` 형제 배치에서는 `outputs/` 접두를 `../`로 바꾸면 된다(골든 실제 참조 패턴 `../03_시각자산/images/ch01/...`). 원고에 병기된 `→ 생성됨:` 문구는 사람이 읽는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
 - (2) D2 경로: 그 렌더 결과(svg/png)를 동일하게 삽입한다.
 - (3) placeholder: `slide-preview` 안에 `--line` 테두리의 placeholder 박스를 두고, `deferred`/`missing`이면 원고의 `GPT image prompt:`(또는 `Comic panel prompt:`)/D2 소스 원문을, 재현이 어려운 D2는 골든 Slide 5·8처럼 `.flow`/`.node`/`.arrow`로 흐름을 간단히 재현하거나 `<pre class="asset-code">`로 노출한다(골든 그대로). 실제 픽셀 이미지를 대신 만들지 않는다.
 - 화면 캡처 계획(`Screenshot plan:`)뿐이고 manifest에도 항목이 없으면 캡처 대상 목록을 placeholder 텍스트로 보여준다.
 
-**자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+**자산 선택 계약**: 슬라이드별로 `outputs/03_시각자산/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`outputs/03_시각자산/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
 
 **자산 임베드 안전 여백 (2026-07-06 개정)**: 임베드된 이미지/D2가 `.slide-preview` 셀 가장자리에 닿지 않게, 이미지 전용 셀렉터 `.slide-preview > img`에만 `box-sizing: border-box; padding: clamp(12px, 4%, 32px);`를 적용한다(`object-fit: contain`은 기존 규칙 유지). **`.slide-preview` 자체나 `.flow`/`pre`/`.split` 등 비이미지 위젯에는 padding을 주지 않는다** — 그 컨테이너 안에는 이미지 외에도 순서도·코드·비교 패널이 들어가므로 전역 padding은 레이아웃을 깬다. `%` 단독 padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거: `docs/history/2026-07-06_asset-embed-safe-margin/proposal.md`(제안 B), codex 조건 2: `docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md`.
 
 ### 4. 자립성 검증
 
 - 외부 CDN·웹폰트·스크립트 참조를 넣지 않는다. 이미지도 로컬 상대경로만 사용한다.
-- `storyboards/chNN.html` 파일 하나만으로 브라우저에서 바로 열려야 한다(추가 리소스 다운로드 없음).
+- `outputs/05_스토리보드/chNN.html` 파일 하나만으로 브라우저에서 바로 열려야 한다(추가 리소스 다운로드 없음).
 
 ### 5. 확정
 
 사용자에게 스토리보드를 보여주고(브라우저로 열기 등) 확인을 받은 뒤:
 
 - `courses/{course-id}/status.md`의 해당 차시 `스토리보드` 칸을 ✅로 갱신한다.
-- "산출물 인덱스"에 `- chNN 스토리보드: storyboards/chNN.html (확정 YYYY-MM-DD)`를 추가한다.
+- "산출물 인덱스"에 `- chNN 스토리보드: outputs/05_스토리보드/chNN.html (확정 YYYY-MM-DD)`를 추가한다.
 - "다음 할 일"을 `chNN PPT프리뷰 작성(ppt-preview)`로 갱신한다.
 
 ## 확정 체크리스트
 
-- [ ] **카드 수 일치**: `storyboards/chNN.html`의 `.slide.detailed` 카드 수가 원고 `manuscripts/chNN.md`의 `## Slide N.` 블록 수와 정확히 같다(1:1, 누락·병합 없음).
+- [ ] **카드 수 일치**: `outputs/05_스토리보드/chNN.html`의 `.slide.detailed` 카드 수가 원고 `outputs/02_원고/chNN.md`의 `## Slide N.` 블록 수와 정확히 같다(1:1, 누락·병합 없음).
 - [ ] **나레이션 표시**: 모든 카드에 `lecture-script` 나레이션 섹션이 존재하고 원고 Narration 필드 전문을 담고 있다(축약·누락 없음).
 - [ ] **라이트 팔레트 준수**: 골든 CSS 변수(`--ink #17202a`/`--muted #5d6875`/`--line #d9dee7`/`--soft #f5f7fa`, 배경 `#eceff4`)를 그대로 사용하고, 새 색상표나 다크 테마가 도입되지 않았다.
 - [ ] **브라우저 열림 확인**: 완성 파일을 브라우저에서 열어(Playwright 또는 사용자 육안 확인) 카드가 정상 렌더되는지 확인했다.
@@ -92,7 +92,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 슬라이드를 1:1 카드�
 
 - 골든 템플릿: `templates/golden/storyboard_golden.html` (ch01 GPT 원본 — CSS 변수, Malgun Gothic 폰트, `.slide-head`/`.slide-body`/`.slide-preview`/`.lecture-panel`/`.lecture-block` 구조와 위젯 패턴의 유일한 기준)
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (8개 필드 정의·순서)
-- 시각자산 SSOT: `assets/manifest.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
+- 시각자산 SSOT: `outputs/03_시각자산/manifest.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 - status.md 형식: `templates/status_template.md`
-- 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §4(디렉터리 구조 — `storyboards/chNN.html` 경로 규약)
+- 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §4(디렉터리 구조 — `outputs/05_스토리보드/chNN.html` 경로 규약)
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

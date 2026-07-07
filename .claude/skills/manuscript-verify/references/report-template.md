@@ -1,6 +1,6 @@
 # 원고 기술검증 리포트 포맷
 
-`courses/{id}/verification/chNN_verify.md`는 아래 구조를 따른다.
+`courses/{id}/outputs/11_검증/chNN_verify.md`는 아래 구조를 따른다.
 
 ```
 # 원고 기술검증 — chNN (YYYY-MM-DD)

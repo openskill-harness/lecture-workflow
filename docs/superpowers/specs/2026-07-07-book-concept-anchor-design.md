@@ -6,7 +6,7 @@
 
 ## 1. 배경 / 문제
 
-확정 원고를 소설체로 재집필한 PDF 책(`book/chNN.pdf`)이 **비유·이야기 일색**으로 나와 "부실해 보인다". 실제 ch01 책을 보면:
+확정 원고를 소설체로 재집필한 PDF 책(`outputs/10_책/chNN.pdf`)이 **비유·이야기 일색**으로 나와 "부실해 보인다". 실제 ch01 책을 보면:
 
 - 기술 정의가 **없는 게 아니라**, 서술 문단 속에 녹아 있어 눈에 안 보인다. 예: *"WAS는 Web Application Server의 줄임말입니다. …요청마다 결과가 달라지는 일을 처리합니다. WAS는 식당의 주방장과…"* — 정의·설명·비유가 한 문단에 뒤엉켜 독자가 "이 용어의 딱 떨어지는 정의"를 집어낼 수 없다.
 - 장 제목이 순전히 이야기("3장. 안내 데스크와 주방")라 목차만 봐선 **어떤 기술을 다루는 장인지** 알 수 없다.
@@ -22,7 +22,7 @@
 ```
 ::: concept-anchor
 **HTTP · HyperText Transfer Protocol**          ← ① 정식 기술명 (이야기 제목이 아님)
-![](../assets/diagrams/ch01-slide05-http.png)     ← ② 깨끗한 D2 도식 (opt-in D2 재활용)
+![](../03_시각자산/diagrams/ch01-slide05-http.png)     ← ② 깨끗한 D2 도식 (opt-in D2 재활용)
 웹에서 클라이언트와 서버가 요청·응답 메시지를        ← ③ 짧은 정식 정의 (1–2문장, 원고 '핵심 정의' 근거)
 주고받는 통신 규칙.
 :::
@@ -49,13 +49,13 @@
 씨앗은 **이미 확정 원고에 존재**하므로 manuscript는 수정하지 않는다:
 
 - **기술명·정의**: 원고 슬라이드 Screen 필드의 `핵심 정의` 라인을 근거로 한다.
-- **도식**: 원고 Visual asset의 D2 소스 / `assets/manifest.json`의 `d2` 자산.
+- **도식**: 원고 Visual asset의 D2 소스 / `outputs/03_시각자산/manifest.json`의 `d2` 자산.
 
 book-build는 각 장에 매핑되는 원고 슬라이드 중 `핵심 정의`가 있고(이상적으로 D2도 있는) 슬라이드를 골라 앵커 개념으로 삼는다.
 
 ### 3.3 도식 조달 — opt-in D2 재활용
 
-- **기본**: 앵커 도식은 이미 렌더된 opt-in D2(`assets/diagrams/{chNN}-slide{NN}-*.png`)를 재활용한다. (ch01은 HTTP·WAS·내장Tomcat·WebMVC·요청흐름 5개 D2가 장별 핵심 개념과 거의 일치.)
+- **기본**: 앵커 도식은 이미 렌더된 opt-in D2(`outputs/03_시각자산/diagrams/{chNN}-slide{NN}-*.png`)를 재활용한다. (ch01은 HTTP·WAS·내장Tomcat·WebMVC·요청흐름 5개 D2가 장별 핵심 개념과 거의 일치.)
 - **없으면 생성**: 고른 핵심 개념 슬라이드에 D2가 없으면 `pub-d2-diagram`으로 1개 생성(opt-in). 원고에 D2 소스가 없으면 book-build가 그 개념의 구조를 나타내는 최소 D2 소스를 작성해 렌더한다.
 - **최종 폴백**: 도식이 개념에 부적합하면(도식화가 무의미한 개념) 도식 없이 **명 + 정의**만으로 앵커를 만든다. (앵커 자체는 생략 불가 — §3.5 하드 체크.)
 - 앵커 도식은 GPT 일러스트를 쓰지 않는다. **GPT 일러스트는 이야기 장면(분위기)용으로 유지**되며 역할이 분리된다: 앵커=구조(D2), 장면=분위기(GPT).
@@ -80,14 +80,14 @@ manuscript는 변경하지 않는다. 변경은 book-build에 국한된다.
 |---|---|
 | `.claude/skills/book-build/SKILL.md` | 재집필 단계에 앵커 규칙(§3.1·3.2·3.4) 추가. 편집 검토 ④ 하드 체크(§3.5)로 개정 |
 | `.claude/skills/book-build/references/storytelling.md` | "비유 → 왜? → 정의" 패턴 개정: 정의는 앵커에서 세운다(프로즈 용해 금지). 앵커를 필수 구조 요소로 명문화 |
-| 책 원고 마크다운 규약 (`book/chNN_원고.md`) | 앵커를 pandoc fenced div `::: concept-anchor … :::`로 표기 |
+| 책 원고 마크다운 규약 (`outputs/10_책/chNN_원고.md`) | 앵커를 pandoc fenced div `::: concept-anchor … :::`로 표기 |
 | `.claude/skills/book-build/references/scripts/typst_builder.py` | `concept-anchor` fenced div를 구분 블록(구분선/여백 + 도식 + 정의)으로 렌더하는 스타일 추가 |
 | `.claude/skills/book-build/references/templates/book_base.typ` | `concept-anchor` 블록 typst 스타일 정의 |
 
 ### 4.1 앵커 렌더링 인터페이스
 
 - **마크다운 → typst**: pandoc fenced div `::: concept-anchor`가 typst의 커스텀 함수(예: `#concept-anchor[명][도식경로][정의])` 또는 스타일 박스로 매핑된다. `typst_builder.py`의 MD→typst 변환 로직에 이 div 클래스 처리를 추가한다.
-- **도식 경로**: 앵커 내부 이미지 경로는 `book/chNN_원고.md` 기준 상대경로(기존 삽화와 동일 규약).
+- **도식 경로**: 앵커 내부 이미지 경로는 `outputs/10_책/chNN_원고.md` 기준 상대경로(기존 삽화와 동일 규약).
 - **블록 스타일**: 위아래 구분선 또는 옅은 배경 + 여백으로 프로즈와 분리. 라이트 테마 고정(`style.md` 디자인 제약 준수, 새 색상 도입 금지).
 
 ## 5. 적용 (검증)

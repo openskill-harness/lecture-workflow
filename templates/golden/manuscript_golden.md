@@ -167,7 +167,7 @@
 - 실무사례형 시나리오: 개발자가 API가 안 된다고 말할 때, 실제로는 서버가 죽은 것이 아니라 요청 경로가 `/hello`가 아니라 `/helo`로 잘못 들어간 경우가 많다. HTTP 요청의 경로와 응답 상태 코드를 볼 줄 알면 이런 문제를 빨리 찾는다.
 
 **Visual asset**
-- D2 diagram: `assets/diagrams/ch01_http-request-response.d2`
+- D2 diagram: `outputs/03_시각자산/diagrams/ch01_http-request-response.d2`
 
 ```d2
 direction: right
@@ -309,7 +309,7 @@ Hello Spring Boot
 - 실무사례형 시나리오: “내 장바구니 보기” 요청은 사용자마다 결과가 다르다. 단순 파일 전달이 아니라 로그인 사용자 확인, 장바구니 데이터 조회, 응답 생성이 필요하므로 애플리케이션 로직이 실행되어야 한다.
 
 **Visual asset**
-- D2 diagram: `assets/diagrams/ch01_webserver-was-role.d2`
+- D2 diagram: `outputs/03_시각자산/diagrams/ch01_webserver-was-role.d2`
 
 ```d2
 direction: right
@@ -398,7 +398,7 @@ web -> browser: "정적 응답"
 - 실무사례형 시나리오: 팀원이 새 프로젝트를 받아서 `Run As > Spring Boot App`을 눌렀더니 바로 8080 포트로 서버가 뜬다. 별도 Tomcat 설치 없이 API 확인이 가능해져 온보딩 시간이 줄어든다.
 
 **Visual asset**
-- D2 diagram: `assets/diagrams/ch01_springboot-embedded-server.d2`
+- D2 diagram: `outputs/03_시각자산/diagrams/ch01_springboot-embedded-server.d2`
 
 ```d2
 direction: right
@@ -826,7 +826,7 @@ public class Ch01HelloServerApplication {
 - 실무사례형 시나리오: API가 404로 실패하면 개발자는 “서버는 켜졌는가?”, “경로가 맞는가?”, “Controller 매핑이 있는가?”를 순서대로 확인한다. 흐름을 알면 어디서 끊겼는지 찾기 쉽다.
 
 **Visual asset**
-- D2 diagram: `assets/diagrams/ch01_request-to-controller.d2`
+- D2 diagram: `outputs/03_시각자산/diagrams/ch01_request-to-controller.d2`
 
 ```d2
 direction: right

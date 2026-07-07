@@ -5,6 +5,8 @@
 
 | 날짜 | 변경 | 대상 | 사유 | 레코드 |
 |------|------|------|------|--------|
+| 2026-07-07 | 산출물 디렉터리 규약 재편 — `outputs/` + 번호 한글 폴더(신규 과정부터, 레거시 무이관), repair를 인덱스 실경로 1차 기준으로, `scripts/course_layout.py` 신설(배치 자동 판별) | spec §3·§4, 전 단계 스킬 SKILL.md, templates, scripts | 산출물이 10여 폴더에 흩어져 가독성 저하 — 파이프라인 순서대로 한곳에 | [2026-07-07_outputs-restructure](2026-07-07_outputs-restructure/) |
+| 2026-07-07 | pptx-build·pub-d2-diagram description의 콜론+공백 YAML 파싱 실패 수정 | skills/pptx-build, pub-d2-diagram | 엄격 YAML 파서에서 스킬 description 소실 | [2026-07-07_outputs-restructure](2026-07-07_outputs-restructure/) (applied.md 부수 발견) |
 | 2026-07-07 | R1에 "현재형 결정 이유(why)는 현행 문서에 유지" 조항 추가 (변경 사유는 R3대로 history) | CLAUDE.md, harness-maintain | 정리 시 결정 근거까지 지우는 실수 방지 | [2026-07-07_r1-rationale-clause](2026-07-07_r1-rationale-clause/) |
 | 2026-07-07 | 설계 spec의 v1 구성·1회성 이관 서술을 history로 분리(결정 **이유**는 spec에 유지) | spec §1·§2, docs/history/2026-07-05_v2-redesign/migration-notes.md | 현행 문서=현행 진실+결정 이유만, 옛 상태는 이력으로(R1) | [2026-07-05_v2-redesign](2026-07-05_v2-redesign/) |
 | 2026-07-07 | SSOT 규율(R1~R4) 도입 + CLAUDE.md 슬림화 + 이력 docs/history 일원화 + harness-maintain 스킬 신설(외부 플러그인 대체) | CLAUDE.md, course-pipeline, harness-maintain, docs/ | old+new 공존·중복·3중관리 제거, 유지보수 in-repo 자립 | [2026-07-07_ssot-discipline](2026-07-07_ssot-discipline/) |

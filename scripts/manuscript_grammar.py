@@ -16,8 +16,12 @@ IMG_PROMPT_RE = re.compile(
     r"(?:image prompt|comic panel prompt|시각자료 프롬프트\(영문\))\s*[:：]\s*`?(.+)",
     re.IGNORECASE,
 )
-# 이미지 자산 경로(렌더된 png/jpg만 — .d2 소스는 제외)
-IMG_PATH_RE = re.compile(r"(assets[/\\][^\s)`\"']+\.(?:png|jpg|jpeg|webp))", re.IGNORECASE)
+# 이미지 자산 경로(렌더된 png/jpg만 — .d2 소스는 제외).
+# outputs/ 규약(outputs/03_시각자산/…)과 루트 평면 배치(assets/…) 둘 다 인식한다(course_layout 참조).
+IMG_PATH_RE = re.compile(
+    r"((?:outputs[/\\]03_시각자산|assets)[/\\][^\s)`\"']+\.(?:png|jpg|jpeg|webp))",
+    re.IGNORECASE,
+)
 # D2 opt-in 마커: "주 시각자료: D2" / "Primary asset: D2"
 D2_PRIMARY_RE = re.compile(r"(?:주\s*시각자료|primary\s*asset)\s*[:：]\s*d2", re.IGNORECASE)
 # 이미지 보류(defer) 마커

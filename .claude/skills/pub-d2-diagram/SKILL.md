@@ -1,6 +1,6 @@
 ---
 name: pub-d2-diagram
-description: D2 소스를 모노톤 도형 PNG/SVG로 렌더하는 opt-in 폴백 엔진. visual-assets가 원고 `주 시각자료: D2` 마커 슬라이드에서만 스크립트로 호출한다. 기본 시각자산은 GPT 이미지이므로 자동선택 대상이 아니다.
+description: 'D2 소스를 모노톤 도형 PNG/SVG로 렌더하는 opt-in 폴백 엔진. visual-assets가 원고 `주 시각자료: D2` 마커 슬라이드에서만 스크립트로 호출한다. 기본 시각자산은 GPT 이미지이므로 자동선택 대상이 아니다.'
 model: claude-sonnet-4-6
 ---
 
@@ -125,7 +125,7 @@ Windows에는 `rsvg-convert`가 없다. `visual-assets`/`pub-d2-diagram` 파이�
    - **device scale factor**: `2`(레티나/고해상도 인쇄 대비 — `browser.new_context(device_scale_factor=2)`).
    - **배경**: 투명 배경 고정 — `page.screenshot(..., omit_background=True)` 사용, HTML 래퍼를 쓸 경우 `body { background: transparent }`도 명시(이중 안전장치).
 4. 임시 `.d2`/`.svg`/(HTML 래퍼) 파일은 정리한다.
-5. 산출물 파일명은 소비 계약(`assets/diagrams/{chNN}-slide{NN}-{요지}.png` — 슬라이드 번호 포함, `courses/spring-boot-basic/assets/diagrams/ch01-slide05-http.png` 등 기존 실사례 참고)을 따른다. **주의**: `render_md_diagrams.py`는 파일 내 D2 블록 등장 순서로 `{접두사}-d{i}.svg`를 명명한다(슬라이드 번호 기반이 아니다) — PNG 변환 시 원고 순서와 대조해 슬라이드 번호를 붙여 리네임해야 `visual-assets`의 manifest 빌더(`build_asset_manifest.py`)가 `assets/diagrams/{chNN}-slide{NN}-*.png` 글롭으로 찾을 수 있다.
+5. 산출물 파일명은 소비 계약(`outputs/03_시각자산/diagrams/{chNN}-slide{NN}-{요지}.png` — 슬라이드 번호 포함, `courses/spring-boot-basic/assets/diagrams/ch01-slide05-http.png` 등 기존 실사례 참고)을 따른다. **주의**: `render_md_diagrams.py`는 파일 내 D2 블록 등장 순서로 `{접두사}-d{i}.svg`를 명명한다(슬라이드 번호 기반이 아니다) — PNG 변환 시 원고 순서와 대조해 슬라이드 번호를 붙여 리네임해야 `visual-assets`의 manifest 빌더(`build_asset_manifest.py`)가 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-*.png` 글롭으로 찾을 수 있다.
 
 ### 종횡비 가이드 — 3:1 권장 (자동 재배치 아님)
 

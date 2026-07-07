@@ -1,8 +1,9 @@
 """시각자산 manifest 빌더 — 재설계(visual-assets 스테이지)의 SSOT 생성기.
 
-원고(manuscripts/chNN.md)의 슬라이드별 Visual asset(이미지 프롬프트 / D2 소스)을 스캔하고,
-실제 생성된 자산 파일(assets/images/chNN/, assets/diagrams/)과 대조해
-courses/{id}/assets/manifest.json 을 만든다.
+원고(chNN.md)의 슬라이드별 Visual asset(이미지 프롬프트 / D2 소스)을 스캔하고,
+실제 생성된 자산 파일(images/chNN/, diagrams/)과 대조해 시각자산 폴더의
+manifest.json 을 만든다. 경로는 course_layout 이 배치(outputs/ 규약·루트 평면)를
+판별해 결정한다.
 
 주 시각자료(primary): 기본은 GPT 이미지. 원고 Visual asset에 `주 시각자료: D2` 마커가 있거나
 이미지 프롬프트가 없으면 D2가 primary. image/d2 블록 모두 명시 `primary`(bool)를 갖는다.
@@ -10,8 +11,8 @@ courses/{id}/assets/manifest.json 을 만든다.
 manifest 스키마(슬라이드별):
   {
     "slide": 5,
-    "image": {"path": "assets/images/ch01/slide05.png", "prompt_hash": "...", "status": "present|deferred|missing", "primary": true},
-    "d2":    {"path": "assets/diagrams/ch01-slide05-http.png", "d2_hash": "...", "status": "present|deferred|missing", "primary": false}
+    "image": {"path": "outputs/03_시각자산/images/ch01/slide05.png", "prompt_hash": "...", "status": "present|deferred|missing", "primary": true},
+    "d2":    {"path": "outputs/03_시각자산/diagrams/ch01-slide05-http.png", "d2_hash": "...", "status": "present|deferred|missing", "primary": false}
   }
 status(이미지): 파일 present → present / primary 아니거나 `이미지 보류` 마커면 deferred / 그 외 missing.
 status(자산 단계 전체): primary 자산이 present·deferred인 슬라이드 수 / 예상 수 로 present|partial|missing 판정.
@@ -28,6 +29,7 @@ import json
 import sys
 from pathlib import Path
 
+import course_layout
 from manuscript_grammar import SLIDE_RE, FIELD_RE, IMG_PROMPT_RE, D2_PRIMARY_RE, IMG_DEFER_RE
 
 
@@ -37,7 +39,7 @@ def _hash(text):
 
 def _load_prior_hashes(course):
     """이전 manifest.json에서 슬라이드별 (image/d2) 해시를 읽어온다. 없으면 빈 dict."""
-    p = course / "assets" / "manifest.json"
+    p = course_layout.path(course, "assets") / "manifest.json"
     if not p.exists():
         return {}
     try:
@@ -107,10 +109,11 @@ def parse_visual_assets(md_text):
 def build_manifest(course_dir, ch):
     course = Path(course_dir)
     prior = _load_prior_hashes(course)   # {slide: {"image": hash, "d2": hash}}
-    md = (course / "manuscripts" / f"{ch}.md").read_text(encoding="utf-8")
+    md = (course_layout.path(course, "manuscripts") / f"{ch}.md").read_text(encoding="utf-8")
     va = parse_visual_assets(md)
-    img_dir = course / "assets" / "images" / ch
-    dia_dir = course / "assets" / "diagrams"
+    assets_rel = course_layout.rel(course, "assets")
+    img_dir = course / assets_rel / "images" / ch
+    dia_dir = course / assets_rel / "diagrams"
 
     slides = []
     for num in sorted(va):
@@ -122,7 +125,7 @@ def build_manifest(course_dir, ch):
         # 자산 파일 실존 여부
         d2_matches = sorted(dia_dir.glob(f"{ch}-slide{num:02d}-*.png")) if (has_d2 and dia_dir.exists()) else []
         d2_file_ok = bool(d2_matches) and d2_matches[0].stat().st_size > 0
-        img_path = f"assets/images/{ch}/slide{num:02d}.png"
+        img_path = f"{assets_rel}/images/{ch}/slide{num:02d}.png"
         img_file_ok = has_img and (course / img_path).exists() and (course / img_path).stat().st_size > 0
 
         # 주 시각자료 선택: 기본은 GPT 이미지. D2는 opt-in 마커가 있거나 이미지 프롬프트가 없을 때만 primary.
@@ -147,7 +150,7 @@ def build_manifest(course_dir, ch):
             else:
                 d2_status = "missing"
             entry["d2"] = {
-                "path": f"assets/diagrams/{d2_matches[0].name}" if d2_matches else None,
+                "path": f"{assets_rel}/diagrams/{d2_matches[0].name}" if d2_matches else None,
                 "d2_hash": cur_d2_hash,
                 "status": d2_status,
                 "primary": primary == "d2",
@@ -195,7 +198,7 @@ def build_manifest(course_dir, ch):
         "visual_slides_total": total_visual_slides,
         "slides": slides,
     }
-    out_path = course / "assets" / "manifest.json"
+    out_path = course / assets_rel / "manifest.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     return manifest, out_path

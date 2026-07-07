@@ -83,7 +83,7 @@
 슬라이드 성격에 맞춰 아래 중 하나 이상을 조합한다(골든에 실제 등장한 유형만 표준으로 삼는다):
 
 - **GPT image prompt:** — 백틱(`` ` ``)으로 감싼 영문 프롬프트 한 줄. 예: `` GPT image prompt: `A clean educational illustration ...` ``. 만화식 2컷은 `Comic panel prompt:` 라벨을 대신 쓴다.
-- **D2 초안** — 참조 파일 경로를 먼저 한 줄 적고(`` D2 diagram: `assets/diagrams/chNN_slug.d2` ``), 바로 아래에 ` ```d2 ` 코드펜스로 실제 D2 소스를 포함한다. 이미 만든 다이어그램을 재사용할 때는 `Reuse D2: {파일명}` 한 줄로 대체 가능.
+- **D2 초안** — 참조 파일 경로를 먼저 한 줄 적고(`` D2 diagram: `outputs/03_시각자산/diagrams/chNN_slug.d2` ``), 바로 아래에 ` ```d2 ` 코드펜스로 실제 D2 소스를 포함한다. 이미 만든 다이어그램을 재사용할 때는 `Reuse D2: {파일명}` 한 줄로 대체 가능.
 - **화면 캡처 계획** — `Screenshot plan:` 라벨 뒤 번호 매긴 목록으로 캡처할 화면 순서를 적는다(실습/실행 결과 확인 슬라이드에 사용).
 - **코드 블록** — `Code block for slide:` 또는 `Code block for PPT:` 라벨 뒤 ` ```{language} ` 코드펜스(java/http 등). 여러 언어 블록을 연달아 넣을 수 있다.
 

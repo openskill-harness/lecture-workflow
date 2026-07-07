@@ -397,13 +397,15 @@ def build_integrated_md(front: list, chapters: list, back: list,
 def md_to_typst(md_path: Path, typ_path: Path) -> bool:
     """Pandoc으로 마크다운 → Typst 변환 (paragraph-gap Lua 필터 포함)"""
     lua_filter = Path(__file__).parent / 'paragraph-gap.lua'
+    anchor_filter = Path(__file__).parent / 'concept-anchor.lua'
     cmd = [
         'pandoc',
         str(md_path),
-        '-f', 'markdown+pipe_tables+fenced_code_blocks+backtick_code_blocks-citations',
+        '-f', 'markdown+pipe_tables+fenced_code_blocks+backtick_code_blocks+fenced_divs-citations',
         '-t', 'typst',
         '-o', str(typ_path),
         '--wrap=none',
+        '--lua-filter', str(anchor_filter),   # anchor 필터를 paragraph-gap 앞에 — 순서 고정(codex 조건1)
         '--lua-filter', str(lua_filter),
     ]
 
@@ -670,6 +672,7 @@ def merge_template_and_content(template_path: Path, content: str,
     pre_toc_content가 있으면 cover와 toc 사이에 삽입 (머릿말 등).
     """
     template = template_path.read_text(encoding="utf-8")
+    frontmatter_call = ""
 
     if design is not None:
         from design_assembler import parse_design_arg, load_preset_overrides, assemble_book_base
@@ -691,6 +694,11 @@ def merge_template_and_content(template_path: Path, content: str,
         base_path = template_path.parent / "book_base.typ"
         if base_path.exists():
             base = base_path.read_text(encoding="utf-8")
+            # book_base.typ의 표지·목차는 render-book-frontmatter() 함수로 정의만 되어 있다
+            # (Task 3 회귀 수정 — 단독 #import 시 book-title 등 미정의 변수 오류 방지).
+            # 여기서 template(book.typ)이 이미 그 변수들을 바인딩한 뒤 명시적으로 호출한다.
+            if "render-book-frontmatter" in base:
+                frontmatter_call = "\n#render-book-frontmatter()\n"
         else:
             base = ""
 
@@ -708,7 +716,7 @@ def merge_template_and_content(template_path: Path, content: str,
         base = base.replace(PRE_TOC_MARKER, "")
 
     if base:
-        return template + "\n" + base + "\n" + CONTENT_MARKER + "\n" + content
+        return template + "\n" + base + frontmatter_call + "\n" + CONTENT_MARKER + "\n" + content
     return template + "\n" + CONTENT_MARKER + "\n" + content
 
 

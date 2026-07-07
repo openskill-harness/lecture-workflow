@@ -168,6 +168,25 @@
 
 // ── 볼드/이탤릭 ──
 #show strong: set text(fill: rgb("#1e3a5f"))
+
+// ── 개념 앵커 (concept-anchor) ──
+// 정식 기술명(굵게) + D2 도식 + 짧은 정의를 위아래 구분선으로 감싼 블록.
+// 이야기 프로즈와 시각적으로 분리해 정의가 눈에 보이게 한다.
+// 앵커 내부 D2 이미지는 빈 alt(![](path))로 둔다 — 전역 #show figure 여백 중복 방지(codex 조건2).
+#let concept-anchor(body) = block(
+  width: 100%,
+  above: 16pt,
+  below: 16pt,
+  inset: (top: 10pt, bottom: 10pt),
+  stroke: (
+    top: 0.8pt + rgb("#2563eb"),
+    bottom: 0.8pt + rgb("#2563eb"),
+  ),
+)[
+  #set align(center)
+  #body
+]
+
 #show emph: set text(fill: rgb("#6b7280"))
 
 // ── 수평선은 후처리에서 #v + block으로 변환됨 ──
@@ -321,67 +340,80 @@
 }
 
 // ══════════════════════════════════════
-// 표지 — 이미지 또는 텍스트
+// 표지 + 목차 — render-book-frontmatter()
 // ══════════════════════════════════════
-#if book-cover-image != "" [
-  #page(numbering: none, header: none, footer: none, margin: (top: 20pt, bottom: 20pt, left: 16pt, right: 16pt))[
-    #image(book-cover-image, width: 100%, height: 100%, fit: "contain")
-  ]
-] else [
-  #page(numbering: none, header: none, footer: none)[
-    #v(1fr)
-    #align(center)[
-      #line(length: 40%, stroke: 2pt + color-primary)
+// codex 조건(2026-07-07, Task 3 회귀 수정): 표지/목차는 book.typ가 미리 정의하는
+// book-title 등 외부 변수를 참조하므로, 이 파일이 다른 스크립트 없이 단독으로
+// #import 될 때(예: concept-anchor 단위 테스트) 최상위에서 즉시 평가되면
+// "unknown variable" 오류가 난다. 함수로 감싸 정의만 하고, 실제 호출은
+// typst_builder.py의 merge_template_and_content가 book.typ + book_base.typ를
+// 이어붙인 뒤(book-title 등이 이미 바인딩된 상태) 명시적으로 수행한다.
+// 이 파일의 최상위에는 이제 #let/#show/state만 남는다 — 단독 import 시
+// 부작용 없는 순수 정의만 평가된다.
+#let render-book-frontmatter() = [
+  // ══════════════════════════════════════
+  // 표지 — 이미지 또는 텍스트
+  // ══════════════════════════════════════
+  #if book-cover-image != "" [
+    #page(numbering: none, header: none, footer: none, margin: (top: 20pt, bottom: 20pt, left: 16pt, right: 16pt))[
+      #image(book-cover-image, width: 100%, height: 100%, fit: "contain")
+    ]
+  ] else [
+    #page(numbering: none, header: none, footer: none)[
+      #v(1fr)
+      #align(center)[
+        #line(length: 40%, stroke: 2pt + color-primary)
+        #v(24pt)
+        #text(42pt, weight: "bold", fill: color-primary-dark, tracking: 2pt)[#book-title]
+        #v(16pt)
+        #line(length: 60%, stroke: 0.5pt + color-primary-light)
+        #v(16pt)
+        #text(15pt, fill: rgb("#374151"), weight: "medium")[#book-subtitle]
+        #v(48pt)
+        #block(
+          width: 70%,
+          inset: (x: 20pt, y: 16pt),
+          radius: 4pt,
+          fill: rgb("#f8fafc"),
+          stroke: 0.5pt + rgb("#e2e8f0"),
+          text(10.5pt, fill: rgb("#64748b"))[#book-description]
+        )
+      ]
+      #v(1fr)
+      #align(center)[
+        #text(11pt, fill: rgb("#4b5563"), weight: "medium")[#book-authors 지음]
+        #v(14pt)
+        #text(9pt, fill: rgb("#94a3b8"))[#book-header-title]
+      ]
       #v(24pt)
-      #text(42pt, weight: "bold", fill: color-primary-dark, tracking: 2pt)[#book-title]
-      #v(16pt)
-      #line(length: 60%, stroke: 0.5pt + color-primary-light)
-      #v(16pt)
-      #text(15pt, fill: rgb("#374151"), weight: "medium")[#book-subtitle]
-      #v(48pt)
-      #block(
-        width: 70%,
-        inset: (x: 20pt, y: 16pt),
-        radius: 4pt,
-        fill: rgb("#f8fafc"),
-        stroke: 0.5pt + rgb("#e2e8f0"),
-        text(10.5pt, fill: rgb("#64748b"))[#book-description]
-      )
     ]
-    #v(1fr)
-    #align(center)[
-      #text(11pt, fill: rgb("#4b5563"), weight: "medium")[#book-authors 지음]
-      #v(14pt)
-      #text(9pt, fill: rgb("#94a3b8"))[#book-header-title]
-    ]
-    #v(24pt)
   ]
-]
 
-// ══════════════════════════════════════
-// 목차 (자동 생성)
-// ══════════════════════════════════════
-#page(numbering: none, header: none, footer: none)[
-  #v(30pt)
-  #block(width: 100%, below: 12pt, {
-    text(24pt, weight: "bold", fill: rgb("#1a1a1a"))[목차]
-    v(6pt)
-    line(length: 100%, stroke: 3pt + rgb("#2563eb"))
-  })
-  #v(12pt)
+  // ══════════════════════════════════════
+  // 목차 (자동 생성)
+  // ══════════════════════════════════════
+  #page(numbering: none, header: none, footer: none)[
+    #v(30pt)
+    #block(width: 100%, below: 12pt, {
+      text(24pt, weight: "bold", fill: rgb("#1a1a1a"))[목차]
+      v(6pt)
+      line(length: 100%, stroke: 3pt + rgb("#2563eb"))
+    })
+    #v(12pt)
 
-  #show outline.entry.where(level: 1): set text(weight: "bold", size: 11pt)
-  #show outline.entry.where(level: 1): it => {
-    v(6pt)
-    it
-  }
-  #show outline.entry.where(level: 3): set text(size: 8.5pt, fill: rgb("#6b7280"))
+    #show outline.entry.where(level: 1): set text(weight: "bold", size: 11pt)
+    #show outline.entry.where(level: 1): it => {
+      v(6pt)
+      it
+    }
+    #show outline.entry.where(level: 3): set text(size: 8.5pt, fill: rgb("#6b7280"))
 
-  #outline(
-    title: none,
-    indent: 1.5em,
-    depth: 2,
-  )
+    #outline(
+      title: none,
+      indent: 1.5em,
+      depth: 2,
+    )
+  ]
 ]
 
 // ══════════════════════════════════════

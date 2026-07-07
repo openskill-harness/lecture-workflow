@@ -15,7 +15,9 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 `ppt_previews/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
 그대로 이식하므로 간접 소비다. 요약 모드도 원고를 참고하되 이미지 삽입은 하지 않는다(저밀도 요약 취지).
 
-**자산 선택 계약**: 슬라이드별로 `assets/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`assets/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+(이 스킬은 manifest를 직독하지 않는다: 그대로 모드는 ppt-preview HTML을 그대로 이어받아 이미 임베드된
+자산을 쓰고, 요약 모드는 판서용으로 자산을 넣지 않기 때문이다. 자산 SSOT 계약은 상류 ppt-preview가 이미
+충족했다.)
 
 ## 산출물 (항상 2개)
 
@@ -40,6 +42,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
   중단한다.
 - **그대로 모드**: `ppt_previews/chNN.html`이 없거나 `PPT프리뷰`가 ✅가 아니면 사용자에게 알리고
   중단한다.
+- **하드게이트**: 두 모드 공통으로 해당 차시 `시각자산`이 ✅ 또는 `deferred`가 아니면(⬜/🔄/`partial`/`stale`)
+  사용자에게 알리고 중단한다 — 먼저 `visual-assets`를 완료(또는 명시 보류)해야 한다.
 - `status.md`의 해당 차시 `판서` 칸을 🔄로 갱신한다.
 
 ## 2. 모드별 템플릿 선택

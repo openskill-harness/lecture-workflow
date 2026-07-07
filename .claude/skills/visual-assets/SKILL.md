@@ -53,6 +53,16 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
   3. 최종 파일을 `assets/diagrams/{chNN}-slide{NN}-{요지}.png`로 저장(또는 리네임)한다 — `{요지}`는 다이어그램 내용을 요약한 짧은 영문/한글 슬러그.
   4. 종횡비가 3:1을 넘으면 `pub-d2-diagram`의 종횡비 가이드에 따라 원고 D2 소스를 `direction: down` 등으로 재배치할지 사용자에게 확인한다(자동 재배치 아님).
 
+### 3-b. 정확 좌표 플롯 (opt-in — [PLOT SCRIPT])
+
+원고 Visual asset에 `주 시각자료: PLOT` 마커 또는 `Plot script:` 라인이 있는 슬라이드는 생성 이미지가
+아니라 image-gen의 `plot_gen.py`로 렌더한다 — 곡선 연속성·점 좌표가 정확해야 하는 그래프(정사영·함수·
+좌표평면 등)에서 생성 이미지는 좌표를 어긋나게 만들기 때문이다(image-gen이 이 목적을 위해 추가한 분기).
+- 방출: `<!-- [PLOT SCRIPT: chNN-slideNN] --><matplotlib 파이썬 스니펫><!-- path: assets/images/chNN/slideNN.png -->`
+- image-gen이 `[PLOT SCRIPT]` 태그를 스캔해 `plot_gen.py`로 실행, 결과 PNG를 같은 `assets/images/chNN/slideNN.png`
+  경로에 쓴다 — manifest는 이미지 블록으로 동일하게 취급한다(별도 스키마 불필요).
+- primary 판정: 이미지 블록으로 잡히므로 기본 primary. D2 마커와 동시 사용하지 않는다.
+
 ### 4. manifest 생성 (SSOT)
 
 - `python scripts/build_asset_manifest.py courses/{course-id} chNN` 를 실행한다(레포 루트 스크립트, 수정하지 않고 그대로 호출).

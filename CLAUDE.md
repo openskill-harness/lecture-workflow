@@ -68,6 +68,7 @@ courses/{course-id}/
 ├── assets/
 │   ├── images/chNN/           # 생성 이미지
 │   ├── diagrams/               # D2 소스 + 렌더 PNG
+│   ├── ppt_render/chNN/         # pptx-build 이미지 모드: preview HTML→PNG 렌더(render_preview_slides.py)
 │   └── manifest.json           # 시각자산 SSOT (visual-assets 소유, 슬라이드→경로/해시/상태)
 └── code/chNN/                  # 차시별 실습 코드
 ```

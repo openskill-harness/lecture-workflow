@@ -1,6 +1,6 @@
 ---
 name: image-gen
-description: [IMAGE PROMPT] (레거시 [GEMINI PROMPT]도 인식) 플레이스홀더를 Codex(GPT) CLI 이미지로 자동 생성·교체. 코드·개념 트랙 공용. 챕터 완성 후 `이미지 생성` 시 로드.
+description: "[IMAGE PROMPT] 플레이스홀더를 Codex(GPT) CLI 이미지로 자동 생성·교체하고, [PLOT SCRIPT]는 plot_gen.py(matplotlib 정확 좌표 플롯)로 렌더한다. visual-assets가 주 호출자. '이미지 생성' 시 로드."
 ---
 
 # 이미지 자동화 스킬

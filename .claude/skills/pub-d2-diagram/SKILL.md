@@ -1,8 +1,10 @@
-# D2 다이어그램 빌드 스킬
-
+---
+name: pub-d2-diagram
+description: D2 소스를 모노톤 도형 PNG/SVG로 렌더하는 opt-in 폴백 엔진. visual-assets가 원고 `주 시각자료: D2` 마커 슬라이드에서만 스크립트로 호출한다. 기본 시각자산은 GPT 이미지이므로 자동선택 대상이 아니다.
 model: claude-sonnet-4-6
-user_invocable: true
-trigger: ["D2 빌드", "다이어그램 생성", "/d2"]
+---
+
+# D2 다이어그램 빌드 스킬
 
 ## 하는 일
 

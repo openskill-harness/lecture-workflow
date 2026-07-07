@@ -1,6 +1,6 @@
 ---
 name: book-build
-description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`book/chNN.pdf`)을 만든다. 과정 완주 시 합본(`book/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 11단계 — 캐릭터 설정 → 소설체 재집필(이미지는 `assets/manifest.json`의 확정 경로를 참조) → humanizer 문체 교정 → 편집 검토 3종(사실성·개념 누락·과도한 소설화) → typst_builder(Typst/Pandoc)로 PDF 빌드. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
+description: 확정 원고(`manuscripts/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`book/chNN.pdf`)을 만든다. 과정 완주 시 합본(`book/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 11단계 — 캐릭터 설정 → 소설체 재집필(이미지는 `assets/manifest.json`의 확정 경로를 참조) → humanizer 문체 교정 → 편집 검토 4종(사실성·개념 누락·과도한 소설화·개념 앵커) → typst_builder(Typst/Pandoc)로 PDF 빌드. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 ---
 
 # book-build
@@ -130,7 +130,7 @@ typst_builder.build(config)
 
 ### 6. 확정
 
-편집 검토 3종 통과 + PDF 렌더 정상을 사용자에게 보고하고 확인을 받은 뒤:
+편집 검토 4종 통과 + PDF 렌더 정상을 사용자에게 보고하고 확인을 받은 뒤:
 
 - `courses/{course-id}/status.md`의 해당 차시 `책` 칸을 ✅로 갱신한다.
 - 산출물 인덱스에 `- chNN 책: book/chNN.pdf (확정 YYYY-MM-DD)`를 추가한다(합본이면 별도로 `- 합본: book/합본.pdf (확정 YYYY-MM-DD)`).
@@ -147,7 +147,7 @@ typst_builder.build(config)
 
 체크리스트 실패 시 챕터 전체를 다시 쓰지 않는다.
 
-- 편집 검토 3종 중 하나라도 실패하면 **검토에서 지적된 문단만** 재집필한다(챕터 전체 재집필 금지).
+- 편집 검토 4종 중 하나라도 실패하면 **검토에서 지적된 문단만** 재집필한다(챕터 전체 재집필 금지).
 - 캐릭터 부재 구간이 발견되면 해당 챕터(또는 인접 챕터)에 짧은 대사 1개만 추가해 규칙을 충족시킨다.
 - 개념 누락이 발견되면 누락된 개념만 가장 관련 있는 기술 파트 문단에 추가한다.
 - PDF 렌더 실패(빈 페이지·이미지 깨짐 등)는 원고 재집필이 아니라 빌드 문제다 — 먼저 Task 13 드라이런 기록(`docs/reviews/2026-07-05_typst-windows-dryrun.md`, Task 13 보고서 `.superpowers/sdd/task-13-report.md`)에 이미 알려진 이슈(예: 마지막 파일 뒤 구분자로 인한 이미지 근처 빈 페이지)인지 먼저 확인하고, 아니면 이미지 경로/`typst_builder.py` 후처리 로직을 점검한다.

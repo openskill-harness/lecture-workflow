@@ -155,6 +155,7 @@ def build_manifest(course_dir, ch):
         if has_img:
             cur_hash = _hash(info["prompt"])
             prior_hash = prior.get(num, {}).get("image")
+            # 주의: stale은 프롬프트 변경 후 첫 재빌드에서만 감지된다(새 해시를 저장하므로). 재생성 전 중복 빌드 금지 — visual-assets §7 흐름 준수.
             if img_file_ok and prior_hash is not None and prior_hash != cur_hash:
                 img_status = "stale"          # 파일은 있으나 프롬프트가 바뀜 → 재생성 필요
             elif img_file_ok:

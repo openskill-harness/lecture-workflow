@@ -435,7 +435,7 @@ description: 이 강의 제작 하네스(스킬·에이전트·CLAUDE.md·docs)�
 
 스킬 추가/수정, 에이전트 변경, 디렉터리 규약·status.md 스키마 변경은:
 
-1. `docs/history/<YYYY-MM-DD_변경>/proposal.md`에 계획을 쓴다(문제·제안·회귀 위험·검증).
+1. `docs/history/<YYYY-MM-DD_변경>/proposal.md`에 계획을 쓴다(문제·제안·회귀 위험·검증). 큰 변경이라 writing-plans로 실행계획을 만들면 그 계획도 **같은 폴더 `plan.md`**에 둔다 — superpowers writing-plans의 기본 저장 위치(`docs/superpowers/plans/`)를 이 규약으로 override한다(계획도 point-in-time 산출물 = 이력이므로). 한 변경의 proposal·codex-review·plan은 항상 한 폴더에 동거한다.
 2. codex 사전검증 — Git Bash에서 stdin 닫고 read-only: `codex exec --sandbox read-only '...' </dev/null`. 결과를 같은 폴더 `codex-review.md`에 저장(맨 위 한 줄 결론). 조건부/반려면 반영.
 3. 변경을 **R2로 반영**한다:
    - 새 규칙/기능 *추가* → 기존 문서에 덧붙인다.

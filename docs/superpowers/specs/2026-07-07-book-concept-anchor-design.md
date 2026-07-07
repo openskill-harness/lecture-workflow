@@ -105,4 +105,4 @@ manuscript는 변경하지 않는다. 변경은 book-build에 국한된다.
 
 ## 7. 유지 규칙 준수
 
-book-build는 하네스 구조(스킬 절차·검토 규칙)를 바꾸므로, 구현 전 `docs/proposals/`에 계획을 쓰고 codex 사전검증(`codex exec --sandbox read-only … </dev/null`) 후 `docs/reviews/`에 결과를 저장한다(CLAUDE.md 유지 규칙). — 구현 계획(writing-plans) 단계에서 Task로 포함한다.
+book-build는 하네스 구조(스킬 절차·검토 규칙)를 바꾸므로, 구현 전 `docs/history/<날짜_변경>/proposal.md`에 계획을 쓰고 codex 사전검증 결과를 같은 폴더 `codex-review.md`에 저장한 뒤 반영하고 `docs/history/CHANGELOG.md`에 한 줄 추가한다(CLAUDE.md 유지 규칙 R3 · harness-maintain 스킬). — 구현 계획(writing-plans) 단계에서 Task로 포함한다.

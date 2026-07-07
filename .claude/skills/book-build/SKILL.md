@@ -150,7 +150,7 @@ typst_builder.build(config)
 - 편집 검토 4종 중 하나라도 실패하면 **검토에서 지적된 문단만** 재집필한다(챕터 전체 재집필 금지).
 - 캐릭터 부재 구간이 발견되면 해당 챕터(또는 인접 챕터)에 짧은 대사 1개만 추가해 규칙을 충족시킨다.
 - 개념 누락이 발견되면 누락된 개념만 가장 관련 있는 기술 파트 문단에 추가한다.
-- PDF 렌더 실패(빈 페이지·이미지 깨짐 등)는 원고 재집필이 아니라 빌드 문제다 — 먼저 Task 13 드라이런 기록(`docs/reviews/2026-07-05_typst-windows-dryrun.md`, Task 13 보고서 `.superpowers/sdd/task-13-report.md`)에 이미 알려진 이슈(예: 마지막 파일 뒤 구분자로 인한 이미지 근처 빈 페이지)인지 먼저 확인하고, 아니면 이미지 경로/`typst_builder.py` 후처리 로직을 점검한다.
+- PDF 렌더 실패(빈 페이지·이미지 깨짐 등)는 원고 재집필이 아니라 빌드 문제다 — 먼저 Task 13 드라이런 기록(`docs/history/2026-07-05_v2-redesign/typst-windows-dryrun.md`, Task 13 보고서 `.superpowers/sdd/task-13-report.md`)에 이미 알려진 이슈(예: 마지막 파일 뒤 구분자로 인한 이미지 근처 빈 페이지)인지 먼저 확인하고, 아니면 이미지 경로/`typst_builder.py` 후처리 로직을 점검한다.
 
 ## 라이선스 주의
 
@@ -159,7 +159,7 @@ typst_builder.build(config)
 ## 참고
 
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (8개 필드: Screen, Easy analogy, Practical case, Visual asset, Source, Narration, Practice, Assessment)
-- Task 13 자산 이식 보고서: `.superpowers/sdd/task-13-report.md`, 드라이런 상세: `docs/reviews/2026-07-05_typst-windows-dryrun.md`
+- Task 13 자산 이식 보고서: `.superpowers/sdd/task-13-report.md`, 드라이런 상세: `docs/history/2026-07-05_v2-redesign/typst-windows-dryrun.md`
 - status.md 형식: `templates/status_template.md` (마지막 열이 `책`)
 - 시각자산 SSOT: `assets/manifest.json`(`visual-assets` 스킬 소유) — §2 "자산 해석 규칙" 참조.
 - 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §10(이 스킬의 설계 근거)

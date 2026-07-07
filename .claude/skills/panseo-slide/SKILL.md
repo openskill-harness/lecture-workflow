@@ -117,8 +117,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
    닿지 않게 한다(`object-fit: contain`은 유지). `.ppt-media`/`.cover-image` 자체나 `.flow`/`pre`/
    `.split` 등 비이미지 위젯에는 padding을 주지 않는다 — 전역 padding은 레이아웃을 깬다. `%` 단독
    padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거:
-   `docs/proposals/2026-07-06_asset-embed-safe-margin.md`(제안 B), codex 조건 2:
-   `docs/reviews/2026-07-06_asset-embed-margin-codex-review.md`.
+   `docs/history/2026-07-06_asset-embed-safe-margin/proposal.md`(제안 B), codex 조건 2:
+   `docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md`.
 7. `{{DECK_TITLE}}`을 강의명/원고 제목으로 치환한다. 판서 캔버스(`#pad`)는 엔진 구조상 이미
    전체 화면을 덮는 오버레이이므로, 슬라이드 위에 판서 레이어를 얹기 위한 별도 작업은 필요 없다.
 

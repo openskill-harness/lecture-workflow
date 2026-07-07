@@ -3,7 +3,7 @@
 
 레이아웃 엔진: dagre. (ELK가 아니다 — ELK는 엣지 라벨을 연결선/노드 위에 공간 예약 없이
 얹어 라벨-선/라벨-노드 겹침을 유발한다. dagre는 엣지 라벨을 공간 예약 요소로 취급해
-설계상 겹치지 않는다. 근거: docs/reviews/2026-07-06_d2-layout-debug.md)
+설계상 겹치지 않는다. 근거: docs/history/2026-07-06_d2-layout-debug/debug-note.md)
 """
 import re, subprocess, sys, pathlib
 

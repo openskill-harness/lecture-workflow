@@ -20,6 +20,7 @@
 - **라이트 테마 고정**: 새 색상 도입 금지. `book_base.typ` 기존 accent `rgb("#2563eb")` 재사용(`style.md` 디자인 제약 준수).
 - **대상 검증 차시**: `courses/spring-boot-basic` ch01.
 - 스펙 출처: `docs/superpowers/specs/2026-07-07-book-concept-anchor-design.md`.
+- **codex 조건부 승인 반영**(`docs/reviews/2026-07-07_book-concept-anchor-codex-review.md`): (1) Lua 필터는 `pandoc.write`로 AST→typst 직렬화 + `+fenced_divs` + anchor 필터를 paragraph-gap 앞에 → Task 3. (2) 앵커 이미지 빈 alt + design_assembler 경로에도 함수 → Task 3·6. (3) 편집검토 기존 ③ 유지 + 신규 ④ 추가(대체 금지) → Task 4.
 
 ---
 
@@ -167,7 +168,7 @@ def test_div_becomes_concept_anchor_call(tmp_path):
     md = tmp_path / "in.md"
     md.write_text(_MD, encoding="utf-8")
     out = tmp_path / "out.typ"
-    cmd = ["pandoc", str(md), "-f", "markdown", "-t", "typst", "-o", str(out),
+    cmd = ["pandoc", str(md), "-f", "markdown+fenced_divs", "-t", "typst", "-o", str(out),
            "--wrap=none", "--lua-filter", str(LUA)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
@@ -184,7 +185,7 @@ def test_non_anchor_div_untouched(tmp_path):
     md = tmp_path / "in.md"
     md.write_text("::: other\n일반 내용.\n:::\n", encoding="utf-8")
     out = tmp_path / "out.typ"
-    cmd = ["pandoc", str(md), "-f", "markdown", "-t", "typst", "-o", str(out),
+    cmd = ["pandoc", str(md), "-f", "markdown+fenced_divs", "-t", "typst", "-o", str(out),
            "--wrap=none", "--lua-filter", str(LUA)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     assert r.returncode == 0, r.stderr
@@ -220,17 +221,14 @@ Expected: `test_div_becomes_concept_anchor_call`, `test_book_base_defines_concep
 `.claude/skills/book-build/references/scripts/concept-anchor.lua`를 생성한다:
 
 ```lua
--- Div(class="concept-anchor") → typst #concept-anchor[ <div 내용> ] 로 감싼다.
--- 다른 div는 손대지 않는다. div 내부 블록(굵은 기술명·이미지·정의 문단)은
--- pandoc typst writer가 그대로 렌더한다.
+-- Div(class="concept-anchor") → typst #concept-anchor[ <직렬화된 내용> ] 로 감싼다.
+-- codex 조건1: 내부 Markdown을 문자열로 끼워 넣지 말고, div의 AST content를
+-- pandoc.write로 typst content로 직렬화한 뒤 단일 RawBlock으로 감싼다.
+-- 다른 div는 손대지 않는다.
 function Div(el)
-  if el.classes:includes("concept-anchor") then
-    local blocks = { pandoc.RawBlock("typst", "#concept-anchor[") }
-    for _, b in ipairs(el.content) do
-      table.insert(blocks, b)
-    end
-    table.insert(blocks, pandoc.RawBlock("typst", "]"))
-    return blocks
+  if el.classes and el.classes:includes("concept-anchor") then
+    local inner = pandoc.write(pandoc.Pandoc(el.content), "typst")
+    return pandoc.RawBlock("typst", "#concept-anchor[\n" .. inner .. "\n]")
   end
 end
 ```
@@ -243,6 +241,7 @@ end
 // ── 개념 앵커 (concept-anchor) ──
 // 정식 기술명(굵게) + D2 도식 + 짧은 정의를 위아래 구분선으로 감싼 블록.
 // 이야기 프로즈와 시각적으로 분리해 정의가 눈에 보이게 한다.
+// 앵커 내부 D2 이미지는 빈 alt(![](path))로 둔다 — 전역 #show figure 여백 중복 방지(codex 조건2).
 #let concept-anchor(body) = block(
   width: 100%,
   above: 16pt,
@@ -268,14 +267,18 @@ end
     cmd = [
         'pandoc',
         str(md_path),
-        '-f', 'markdown+pipe_tables+fenced_code_blocks+backtick_code_blocks-citations',
+        '-f', 'markdown+pipe_tables+fenced_code_blocks+backtick_code_blocks+fenced_divs-citations',
         '-t', 'typst',
         '-o', str(typ_path),
         '--wrap=none',
-        '--lua-filter', str(anchor_filter),
+        '--lua-filter', str(anchor_filter),   # anchor 필터를 paragraph-gap 앞에 — 순서 고정(codex 조건1)
         '--lua-filter', str(lua_filter),
     ]
 ```
+
+- [ ] **Step 5b: design 모드 경로에도 concept-anchor 함수 포함 (codex 조건2)**
+
+`design` 모드는 `merge_template_and_content`(typst_builder.py:674)가 `book_base.typ`가 아니라 `design_assembler.assemble_book_base(...)`가 조립한 base를 쓴다. ch01은 standard 모드(driver에 `design` 키 없음)라 book_base.typ로 충분하지만, design 모드 회귀를 막기 위해 `design_assembler.py`의 조립 결과에도 동일한 `#concept-anchor` 정의가 포함되도록 한다(assemble_book_base가 산출하는 base 문자열에 Step 4의 함수 블록을 추가하거나, 공통 컴포넌트로 삽입). 구조 파악 후 book_base.typ와 **동일한 함수 정의**를 넣는다.
 
 - [ ] **Step 6: 테스트 실행해 통과 확인**
 
@@ -326,20 +329,30 @@ git commit -m "feat(book-build): 개념 앵커 렌더 — concept-anchor Lua 필
 - **제목 이원화**: 각 장 제목은 `이야기 제목 — 기술 부제`(예: `2장. 약속이 있어야 대화가 된다 — HTTP`).
 ```
 
-- [ ] **Step 2: 편집검토 ③을 ④ 개념 앵커 검증(하드 체크)으로 개정**
+- [ ] **Step 2: 기존 ③ 유지(문구 조정) + 신규 ④ 개념 앵커 검증 추가 (codex 조건3 — 대체 금지)**
 
-`SKILL.md`의 `### 4. 편집 검토 패스` 절에서 3번 항목("**과도한 소설화 방지**…")을 아래로 교체한다:
+`SKILL.md`의 `### 4. 편집 검토 패스` 절에서:
+
+(a) 절 도입부의 "**3종**"을 "**4종**"으로 바꾼다.
+
+(b) 기존 3번 "**과도한 소설화 방지**" 항목은 **유지**하되, "기술 설명(정의·동작 원리·코드)을 끼워 넣어" 문구를 아래처럼 고친다(새 ④ 하드 체크의 "정의 중복 용해 금지"와 충돌 방지):
 
 ```
-3. **개념 앵커 검증(하드 체크)**: 아래를 모두 만족해야 하며, 하나라도 어기면 확정할 수 없다.
+3. **과도한 소설화 방지**: 기술 설명 없이 이야기만 이어지는 구간(예: 대화·감정 묘사만 3문단 이상 연속)을 검출한다. 발견되면 그 구간에 기술 설명(**동작 원리·코드·예시 — 단 정식 정의는 앵커에만 두고 여기서 재정의하지 않는다**)을 끼워 넣어 이야기와 기술이 번갈아 나오도록 조정한다.
+```
+
+(c) 그 아래에 **4번 항목**을 새로 추가한다:
+
+```
+4. **개념 앵커 검증(하드 체크)**: 아래를 모두 만족해야 하며, 하나라도 어기면 확정할 수 없다.
    - 각 장에 개념 앵커가 **1–2개** 있다(0개인 장이 없다).
    - 각 앵커에 **정식 기술명 + (도식 또는 명시적 도식-불가 사유) + 짧은 정의**가 모두 있다.
-   - 앵커의 정의가 프로즈 문단에 **중복 용해되지 않았다**(정의는 앵커에만). 기술 설명 없이 대화·감정 묘사만 3문단 이상 연속되는 구간도 검출해 앵커 뒤 프로즈에 기술 설명을 보강한다.
+   - 앵커의 정의가 프로즈 문단에 **중복 용해되지 않았다**(정의는 앵커에만).
 ```
 
-- [ ] **Step 3: 확정 체크리스트에 앵커 항목 추가**
+- [ ] **Step 3: 확정 체크리스트 갱신 (3종→4종 + 앵커 항목)**
 
-`SKILL.md`의 확정 체크리스트에 아래 항목을 추가한다:
+`SKILL.md`의 확정 체크리스트에서 기존 "**편집 검토 3종 통과**" 항목을 "**편집 검토 4종 통과**: 사실성 보존 / 개념 누락 대조표 / 과도한 소설화 방지 / 개념 앵커 검증"으로 바꾸고, 아래 항목을 추가한다:
 
 ```
 - [ ] **개념 앵커**: 장마다 앵커 1–2개, 각 앵커 3요소(명+도식+정의) 충족, 정의 프로즈 용해 없음, 제목 이원화 적용.
@@ -417,7 +430,7 @@ git commit -m "docs(storytelling): 정의는 개념 앵커에 + 장 제목 이�
 (이하 기존 이야기 프로즈 — 단, 프로즈 안에 있던 정식 정의 문장은 앵커로 옮겨 중복 제거)
 ```
 
-각 장 제목에 기술 부제를 붙인다(제목 이원화). 정의를 앵커로 옮긴 뒤 프로즈에 남은 중복 정의 문장은 제거한다.
+각 장 제목에 기술 부제를 붙인다(제목 이원화). 정의를 앵커로 옮긴 뒤 프로즈에 남은 중복 정의 문장은 제거한다. **앵커 내부 D2 이미지는 빈 alt(`![](path)`)로 둔다**(figure 여백 중복 방지 — codex 조건2).
 
 - [ ] **Step 2: 책 재빌드**
 

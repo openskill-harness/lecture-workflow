@@ -114,6 +114,20 @@ def test_defer_marker_keeps_image_deferred_not_missing(tmp_path):
     assert manifest["overall_status"] == "present"
 
 
+def test_changed_prompt_marks_present_asset_stale(tmp_path):
+    # 1) 프롬프트 A로 빌드(이미지 파일 존재) → present
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    m1, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5(m1)["image"]["status"] == "present"
+    # 2) 원고의 이미지 프롬프트만 다른 텍스트로 교체(파일은 그대로) → stale
+    changed = _BOTH.replace("HTTP request flow", "COMPLETELY DIFFERENT SCENE")
+    (course / "manuscripts" / "ch01.md").write_text(changed, encoding="utf-8")
+    m2, _ = bam.build_manifest(str(course), "ch01")
+    s = _slide5(m2)
+    assert s["image"]["status"] == "stale"
+    assert m2["overall_status"] != "present"  # stale은 커버 아님 → 재생성 유도
+
+
 def test_comic_panel_prompt_is_counted_as_image(tmp_path):
     # `Comic panel prompt:` 라벨도 이미지 프롬프트로 인식되어야 한다.
     # 미생성 상태이므로 image 블록이 primary=True/status=missing 으로 잡혀

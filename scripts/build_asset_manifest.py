@@ -15,7 +15,9 @@ manifest 스키마(슬라이드별):
   }
 status(이미지): 파일 present → present / primary 아니거나 `이미지 보류` 마커면 deferred / 그 외 missing.
 status(자산 단계 전체): primary 자산이 present·deferred인 슬라이드 수 / 예상 수 로 present|partial|missing 판정.
-prompt_hash/d2_hash = 원고의 해당 소스 텍스트 SHA1 앞 12자 → 원고 변경 시 stale 감지에 사용.
+prompt_hash/d2_hash = 원고 해당 소스 텍스트 SHA1 앞 12자. 재빌드 시 이전 manifest.json의
+해시와 비교해, 파일은 있으나 프롬프트가 바뀐 자산을 status="stale"로 표기한다(stale은 커버로
+인정하지 않으므로 하드 게이트가 재생성을 유도한다).
 
 사용:
   python scripts/build_asset_manifest.py <course_dir> <chNN>
@@ -31,6 +33,24 @@ from manuscript_grammar import SLIDE_RE, FIELD_RE, IMG_PROMPT_RE, D2_PRIMARY_RE,
 
 def _hash(text):
     return hashlib.sha1(text.strip().encode("utf-8")).hexdigest()[:12] if text and text.strip() else None
+
+
+def _load_prior_hashes(course):
+    """이전 manifest.json에서 슬라이드별 (image/d2) 해시를 읽어온다. 없으면 빈 dict."""
+    p = course / "assets" / "manifest.json"
+    if not p.exists():
+        return {}
+    try:
+        prev = json.loads(p.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        return {}
+    out = {}
+    for s in prev.get("slides", []):
+        out[s["slide"]] = {
+            "image": (s.get("image") or {}).get("prompt_hash"),
+            "d2": (s.get("d2") or {}).get("d2_hash"),
+        }
+    return out
 
 
 def parse_visual_assets(md_text):
@@ -86,6 +106,7 @@ def parse_visual_assets(md_text):
 
 def build_manifest(course_dir, ch):
     course = Path(course_dir)
+    prior = _load_prior_hashes(course)   # {slide: {"image": hash, "d2": hash}}
     md = (course / "manuscripts" / f"{ch}.md").read_text(encoding="utf-8")
     va = parse_visual_assets(md)
     img_dir = course / "assets" / "images" / ch
@@ -115,14 +136,28 @@ def build_manifest(course_dir, ch):
             primary = None
 
         if has_d2:
+            cur_d2_hash = _hash(info["d2"])
+            prior_d2 = prior.get(num, {}).get("d2")
+            if d2_file_ok and prior_d2 is not None and prior_d2 != cur_d2_hash:
+                d2_status = "stale"
+            elif d2_file_ok:
+                d2_status = "present"
+            elif primary != "d2":
+                d2_status = "deferred"
+            else:
+                d2_status = "missing"
             entry["d2"] = {
                 "path": f"assets/diagrams/{d2_matches[0].name}" if d2_matches else None,
-                "d2_hash": _hash(info["d2"]),
-                "status": "present" if d2_file_ok else ("deferred" if primary != "d2" else "missing"),
+                "d2_hash": cur_d2_hash,
+                "status": d2_status,
                 "primary": primary == "d2",
             }
         if has_img:
-            if img_file_ok:
+            cur_hash = _hash(info["prompt"])
+            prior_hash = prior.get(num, {}).get("image")
+            if img_file_ok and prior_hash is not None and prior_hash != cur_hash:
+                img_status = "stale"          # 파일은 있으나 프롬프트가 바뀜 → 재생성 필요
+            elif img_file_ok:
                 img_status = "present"
             elif primary != "image":
                 img_status = "deferred"      # D2가 primary — 이미지는 폴백, 생성 불필요
@@ -132,7 +167,7 @@ def build_manifest(course_dir, ch):
                 img_status = "missing"       # primary인데 미생성 → 하드 게이트가 막음
             entry["image"] = {
                 "path": img_path,
-                "prompt_hash": _hash(info["prompt"]),
+                "prompt_hash": cur_hash,
                 "status": img_status,
                 "primary": primary == "image",
             }

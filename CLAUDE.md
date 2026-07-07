@@ -31,6 +31,7 @@
 - `pub-d2-diagram` — D2 모노톤 도형 렌더 (opt-in 폴백 엔진 — 기본 시각자산은 GPT 이미지, 원고에 `주 시각자료: D2` 마커가 있는 슬라이드에서만 `visual-assets`가 호출)
 - `panseo-board` — 빈 판서보드, 명시 요청 시만
 - `humanizer` — 책 문체 교정 (이식 완료, book-build가 §3에서 호출해 사용)
+- `manuscript-verify` — 확정 원고 기술 주장을 외부 근거로 적대적 검증(근거부 리포트, 비차단 온디맨드, 3.5단계 — 원고 자동수정 없음). "원고 검증" 요청 시.
 
 ## 트리거 라우팅
 
@@ -39,6 +40,7 @@
 | "과정 만들자", "개요서" | `course-outline` |
 | "원고 초안" | `manuscript-draft` |
 | "원고 수정", "원고 완성" | `manuscript-final` |
+| "원고 검증", "기술 검증", "팩트체크" | `manuscript-verify` |
 | "시각자산", "이미지·다이어그램 생성" | `visual-assets` |
 | "실습 코드" | `practice-code` |
 | "스토리보드" | `storyboard` |

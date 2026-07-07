@@ -6,7 +6,7 @@
 
 ## 1. 배경 / 문제
 
-확정 원고(`manuscripts/chNN.md`)가 전 파이프라인의 **단일 진실원(SSOT)** — 7개 이상 산출물이 여기서 파생된다. 그런데:
+확정 원고(`outputs/02_원고/chNN.md`)가 전 파이프라인의 **단일 진실원(SSOT)** — 7개 이상 산출물이 여기서 파생된다. 그런데:
 
 - `manuscript-final` 확정 체크리스트는 **구조만** 본다(8필드 무결성·슬라이드 번호). 기술적 주장의 참/거짓은 검증하지 않는다.
 - `Source` 필드는 있으나 품질이 제각각(URL·산문 설명·내부 문서)이고, **"그 Source가 실제로 그 주장을 지지하는지"는 아무도 확인하지 않는다.**
@@ -20,8 +20,8 @@
 - **위치**: 개념상 3.5단계 — `manuscript-final`(원고확정 ✅) 직후, `visual-assets` 언저리.
 - **성격**: **비차단 온디맨드 스킬**. 파이프라인 필수 관문이 아니라, 원고 신뢰도를 높이고 싶을 때 부르는 보증 도구. 하드 게이트가 아니다(처리 방식이 "근거부 리포트"이고 LLM 검증엔 오탐이 있으므로 파이프라인을 막지 않는다).
 - **전제**: 대상 차시 `원고확정` ✅. 미확정 원고는 검증하지 않는다(어차피 바뀐다).
-- **입력**: `courses/{course-id}/manuscripts/chNN.md`.
-- **출력**: `courses/{course-id}/verification/chNN_verify.md`(리포트). `status.md`엔 정보성 한 줄(`원고검증: chNN 리포트 YYYY-MM-DD, 의심 N건`)만 추가 — 하드 게이트 칸 아님.
+- **입력**: `courses/{course-id}/outputs/02_원고/chNN.md`.
+- **출력**: `courses/{course-id}/outputs/11_검증/chNN_verify.md`(리포트). `status.md`엔 정보성 한 줄(`원고검증: chNN 리포트 YYYY-MM-DD, 의심 N건`)만 추가 — 하드 게이트 칸 아님.
 - **course-pipeline 연계**: 원고확정 후 "검증 돌려볼까요?"로 권유하되 막지 않는다(옵션).
 - **원고 자동 수정 금지**: 이 스킬은 리포트만 만든다. 원고 수정은 사용자가 `manuscript-final`로 한다(사용자 확정 SSOT 보호 — `practice-code`의 "역수정은 사용자 승인 후에만" 원칙과 동일).
 
@@ -53,7 +53,7 @@
 
 ### 4.3 리포트 집계기 (report aggregator)
 
-- 판정을 모아 `courses/{course-id}/verification/chNN_verify.md`를 만든다:
+- 판정을 모아 `courses/{course-id}/outputs/11_검증/chNN_verify.md`를 만든다:
   - **요약**: 검증 N건 / 지지 X / 반박 Y(고확신) / 검증불가 Z(사람 판단 필요) / (상한으로) 미검증 W건.
   - **의심 주장 표**: 슬라이드 · 주장 · 판정 · 확신도 · 근거(URL + 인용) · Source 지지 여부 · 수정안.
 - **분리 원칙**: "**반박(조치 대상)**"과 "**검증불가(사람 판단 필요)**"를 리포트에서 명확히 분리한다 — 오탐이 조치 목록을 오염시키지 않게. "검증불가"는 오류가 아니라 사람 판단이 필요한 항목이다.
@@ -61,7 +61,7 @@
 
 ## 5. 수정 루프
 
-1. 사용자가 `verification/chNN_verify.md` 리포트를 검토한다.
+1. 사용자가 `outputs/11_검증/chNN_verify.md` 리포트를 검토한다.
 2. 고칠 주장을 정한다.
 3. `manuscript-final`로 해당 주장을 수정한다(사용자 확정 SSOT 편집).
 4. 필요하면 `manuscript-verify`를 다시 돌려 재검증한다(변경된 주장 중심).

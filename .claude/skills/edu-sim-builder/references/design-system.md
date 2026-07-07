@@ -76,7 +76,7 @@ body{
 - **판정 박스** `.verdict`: 결과 메시지. `.ok`(emerald 틴트), `.bad`(rose), `.warn`(amber).
 - **메트릭/막대**: 라벨+값(mono) 행, `.barwrap/.barfill`로 비율 바.
 
-세부 CSS는 양이 많으니 `assets/template.html`에 실제로 들어있다 — **거기서 복사**하는 게 가장 빠르다.
+세부 CSS는 양이 많으니 `outputs/03_시각자산/template.html`에 실제로 들어있다 — **거기서 복사**하는 게 가장 빠르다.
 
 ## 레이아웃
 

@@ -1,11 +1,11 @@
 ---
 name: practice-code
-description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거로 차시별 실습 코드를 `code/chNN/`에 생성하고 실제로 실행해 검증한다. "실습 코드 만들어줘", "코드 검증" 요청 시 사용. Practice 필드를 전부 수집해 실습 시나리오 순서를 재구성한 뒤 코드를 생성하고, 기술 스택에 맞는 실제 빌드·실행·호출로 검증해 `code/chNN/validation.log`에 기록한다. 코드와 원고 Practice가 어긋나면 사용자 승인 후에만 원고를 역수정하고, 검증 통과 + 사용자 확인 후 status.md 코드 칸을 갱신한다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 Practice 필드를 근거로 차시별 실습 코드를 `outputs/04_코드/chNN/`에 생성하고 실제로 실행해 검증한다. "실습 코드 만들어줘", "코드 검증" 요청 시 사용. Practice 필드를 전부 수집해 실습 시나리오 순서를 재구성한 뒤 코드를 생성하고, 기술 스택에 맞는 실제 빌드·실행·호출로 검증해 `outputs/04_코드/chNN/validation.log`에 기록한다. 코드와 원고 Practice가 어긋나면 사용자 승인 후에만 원고를 역수정하고, 검증 통과 + 사용자 확인 후 status.md 코드 칸을 갱신한다.
 ---
 
 # practice-code
 
-확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물)의 8개 필드 중 **Practice** 필드를 근거로 차시별 실습 코드를 `code/chNN/`에 생성하고, 그 코드를 **실제로 실행해 동작을 검증**하는 스킬. 이후 단계(`storyboard`, `ppt-preview`, `panseo-slide`, `book-build`)의 코드 블록·캡처는 전부 이 단계에서 검증된 코드에서 발췌한다 — 즉 이 스킬은 파이프라인에서 "말로만 설명한 실습"과 "실제로 동작을 확인한 실습"을 가르는 유일한 단계다.
+확정 원고 `outputs/02_원고/chNN.md`(`manuscript-final` 산출물)의 8개 필드 중 **Practice** 필드를 근거로 차시별 실습 코드를 `outputs/04_코드/chNN/`에 생성하고, 그 코드를 **실제로 실행해 동작을 검증**하는 스킬. 이후 단계(`storyboard`, `ppt-preview`, `panseo-slide`, `book-build`)의 코드 블록·캡처는 전부 이 단계에서 검증된 코드에서 발췌한다 — 즉 이 스킬은 파이프라인에서 "말로만 설명한 실습"과 "실제로 동작을 확인한 실습"을 가르는 유일한 단계다.
 
 **스키마 규범**: Practice 필드 형식은 `.claude/skills/manuscript-draft/references/manuscript-schema.md` §3-7 참고. 실습이 없는 슬라이드는 `- 없음.`으로 표시되어 있으므로 수집 대상에서 제외한다.
 
@@ -16,18 +16,18 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거�
 
 ### 1. Practice 필드 수집 및 시나리오 재구성
 
-- `manuscripts/chNN.md`가 없거나 `status.md`의 해당 차시 `원고확정`이 ✅가 아니면 사용자에게 알리고 중단한다(미확정 원고로 코드를 생성하지 않는다).
+- `outputs/02_원고/chNN.md`가 없거나 `status.md`의 해당 차시 `원고확정`이 ✅가 아니면 사용자에게 알리고 중단한다(미확정 원고로 코드를 생성하지 않는다).
 - **하드 게이트**: `status.md`의 `시각자산`이 ✅도 `deferred`도 아니면(⬜/🔄/`partial`/`stale`) 사용자에게 알리고 중단한다 — 먼저 `visual-assets`(4단계)를 완료(또는 명시적 보류)해야 한다. (오케스트라 밖 단독 호출 시에도 이 게이트를 직접 확인한다.)
-- `manuscripts/chNN.md`를 처음부터 끝까지 훑어 `- 없음.`이 아닌 모든 **Practice** 필드를 슬라이드 번호 순서대로 수집한다.
+- `outputs/02_원고/chNN.md`를 처음부터 끝까지 훑어 `- 없음.`이 아닌 모든 **Practice** 필드를 슬라이드 번호 순서대로 수집한다.
 - 골든 사례(`templates/golden/manuscript_golden.md` Slide 13~19)처럼 실습이 여러 슬라이드에 걸쳐 단계형으로 이어지는 경우가 많다(프로젝트 생성 → 의존성 추가 → 코드 작성 → 실행 → 호출 확인). 수집한 Practice 지시를 슬라이드 순서 그대로 하나의 **실습 시나리오**로 재구성한다 — 슬라이드 단위로 흩어진 지시를 실행 가능한 순서(생성 → 작성 → 실행 → 확인)로 정렬하는 것이 이 단계의 핵심이다.
 - Practice 필드가 참조하는 코드/설정은 같은 슬라이드의 **Visual asset** 필드(`Code block for slide:`, `Code block for PPT:` 등)에 실제 소스가 들어 있는 경우가 많다 — Practice만 보지 말고 해당 슬라이드의 Visual asset 코드 블록도 함께 확인해 실제 구현 소스로 삼는다.
 - 차시 헤더의 **차시 목표**, **예상 분량**, 그리고 Practice가 전제하는 실행 환경(JDK 버전, 빌드 도구, 프레임워크 버전 등 — 골든 예시는 Java 21 / Spring Boot 4.1.0 / Gradle)을 함께 확인해 실행 전제를 명확히 한다.
 
 ### 2. 코드 생성
 
-- `code/chNN/`에 실습 코드를 생성한다.
-- 실습이 여러 단계에 걸쳐 점진적으로 완성되는 형태면(예: 프로젝트 생성 → Controller 추가 → 실행) 하위 폴더로 단계를 나눈다: `code/chNN/step1/`, `code/chNN/step2/`, ..., `code/chNN/final/`. 각 폴더는 그 시점까지 완성된 전체 프로젝트 상태를 담는다(diff가 아니라 완결 스냅샷).
-- 단계형이 아니고 단일 산출물(예: 짧은 스크립트 하나)이면 하위 폴더 없이 `code/chNN/` 바로 아래에 둔다.
+- `outputs/04_코드/chNN/`에 실습 코드를 생성한다.
+- 실습이 여러 단계에 걸쳐 점진적으로 완성되는 형태면(예: 프로젝트 생성 → Controller 추가 → 실행) 하위 폴더로 단계를 나눈다: `outputs/04_코드/chNN/step1/`, `outputs/04_코드/chNN/step2/`, ..., `outputs/04_코드/chNN/final/`. 각 폴더는 그 시점까지 완성된 전체 프로젝트 상태를 담는다(diff가 아니라 완결 스냅샷).
+- 단계형이 아니고 단일 산출물(예: 짧은 스크립트 하나)이면 하위 폴더 없이 `outputs/04_코드/chNN/` 바로 아래에 둔다.
 - 코드는 원고 Practice/Visual asset의 코드 블록에 등장한 파일 경로·패키지명·클래스명을 그대로 따른다(임의로 이름을 바꾸지 않는다) — 이후 단계가 이 코드에서 그대로 발췌하기 때문에 원고와 코드의 식별자가 어긋나면 안 된다.
 
 ### 3. 실행 검증 (필수)
@@ -36,7 +36,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거�
 
 - 과정의 기술 스택에 맞는 실제 실행 절차를 따른다. 예(Spring Boot 과정): `gradlew build`로 빌드 → 애플리케이션 기동 → `curl` 또는 PowerShell `Invoke-WebRequest`로 엔드포인트 호출 → 응답 확인.
 - 단계형 실습이면 각 `stepN/` 폴더마다(또는 실행 결과가 달라지는 지점마다) 실행 검증을 반복한다 — 마지막 `final/`만 검증하고 중간 단계를 건너뛰지 않는다.
-- 실행한 모든 명령과 출력 요지, 실행 일시를 `code/chNN/validation.log`에 기록한다. 최소 포함 항목:
+- 실행한 모든 명령과 출력 요지, 실행 일시를 `outputs/04_코드/chNN/validation.log`에 기록한다. 최소 포함 항목:
   - 실행 일시 (YYYY-MM-DD HH:mm)
   - 실행 명령 전문
   - 출력 요지(성공/실패, 핵심 로그 라인 — 전체 로그를 그대로 붙여넣을 필요는 없다. 예: `Tomcat started on port 8080`, HTTP 응답 본문)
@@ -49,21 +49,21 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거�
 
 - 코드를 임의로 원고에 맞추지 않고, **원고를 임의로 고치지도 않는다.**
 - 차이(원고 지시 vs 실제 검증 결과)를 사용자에게 구체적으로 보고한다: 어느 슬라이드의 Practice/Visual asset이, 무엇이(버전/명령/결과), 왜 어긋났는지.
-- 사용자 승인을 받은 뒤에만 `manuscripts/chNN.md`의 해당 필드를 실제 검증된 내용으로 역수정한다. 역수정은 필요한 최소 범위(어긋난 문구)만 고치고 다른 슬라이드·필드는 건드리지 않는다.
+- 사용자 승인을 받은 뒤에만 `outputs/02_원고/chNN.md`의 해당 필드를 실제 검증된 내용으로 역수정한다. 역수정은 필요한 최소 범위(어긋난 문구)만 고치고 다른 슬라이드·필드는 건드리지 않는다.
 
 ### 5. 확정 반영
 
 검증을 통과하고 필요한 역수정까지 사용자 확인을 받으면:
 
 - `courses/{course-id}/status.md`의 해당 차시 `코드` 칸을 ✅로 갱신한다.
-- "산출물 인덱스"에 `- chNN 코드: code/chNN/ (검증 로그: code/chNN/validation.log)`를 추가한다.
+- "산출물 인덱스"에 `- chNN 코드: outputs/04_코드/chNN/ (검증 로그: outputs/04_코드/chNN/validation.log)`를 추가한다.
 - "다음 할 일"을 `chNN 스토리보드 작성(storyboard)`으로 갱신한다.
 - 사용자에게 검증 요약(실행한 단계 수, 통과/실패, 역수정 여부)을 보고한다.
 
 ## 확정 체크리스트
 
-- [ ] **validation.log 존재 및 통과 기록**: `code/chNN/validation.log`가 존재하고, 실행한 모든 단계(step1/.../final 또는 단일 산출물)에 대해 실행 일시·명령·출력 요지가 기록되어 있으며 결과가 성공(또는 의도된 실패 케이스로 명시)이다.
-- [ ] **코드-원고 일치**: 원고 Practice 필드(및 관련 Visual asset 코드 블록)에 등장한 모든 코드 블록이 `code/chNN/` 실물과 일치한다(파일 경로·클래스명·패키지명·핵심 로직이 어긋나지 않는다).
+- [ ] **validation.log 존재 및 통과 기록**: `outputs/04_코드/chNN/validation.log`가 존재하고, 실행한 모든 단계(step1/.../final 또는 단일 산출물)에 대해 실행 일시·명령·출력 요지가 기록되어 있으며 결과가 성공(또는 의도된 실패 케이스로 명시)이다.
+- [ ] **코드-원고 일치**: 원고 Practice 필드(및 관련 Visual asset 코드 블록)에 등장한 모든 코드 블록이 `outputs/04_코드/chNN/` 실물과 일치한다(파일 경로·클래스명·패키지명·핵심 로직이 어긋나지 않는다).
 - [ ] **실행 전제 일치**: 실행에 사용한 전제(JDK 버전, 프레임워크 버전, 빌드 도구 등)가 원고 차시 헤더(차시 정보)와 일치한다. 불일치가 있었다면 §4 절차로 사용자 승인을 받아 원고가 이미 역수정되어 있어야 한다.
 
 ## repair 규칙
@@ -78,5 +78,5 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Practice 필드를 근거�
 
 - Practice 필드 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` §3-7
 - 실습 시나리오 예시(단계형 5~6단계): `templates/golden/manuscript_golden.md` Slide 13~19 (프로젝트 생성 → 의존성 추가 → Controller 작성 → main 확인 → 실행 → 브라우저 호출)
-- status.md 형식: `templates/status_template.md` — "산출물 인덱스"는 `- chNN 코드: code/chNN/ (검증 로그: code/chNN/validation.log)` 형식을 그대로 따른다.
+- status.md 형식: `templates/status_template.md` — "산출물 인덱스"는 `- chNN 코드: outputs/04_코드/chNN/ (검증 로그: outputs/04_코드/chNN/validation.log)` 형식을 그대로 따른다.
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다(스킬 자체를 단위 테스트하지 않는다). 대신 매 실행마다 "확정 체크리스트"가 실습 코드 자체의 품질(실행 가능성)을 검증한다.

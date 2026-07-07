@@ -365,3 +365,14 @@ def test_image_leaves_margin_from_slide_edges(tmp_path):
     # 우측·하단 가장자리에서 최소 여백(0.2in = 182880 EMU)
     assert sw - (left + w) >= 182880, "우측 여백 부족"
     assert sh - (top + h) >= 182880, "하단 여백 부족"
+
+
+def test_outputs_layout_image_path_recognized(tmp_path):
+    """outputs/ 규약 경로(outputs/03_시각자산/…)도 IMG_PATH_RE가 인식해 임베드한다."""
+    (tmp_path / "outputs" / "03_시각자산" / "images" / "ch01").mkdir(parents=True)
+    _make_img(tmp_path, "outputs/03_시각자산/images/ch01/slide01.png", 400, 300)
+    out = tmp_path / "out.pptx"
+    build_pptx(_manuscript_with_image("outputs/03_시각자산/images/ch01/slide01.png"),
+               str(out), assets_root=str(tmp_path))
+    sw, sh, pics = _picture_bounds(out)
+    assert len(pics) == 1

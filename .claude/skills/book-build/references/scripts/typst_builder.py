@@ -272,10 +272,10 @@ def _typst_root_for(typ_path: Path) -> str:
 def fix_image_paths(text: str, source_file: Path) -> str:
     """마크다운 이미지 상대경로 → 절대경로로 변환 (file:// 없이)"""
     source_dir = source_file.parent
-    # 프로젝트 루트 추정 (chapters/ 또는 book/ 상위)
+    # 프로젝트 루트 추정 — 시각자산 폴더(outputs/ 규약 또는 루트 평면 assets/)를 가진 상위
     project_root = source_dir
     for parent in source_file.parents:
-        if (parent / "assets").exists():
+        if (parent / "assets").exists() or (parent / "outputs").exists():
             project_root = parent
             break
 
@@ -991,7 +991,7 @@ def build(config: dict):
             if str(_cover_scripts) not in sys.path:
                 sys.path.insert(0, str(_cover_scripts))
             from cover_generator import generate_front_cover
-            cover_dir = config['base'] / "assets"
+            cover_dir = config['assets_dir']
             cover_path = generate_front_cover(config, cover_dir)
             # book.typ의 book-cover-image 변수를 이 경로로 설정
             template_path = config.get('template')

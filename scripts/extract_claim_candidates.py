@@ -13,6 +13,7 @@ import re
 import sys
 from pathlib import Path
 
+import course_layout
 from manuscript_grammar import SLIDE_RE, FIELD_RE
 
 DEF_RE = re.compile(r"핵심\s*정의\s*[:：]\s*(.+)")
@@ -67,7 +68,7 @@ def main():
     if len(sys.argv) < 3:
         print("usage: python scripts/extract_claim_candidates.py <course_dir> <chNN>")
         return 1
-    md = (Path(sys.argv[1]) / "manuscripts" / f"{sys.argv[2]}.md").read_text(encoding="utf-8")
+    md = (course_layout.path(sys.argv[1], "manuscripts") / f"{sys.argv[2]}.md").read_text(encoding="utf-8")
     print(json.dumps(extract_candidates(md), ensure_ascii=False, indent=2))
     return 0
 

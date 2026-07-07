@@ -92,7 +92,7 @@
     - **코드블록**: JSON·Python dict·터미널 출력 (```` ```json ````)
     - **HTML 다이어그램**: 흐름도·시퀀스·아키텍처 (inline HTML + CSS 변수)
     - **개념도 이미지**: 추상 개념의 시각화 (`[GEMINI PROMPT]` 플레이스홀더)
-    - **터미널 캡처**: 실행 결과·에러 (`[CAPTURE NEEDED]` 플레이스홀더)
+    - **터미널 캡처**: 실행 결과·에러 (`[CAPTURE NEEDED]` 플레이스홀더). 이 플레이스홀더는 `screenshot` 스킬로 실제 PNG(`outputs/03_시각자산/captures/…`)로 교체한다.
 
 ---
 

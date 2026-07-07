@@ -22,8 +22,8 @@ Mermaid 코드 내 `<br>`은 다이어그램 줄바꿈이므로 보존해야 한
 
 | 소스 위치 | 마크다운 경로 | 변환 결과 |
 |----------|-------------|----------|
-| `book/body/01-*.md` | `../../assets/CH01/img.png` | `/absolute/path/assets/CH01/img.png` |
-| `chapters/01-*.md` | `../assets/CH01/img.png` | `/absolute/path/assets/CH01/img.png` |
+| `outputs/10_책/body/01-*.md` | `../../03_시각자산/images/ch01/slide05.png` | `/absolute/path/outputs/03_시각자산/images/ch01/slide05.png` |
+| `chapters/01-*.md` (범용 pub 배치) | `../assets/CH01/img.png` | `/absolute/path/assets/CH01/img.png` |
 
 `fix_image_paths()`가 소스 파일의 디렉토리 기준으로 절대경로를 계산.
 파일이 없으면 `*[이미지: alt]*` 텍스트로 대체.

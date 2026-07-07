@@ -6,7 +6,7 @@ description: >
   보여주는 도구. "시뮬레이터 만들어줘", "이 개념 인터랙티브하게 보여줘", "정사영/어텐션/벡터
   같은 거 애니메이션으로 설명해줘", "강의용 시각자료/explorable 만들어줘", "버튼 누르면 움직이는
   설명 자료" 같은 요청에 반드시 사용한다. 개념 설명을 정적인 글이 아니라 '직접 만져보며 배우는'
-  형태로 만들어 달라는 모든 요청에 적용. 확정 원고(`manuscripts/chNN.md`)가 있는 과정 파이프라인
+  형태로 만들어 달라는 모든 요청에 적용. 확정 원고(`outputs/02_원고/chNN.md`)가 있는 과정 파이프라인
   안에서 호출되면 그 원고의 비유·나레이션을 그대로 이어받아 시뮬레이터를 설계하는 **원고 연동**도
   지원한다. Use this whenever the user wants an interactive educational simulator / explorable
   explanation / animated concept visualization as a single HTML file, even if they don't say the
@@ -28,7 +28,7 @@ description: >
 
 ## 산출물
 
-- **파이프라인 호출**: `courses/{course-id}/simulators/chNN_{주제}.html` (주제는 다룬 슬라이드
+- **파이프라인 호출**: `courses/{course-id}/outputs/08_시뮬/chNN_{주제}.html` (주제는 다룬 슬라이드
   내용을 담은 한글/영문 슬러그, 예: `ch03_어텐션.html`).
 - **단독 호출**(파이프라인 밖): 작업 폴더에 내용을 담은 파일명으로 저장, 경로 규약 없음(기존과
   동일).
@@ -45,8 +45,8 @@ description: >
   
   **status.md 착수 갱신**: 시뮬레이터 제작을 시작하면 해당 차시 `시뮬` 칸을 🔄로 바꾼다. 산출·사용자 확인 후 ✅로, 보류 시 ➖ + 보류/누락 사유로 갱신한다.
   
-  2. `manuscripts/chNN.md`를 읽어 `## Slide N. 제목` 블록 전체 목록을 사용자에게 제시하고
-     **"어떤 슬라이드를 시뮬레이터로 만들까요?"** 라고 묻는다. `storyboards/chNN.html`이 있으면
+  2. `outputs/02_원고/chNN.md`를 읽어 `## Slide N. 제목` 블록 전체 목록을 사용자에게 제시하고
+     **"어떤 슬라이드를 시뮬레이터로 만들까요?"** 라고 묻는다. `outputs/05_스토리보드/chNN.html`이 있으면
      화면 미리보기 참고 링크로 함께 안내한다(§1 참고). 여러 슬라이드를 골라 하나의 시뮬레이터로
      묶어도 된다 — 단, §2-3(범위 확정)에서 반드시 경계를 좁힌다.
   3. 사용자가 고른 `## Slide N.` 블록에서 다음을 읽어 시뮬레이터 설계에 그대로 반영한다:
@@ -65,7 +65,7 @@ description: >
   4. 이후 절차(교육 설계 → 내용 검증 → 빌드 → 검증 → 전달)는 §2의 순서를 그대로 따르되, 시나리오
      한 문단(`pedagogy.md` "시나리오 한 문단")을 원고의 Easy analogy를 기점으로 작성한다.
   5. 완료 후 `status.md`의 해당 차시 `시뮬` 칸을 갱신한다: 사용자가 확인하면 ✅ + "산출물 인덱스"에
-     `- chNN 시뮬레이터: simulators/chNN_{주제}.html (확정 YYYY-MM-DD)` 추가. 사용자가 지금 만들지
+     `- chNN 시뮬레이터: outputs/08_시뮬/chNN_{주제}.html (확정 YYYY-MM-DD)` 추가. 사용자가 지금 만들지
      않고 미루기로 하면 ➖ + `## 보류/누락`에 사유·날짜 기록(예: "사용자가 3차시 이후로 보류").
 - **단독 호출** (파이프라인 밖, 사용자가 바로 개념 설명을 요청): 기존 방식 그대로 — `references/requesting.md`
   체크리스트로 부족한 정보(한 줄 질문/비유/상호작용)만 1~2개 질문하고 진행한다. `status.md` 갱신은
@@ -75,7 +75,7 @@ description: >
 
 - 슬라이드 목록은 번호+제목으로 짧게 나열한다(예: "3. 어텐션이 왜 필요한가", "4. 내적과 유사도").
   원고 전문을 다시 보여줄 필요는 없다 — 제목만으로 사용자가 고를 수 있으면 충분하다.
-- `storyboards/chNN.html`이 이미 있으면 "스토리보드 N번 카드가 이 슬라이드예요"처럼 대조해 안내하면
+- `outputs/05_스토리보드/chNN.html`이 이미 있으면 "스토리보드 N번 카드가 이 슬라이드예요"처럼 대조해 안내하면
   사용자가 더 빠르게 고른다(필수는 아님).
 - 사용자가 슬라이드 여러 개를 걸쳐 하나의 개념을 고르면(예: "4~6번을 한 시뮬레이터로") 허용하되,
   §2-3에서 다룰 범위를 명확히 좁힌다.
@@ -109,7 +109,7 @@ description: >
    무의미**하다. 화면을 그리기 전에 `references/verification.md`의 방식으로 좌표를 계산하고
    viewBox 안에 들어오는지, 의도한 승자/값이 나오는지 node로 확인한다.
 4. **빌드한다.** §3(라이트 테마)의 팔레트와 `references/build-recipe.md`(구조·애니메이션 패턴)를
-   따른다. §4(표준 구성 요소)를 빠짐없이 내장한다. `assets/template.html`은 구조·상호작용 패턴
+   따른다. §4(표준 구성 요소)를 빠짐없이 내장한다. `outputs/03_시각자산/template.html`은 구조·상호작용 패턴
    참고용으로 쓸 수 있으나 **색 토큰은 §3의 라이트 팔레트로 교체**한다(다크가 기본이던 시절 자산 —
    사용자가 다크를 명시적으로 요청한 경우에만 그대로 쓴다).
 5. **다시 검증한다.** node `--check` 문법 검사 + 좌표/수학 재확인 + (가능하면) jsdom으로 버튼
@@ -220,17 +220,17 @@ description: >
   패턴, 고정 좌표계 원칙
 - `references/verification.md` — node 문법검사 + 좌표 viewBox 검증 + 수학 검증 + jsdom 런타임
   검증 + 내용(E절)·메커니즘(F절) 검증 + 큰 파일 주의사항(C절)
-- `assets/template.html` — 탭 시뮬레이터 최소 스캐폴드(구조 참고용, 색은 §3 라이트 토큰으로 교체)
+- `outputs/03_시각자산/template.html` — 탭 시뮬레이터 최소 스캐폴드(구조 참고용, 색은 §3 라이트 토큰으로 교체)
 - 원고 스키마(Easy analogy/Narration/Visual asset 등 8개 필드 정의): `.claude/skills/manuscript-draft/references/manuscript-schema.md`
 - status.md 형식: `templates/status_template.md`
-- 파이프라인 표·디렉터리 구조·본 스킬 재작성 방향: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(9단계), §4(`simulators/chNN_{주제}.html` 경로 규약), §8
+- 파이프라인 표·디렉터리 구조·본 스킬 재작성 방향: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(9단계), §4(`outputs/08_시뮬/chNN_{주제}.html` 경로 규약), §8
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. 산출물 품질은 위 "확정 체크리스트"가 매 실행마다
   담당한다.
 
 ## 결과물 규칙
 
 - 단일 `.html`. CSS/JS 인라인. 외부 의존은 폰트(Pretendard, JetBrains Mono) CDN만.
-- 파이프라인 호출: `courses/{course-id}/simulators/chNN_{주제}.html`. 단독 호출: 파일명은 내용을
+- 파이프라인 호출: `courses/{course-id}/outputs/08_시뮬/chNN_{주제}.html`. 단독 호출: 파일명은 내용을
   담아 한국어로 OK(예: `시뮬레이터_어텐션.html`), 작업 폴더에 저장 후 전달.
 - 큰 파일(>50KB)을 다룰 때 보조 작업창(샌드박스)이 읽기 오류를 낼 수 있으니, 진위 판단은 파일
   도구(Read/Grep)를 기준으로 한다(`references/verification.md` C절 참고).

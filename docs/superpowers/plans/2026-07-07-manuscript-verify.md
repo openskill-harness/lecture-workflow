@@ -19,6 +19,7 @@
 - **리포트 분리**: "반박(조치 대상)"과 "검증불가(사람 판단)"를 분리. 파견 상한으로 미검증분은 리포트에 명시(침묵 절단 금지).
 - **출력 경로**: `courses/{course-id}/verification/chNN_verify.md`. `status.md`엔 정보성 한 줄만.
 - 스펙 출처: `docs/superpowers/specs/2026-07-07-manuscript-verify-design.md`.
+- **codex 조건부 승인 반영**(`docs/reviews/2026-07-07_manuscript-verify-codex-review.md`): (1) 파이프라인 비침투 — 표/게이트/열 금지, 트리거+옵션권유만(Task 5). (2) 추출기=구조 후보만, 원자분해·비유 2차배제는 스킬(Task 3·4). (3) 반박(high)=직접충돌만, Source 부실 분리(지지+보완), 버전 target/evidence 기록(Task 4).
 
 ---
 
@@ -124,7 +125,7 @@ git commit -m "docs: manuscript-verify 제안 codex 사전검증 결과"
 
 **Interfaces:**
 - Consumes: `scripts/manuscript_grammar.py`의 `SLIDE_RE`, `FIELD_RE`
-- Produces: `extract_candidates(md_text) -> list[dict]`. 각 dict = `{"slide": int, "definition": str, "narration": str, "source": str}`. `definition`은 Screen의 `핵심 정의:` 라인 텍스트, `narration`은 Narration 필드 텍스트, `source`는 Source 필드 텍스트. 비유(Easy analogy) 등 다른 필드는 포함하지 않는다. CLI: `python scripts/extract_claim_candidates.py <course_dir> <chNN>` → JSON을 stdout으로.
+- Produces: `extract_candidates(md_text) -> list[dict]`. 각 dict = `{"slide": int, "definition": str, "narration": str, "source": str}`. `definition`은 Screen의 `핵심 정의:` 라인 텍스트, `narration`은 Narration 필드 텍스트, `source`는 Source 필드 텍스트. 비유(Easy analogy) 등 다른 필드는 포함하지 않는다. **원자 주장 분해·claim_type 판정·Narration 속 비유 문장 배제는 이 추출기가 아니라 검증 스킬(LLM)이 한다(codex 조건2 — 추출기는 구조 후보만).** CLI: `python scripts/extract_claim_candidates.py <course_dir> <chNN>` → JSON을 stdout으로.
 
 - [ ] **Step 1: 실패하는 테스트 작성**
 
@@ -332,7 +333,9 @@ description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프�
 
 - 슬라이드 단위로 검증 서브에이전트를 병렬 파견한다(한 슬라이드의 1–3개 주장을 묶어 처리 — 에이전트 수 억제). 프롬프트 규범은 `references/verifier-prompt.md`.
 - 각 검증자는: (a) 권위 문서 웹 리서치(WebSearch/WebFetch — 공식 도큐·MDN·RFC·프레임워크 문서), (b) 슬라이드 `Source` 교차확인(존재·권위·주장 지지 여부), (c) 적대적 반박 시도 후 근거 인용이 있어야만 판정.
-- 반환(주장별): `{claim, verdict: "지지"|"반박"|"검증불가", confidence: "high"|"medium"|"low", evidence_url, evidence_quote, source_supports: bool, suggested_correction}`.
+- 반환(주장별): `{claim, verdict: "지지"|"반박"|"검증불가", confidence: "high"|"medium"|"low", evidence_url, evidence_quote, source_supports: bool, target_version, evidence_version, suggested_correction}`.
+- **판정 기준(오탐 억제)**: `반박(high)`은 공식 문서·버전 맥락이 **직접 충돌**할 때만 낸다. 출처가 없거나·버전이 안 맞거나·문서 간 표현이 애매하면 → `검증불가`(오류 아님, 사람 판단). 버전/설정값 주장은 `target_version`(과정 대상 버전)과 `evidence_version`(근거 문서 버전)을 함께 기록한다.
+- **Source 부실 분리**: 주장 자체는 맞지만 슬라이드 `Source`가 그 주장을 지지하지 않으면 → `verdict: "지지"` + `source_supports: false`(리포트에서 "Source 보완 필요"로 표기). 이는 조치 대상 **반박이 아니다**(원고 주장은 맞으니 수정 대상 아님, Source만 보완 권유).
 - **파견 상한**: 동시 파견 수에 상한을 둔다. 상한으로 못 돌린 주장이 있으면 리포트에 "미검증"으로 **명시**한다(침묵 절단 금지).
 
 ## 3. 리포트 집계
@@ -390,13 +393,17 @@ description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프�
 ## 미검증 (파견 상한 초과 — 재실행 필요)
 - Slide N: "주장…"
 
-## 지지 (참고 — 근거로 확인됨)
-| 슬라이드 | 주장 | 근거(URL) |
-|---|---|---|
+## 지지 (참고 — 근거로 확인됨. `source_supports: false`면 "Source 보완 필요"로 표시)
+| 슬라이드 | 주장 | 근거(URL) | Source 지지 | (버전 주장) 대상/근거 버전 |
+|---|---|---|---|---|
+| 5 | "…" | https://… | ✓ | — |
+| 10 | "…" | https://… | ✗ (Source 보완 필요) | — |
 ```
 
 - "반박"과 "검증불가"는 반드시 별도 섹션으로 분리한다.
 - 모든 "반박"·"지지" 행에는 인용 가능한 `근거(URL)`와 `근거 인용`이 있어야 한다.
+- **Source 부실 분리**: 주장은 맞지만 Source가 부실하면 "반박"이 아니라 "지지" 섹션에 "Source 보완 필요"로 표기한다(조치 대상 아님).
+- **버전 주장**: 버전/설정값 주장은 대상 버전과 근거 문서 버전을 함께 적는다.
 ````
 
 - [ ] **Step 3: verifier-prompt.md 작성**
@@ -414,7 +421,9 @@ description: 확정 원고(`manuscripts/chNN.md`)의 기술 주장(정의·프�
   1. 권위 문서를 WebSearch/WebFetch로 찾아 주장과 대조(공식 도큐·MDN·RFC·프레임워크 공식 문서 우선).
   2. Source 필드가 실제로 그 주장을 지지하는지 확인(존재·권위·지지 여부).
   3. 반박을 시도하고, 인용 가능한 근거가 있을 때만 판정한다.
-- **반환(주장별 JSON)**: `{claim, verdict: "지지"|"반박"|"검증불가", confidence: "high"|"medium"|"low", evidence_url, evidence_quote, source_supports: bool, suggested_correction}`.
+- **반환(주장별 JSON)**: `{claim, verdict: "지지"|"반박"|"검증불가", confidence: "high"|"medium"|"low", evidence_url, evidence_quote, source_supports: bool, target_version, evidence_version, suggested_correction}`.
+- **판정 기준**: `반박(high)`은 공식 문서·버전 맥락이 **직접 충돌**할 때만. 출처 없음·버전 불일치·표현 애매 → `검증불가`. 버전/설정값 주장은 `target_version`(과정 대상 버전)·`evidence_version`(근거 버전)을 함께 적는다.
+- **Source 부실 분리**: 주장은 맞고 Source만 부실하면 → `verdict: "지지"` + `source_supports: false`(반박 아님).
 - **금지**: 근거 없이 "지지"/"반박" 판정 금지(그 경우 "검증불가"). 비유·의견·주관 표현은 판정 대상 아님. 원고 수정 금지.
 ````
 
@@ -445,6 +454,7 @@ git commit -m "feat(verify): manuscript-verify 스킬 — 적대적 검증 절�
 **Interfaces:**
 - Consumes: Task 4 스킬
 - Produces: 사용자·오케스트라가 스킬을 발견/권유하는 경로
+- **제약(codex 조건1)**: 11단계 파이프라인 표·`status.md` 표 열·필수 선행조건·하드 게이트에 넣지 않는다. `scripts/check_visual_gate.py`를 건드리지 않는다. 갱신은 트리거 라우팅·보조 엔진 목록·course-pipeline 선택 권유로만 한정한다.
 
 - [ ] **Step 1: CLAUDE.md 트리거 라우팅 추가**
 

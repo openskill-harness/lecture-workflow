@@ -305,18 +305,18 @@ CLAUDE.md에서 버릴 "디렉터리 구조"·"status.md 갱신 의무"의 SSOT 
 Run: `rg -n "단계 순서|선행 단계|하드 게이트|status.md" .claude/skills/course-pipeline/SKILL.md`
 Expected: 매핑표(§단계 순서 ↔ 스킬명)와 선행단계 검사표가 존재. 존재하면 그 두 표는 건드리지 않는다.
 
-- [ ] **Step 2: 디렉터리 구조 블록 추가**
+- [ ] **Step 2: 디렉터리 구조 — SSOT 재확인 (복사 금지)**
 
-course-pipeline SKILL.md 말미에 `## 과정 디렉터리 구조 (SSOT)` 섹션을 추가하고, 현재 CLAUDE.md "규약 §디렉터리 구조"의 트리를 그대로 옮긴다(courses/{course-id}/ 이하 status.md·manuscripts·assets/manifest.json·code 등 전체 트리). 상세 근거는 `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md §4`로 포인터.
+디렉터리 트리의 SSOT는 이미 설계 §4(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md:86~`)이고, course-pipeline "참고"가 이를 가리킨다. **트리를 course-pipeline에 복사하지 않는다**(R4 위반). CLAUDE.md는 Task 5에서 자기 트리 사본만 제거한다. (spec §4 존재 확인: `grep -n "## 4. 디렉터리 구조" docs/superpowers/specs/2026-07-05-*.md`.)
 
 - [ ] **Step 3: status.md 갱신 의무 블록 추가**
 
-이어서 `## status.md 갱신 의무 (모든 단계 스킬 공통)` 섹션을 추가하고 CLAUDE.md의 해당 규칙을 옮긴다: 작업 시작 시 열 🔄, 확정 시 ✅ + 산출물 인덱스에 경로/확정일/검증로그 한 줄, 보류 시 ➖ + 사유. 템플릿: `templates/status_template.md`.
+course-pipeline SKILL.md "## 참고" 앞에 `## status.md 갱신 의무 (모든 단계 스킬 공통)` 섹션을 추가하고 CLAUDE.md의 해당 규칙을 옮긴다: 작업 시작 시 열 🔄, 확정 시 ✅ + 산출물 인덱스에 경로/확정일/검증로그 한 줄, 보류 시 ➖ + 사유. 형식·트리 SSOT는 `templates/status_template.md`·설계 §4로 포인터(복제 금지, R4).
 
 - [ ] **Step 4: 검증 — 흡수 확인**
 
-Run: `rg -n "디렉터리 구조|status.md 갱신 의무|manifest.json" .claude/skills/course-pipeline/SKILL.md`
-Expected: 두 새 섹션 제목과 트리 내용이 보인다.
+Run: `grep -n "status.md 갱신 의무\|산출물 인덱스\|§4" .claude/skills/course-pipeline/SKILL.md`
+Expected: 새 "status.md 갱신 의무" 섹션 + §4/status_template 포인터가 보인다(트리 원문은 없음 — 포인터만).
 
 - [ ] **Step 5: Commit (사용자 요청 시)**
 

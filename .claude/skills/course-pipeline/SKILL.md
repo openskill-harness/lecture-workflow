@@ -104,6 +104,14 @@ status.md와 실제 파일이 어긋난 경우(예: 셀이 ✅인데 대응 산�
    남은 것이므로 사용자에게 시각자산을 ✅로 확정할지 확인하고, (b) manifest가 `partial`/`stale`/`missing`이면
    먼저 `visual-assets`로 나머지를 마무리한 뒤 하류 산출물의 재생성 필요 여부를 사용자와 정한다.
 
+## status.md 갱신 의무 (모든 단계 스킬 공통)
+
+각 단계 스킬은 자신의 status.md 열을 직접 갱신한다(오케스트라가 대신 하지 않는다):
+
+- 작업 시작 시 해당 열을 🔄, 사용자 확정 시 ✅로 바꾸고 **산출물 인덱스**에 경로(+확정일, 있으면 검증 로그 경로)를 한 줄 추가한다.
+- 사용자가 보류를 선택하면 ➖ + 보류/누락 섹션에 사유를 기록한다. `시각자산`의 `deferred`도 이 방식으로 표기한다.
+- status.md 형식·산출물 인덱스 구조와 **과정 디렉터리 구조**의 SSOT는 `templates/status_template.md`와 설계 §4(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`)다 — 여기에 복제하지 않는다(R4).
+
 ## 참고
 
 - 파이프라인 표·오케스트라 설계: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §3.2, §4(디렉터리 구조)

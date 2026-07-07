@@ -1,9 +1,8 @@
 # 통합 강의 제작 하네스 v2 설계
 
 - 날짜: 2026-07-05
-- 상태: codex 사전 검증 반영 완료 (`docs/reviews/2026-07-05_v2-redesign-codex-review.md`), 사용자 최종 승인 대기
+- 상태: 구현·운영 중 (codex 사전검증 반영 완료: `docs/history/2026-07-05_v2-redesign/codex-review.md`)
 - 대체 대상: 기존 3라인 하네스 전체 (`docs/harness-design-v1.md` 및 관련 구성)
-- 개정 이력: 2026-07-06 `visual-assets` 스테이지 신설 — 10단계 → 11단계로 재편 (`docs/proposals/2026-07-06_visual-assets-stage-redesign.md`, codex 검증: `docs/reviews/2026-07-06_visual-assets-redesign-codex-review.md`)
 
 ## 1. 배경
 
@@ -72,7 +71,7 @@
   - HTML(`storyboard`/`ppt-preview`/`panseo-slide`): 이미지 전용 셀렉터(`.ppt-media > img`, `.slide-preview > img`)에 `box-sizing:border-box; padding: clamp(...); object-fit: contain` — 비이미지 요소(flow/코드블록/split)엔 적용하지 않는다.
   - `book-build`: `book_base.typ`의 `#let embed-margin-ratio = 0.05` + 이미지 `fit:"contain"` + 본문 높이 기반 max-height clamp(초세로가 페이지를 넘지 않게).
 - fit은 오버플로만 막는다 — 초세로/광폭이 unreadable할 만큼 작아지면 pub-d2-diagram의 종횡비(≤3:1) 경고와 병행해 자산 재배치를 유도한다.
-- 근거: `docs/proposals/2026-07-06_asset-embed-safe-margin.md`, codex 검증 `docs/reviews/2026-07-06_asset-embed-margin-codex-review.md`.
+- 근거: `docs/history/2026-07-06_asset-embed-safe-margin/proposal.md`, codex 검증 `docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md`.
 
 ### 3.1 실습 코드 단계 (`practice-code`)
 
@@ -213,7 +212,7 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 **삭제** (legacy snapshot 커밋 후):
 - 스킬: `filmed-lecture`, `offline-lecture`, `online-lecture`, `lecture-harness`
 - 에이전트: `.claude/agents/` 17개 전부
-- 문서: `docs/harness-design-v1.md`, `docs/claude-handoff-lecture-harness.md`, `docs/harness-changelog.md`, `docs/proposals/`, `docs/reviews/`
+- 문서: `docs/harness-design-v1.md`, `docs/claude-handoff-lecture-harness.md`, `docs/harness-changelog.md`, `docs/history/`
 - 강의: `courses/spring-mvc-2026`, `courses/spring-mvc-offline-2026`, `courses/spring-mvc-online-2026`
 
 **보존(엔진, 단 7·8절대로 재작성 대상 포함)**: `panseo-slide`(재작성), `panseo-board`, `edu-sim-builder`(재작성), `image-gen`, `pub-d2-diagram`, `참고스킬/` 백업 폴더.

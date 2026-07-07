@@ -85,7 +85,7 @@
 
 ## 8. 유지 규칙 준수
 
-신규 스킬 추가(파이프라인 3.5단계 편입)는 하네스 구조 변경이므로, 구현 전 `docs/proposals/`에 계획을 쓰고 codex 사전검증(`codex exec --sandbox read-only … </dev/null`) 후 `docs/reviews/`에 결과를 저장한다(CLAUDE.md 유지 규칙). CLAUDE.md 파이프라인 표·트리거 라우팅·`course-pipeline` 연계 갱신도 구현 계획에 포함한다.
+신규 스킬 추가(파이프라인 3.5단계 편입)는 하네스 구조 변경이므로, 구현 전 `docs/history/<날짜_변경>/proposal.md`에 계획을 쓰고 codex 사전검증 결과를 같은 폴더 `codex-review.md`에 저장한 뒤 반영하고 `docs/history/CHANGELOG.md`에 한 줄 추가한다(CLAUDE.md 유지 규칙 R3 · harness-maintain 스킬). CLAUDE.md 파이프라인 표·트리거 라우팅·`course-pipeline` 연계 갱신도 구현 계획에 포함한다.
 
 ## 9. 범위 밖
 

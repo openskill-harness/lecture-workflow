@@ -7,9 +7,9 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
 
 확정 원고 `manuscripts/chNN.md`(`manuscript-final` 산출물)의 **Visual asset** 필드에 있는 이미지 프롬프트·D2 소스를 실제 자산 파일(`assets/images/chNN/`, `assets/diagrams/`)로 생성하고, 그 결과를 `assets/manifest.json`(SSOT)에 확정하는 스킬이다.
 
-**파이프라인 위치**: `manuscript-final`(3단계, 원고확정) 바로 다음, `practice-code`(코드) 이전. 자산 생성이 소비 산출물(스토리보드·PPT프리뷰·판서·PPTX·책) 뒤로 밀리면, 나중에 이미지를 만들 때마다 그 4~5개 산출물을 전부 다시 만들어야 하는 재동기화 폭포가 생긴다(`docs/proposals/2026-07-06_visual-assets-stage-redesign.md` §1). 이 스킬을 원고확정 직후에 실행해 그 문제를 구조적으로 없앤다.
+**파이프라인 위치**: `manuscript-final`(3단계, 원고확정) 바로 다음, `practice-code`(코드) 이전. 자산 생성이 소비 산출물(스토리보드·PPT프리뷰·판서·PPTX·책) 뒤로 밀리면, 나중에 이미지를 만들 때마다 그 4~5개 산출물을 전부 다시 만들어야 하는 재동기화 폭포가 생긴다(`docs/history/2026-07-06_visual-assets-stage-redesign/proposal.md` §1). 이 스킬을 원고확정 직후에 실행해 그 문제를 구조적으로 없앤다.
 
-**설계 근거**: `docs/proposals/2026-07-06_visual-assets-stage-redesign.md`(제안 A·E), codex 사전검증 `docs/reviews/2026-07-06_visual-assets-redesign-codex-review.md`(4개 조건 — hard gate/해시 stale/manifest SSOT/소비 계약).
+**설계 근거**: `docs/history/2026-07-06_visual-assets-stage-redesign/proposal.md`(제안 A·E), codex 사전검증 `docs/history/2026-07-06_visual-assets-stage-redesign/codex-review.md`(4개 조건 — hard gate/해시 stale/manifest SSOT/소비 계약).
 
 **엔진(호출만 하고 자체 생성 로직 없음)**: `image-gen`(`scripts/image_gen.py` — Codex 이미지), `pub-d2-diagram`(`scripts/render_md_diagrams.py` + Windows PNG 변환 — D2 렌더). manifest 빌더: `scripts/build_asset_manifest.py`(레포 루트, 이미 작성됨 — 이 스킬이 수정하지 않고 그대로 호출).
 
@@ -118,7 +118,7 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 
 ## 참고
 
-- 제안·검증 문서: `docs/proposals/2026-07-06_visual-assets-stage-redesign.md`, `docs/reviews/2026-07-06_visual-assets-redesign-codex-review.md`
+- 제안·검증 문서: `docs/history/2026-07-06_visual-assets-stage-redesign/proposal.md`, `docs/history/2026-07-06_visual-assets-stage-redesign/codex-review.md`
 - manifest 빌더(수정 금지, 그대로 호출): `scripts/build_asset_manifest.py`
 - 이미지 엔진: `.claude/skills/image-gen/SKILL.md` + `scripts/image_gen.py`(브릿지 블록 정규식·이동 로직의 원본)
 - D2 엔진: `.claude/skills/pub-d2-diagram/SKILL.md`(Windows 렌더·종횡비 절 포함) + `scripts/render_md_diagrams.py`

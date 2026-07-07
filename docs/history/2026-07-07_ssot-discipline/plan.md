@@ -269,8 +269,9 @@ docs/history/<날짜_변경>/proposal.md 에 계획을 쓰고 codex 사전검증
 - [ ] **Step 4: stale 내용 정정 (R1)**
 
 `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md`에서 현행과 어긋나는 서술을 제자리 교체한다:
-- "10단계" → "11단계"(있는 경우). 확인: `rg -n "10단계" docs/superpowers/specs/`.
-- 폐기된 v1을 정의하는 서술이 현행 진실을 흐리면 제거(개정 이력 나열은 spec의 "개정 이력" 섹션이 아니라 CHANGELOG로 이관 — spec 본문엔 현행 설계만 남긴다).
+- 인라인 "개정 이력" 줄(예: 헤더의 "개정 이력: … 10단계→11단계")은 CHANGELOG와 중복이므로 제거(R3).
+- **UNMARKED 현행 주장** 중 "10단계"가 있으면 "11단계"로 교체. 단, "당시/최초 작성 시점/이미 완료된 기록"으로 **자기-주석된 마이그레이션 기록**의 "10단계"는 시점이 명시된 이력이므로 보존한다(R1은 표시 없는 옛 내용만 금지). 확인: `grep -rn "10단계" docs/superpowers/specs/`로 남는 것이 전부 주석된 기록인지 확인.
+- 폐기된 v1을 *정의*하는 미표시 서술이 현행 진실을 흐리면 제거.
 
 - [ ] **Step 5: 검증 — dead-link 0 확인**
 
@@ -278,7 +279,7 @@ Run (Git Bash):
 ```bash
 rg -n "docs/(proposals|reviews|superpowers/plans)/" .claude/skills docs/superpowers/specs CLAUDE.md
 ```
-Expected: **매치 0**(CLAUDE.md는 Task 5에서 별도 처리되므로 이 시점엔 아직 남아 있을 수 있음 — 그 2줄 외 매치가 0이어야 한다). stale 확인: `rg -n "10단계" docs/superpowers/specs/` → 0.
+Expected: **매치 0**(CLAUDE.md는 Task 5에서 별도 처리되므로 이 시점엔 아직 남아 있을 수 있음 — 그 매치 외 0이어야 한다). stale 확인: `grep -rn "10단계" docs/superpowers/specs/` → 남는 것은 자기-주석된 마이그레이션 기록(당시 10단계, 이미 완료)뿐, UNMARKED 현행 주장은 0.
 
 - [ ] **Step 6: Commit (사용자 요청 시)**
 

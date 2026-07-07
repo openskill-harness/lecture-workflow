@@ -208,8 +208,8 @@
 }
 
 // ── 임베드 안전 여백 정책 (공통 규약) ──
-// 근거: docs/proposals/2026-07-06_asset-embed-safe-margin.md §2-C,
-//       docs/reviews/2026-07-06_asset-embed-margin-codex-review.md 승인 조건 3·4
+// 근거: docs/history/2026-07-06_asset-embed-safe-margin/proposal.md §2-C,
+//       docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md 승인 조건 3·4
 // 정책값 1곳(공통 EMBED_SAFE_MARGIN_RATIO=0.05)의 Typst 구현 상수. 값을 바꿀 땐 여기만 수정.
 #let embed-margin-ratio = 0.05
 

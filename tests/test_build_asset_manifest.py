@@ -54,6 +54,14 @@ _IMG_DEFER = (
 )
 
 
+_COMIC = (
+    "## Slide 5. HTTP\n\n"
+    "**Visual asset**\n"
+    "- Comic panel prompt: `Two-panel comic explaining an HTTP request, no text, 16:9`\n\n"
+    "**Source**\n- x\n"
+)
+
+
 def _slide5(manifest):
     return next(s for s in manifest["slides"] if s["slide"] == 5)
 
@@ -104,3 +112,17 @@ def test_defer_marker_keeps_image_deferred_not_missing(tmp_path):
     assert s["image"]["primary"] is True
     assert s["image"]["status"] == "deferred"
     assert manifest["overall_status"] == "present"
+
+
+def test_comic_panel_prompt_is_counted_as_image(tmp_path):
+    # `Comic panel prompt:` 라벨도 이미지 프롬프트로 인식되어야 한다.
+    # 미생성 상태이므로 image 블록이 primary=True/status=missing 으로 잡혀
+    # 커버리지(하드게이트)에 포함돼야 한다 — 안 잡히면 빠진 자산이 present로 샌다.
+    course = _make_course(tmp_path, _COMIC, img=False, d2=False)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    s = _slide5(manifest)
+    assert "image" in s
+    assert s["image"]["primary"] is True
+    assert s["image"]["status"] == "missing"
+    assert manifest["visual_slides_total"] == 1
+    assert manifest["overall_status"] != "present"

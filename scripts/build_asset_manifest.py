@@ -23,18 +23,10 @@ prompt_hash/d2_hash = 원고의 해당 소스 텍스트 SHA1 앞 12자 → 원�
 """
 import hashlib
 import json
-import re
 import sys
 from pathlib import Path
 
-SLIDE_RE = re.compile(r"^## Slide (\d+)\.\s*(.+)$")
-FIELD_RE = re.compile(r"^\*\*(Screen|Easy analogy|Practical case|Visual asset|Source|Narration|Practice|Assessment)\*\*")
-# 영문 이미지 프롬프트 라인 (백틱 안 우선, 없으면 라벨 뒤 텍스트)
-IMG_PROMPT_RE = re.compile(r"(?:image prompt|시각자료 프롬프트\(영문\))\s*[:：]\s*`?(.+)", re.IGNORECASE)
-# D2 opt-in 마커: "주 시각자료: D2" / "Primary asset: D2" 있으면 D2를 주 시각자료로 강제
-D2_PRIMARY_RE = re.compile(r"(?:주\s*시각자료|primary\s*asset)\s*[:：]\s*d2", re.IGNORECASE)
-# 이미지 보류(defer) 마커: 이미지가 primary인데 아직 안 만들었어도 의도된 보류(deferred)로 표기
-IMG_DEFER_RE = re.compile(r"이미지\s*보류|image\s*deferred", re.IGNORECASE)
+from manuscript_grammar import SLIDE_RE, FIELD_RE, IMG_PROMPT_RE, D2_PRIMARY_RE, IMG_DEFER_RE
 
 
 def _hash(text):

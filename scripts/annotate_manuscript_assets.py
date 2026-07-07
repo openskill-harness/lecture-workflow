@@ -14,6 +14,8 @@ import re
 import sys
 from pathlib import Path
 
+from manuscript_grammar import SLIDE_RE, FIELD_RE
+
 
 def annotate(course_dir, ch):
     course = Path(course_dir)
@@ -25,8 +27,6 @@ def annotate(course_dir, ch):
     out = []
     cur_slide = None
     in_va = False
-    slide_re = re.compile(r"^## Slide (\d+)\.")
-    field_re = re.compile(r"^\*\*(Screen|Easy analogy|Practical case|Visual asset|Source|Narration|Practice|Assessment)\*\*")
 
     def va_annotations(slide):
         """이 슬라이드에 병기할 라인 — 주 시각자료(primary)가 present인 경우 그 한 줄만."""
@@ -51,7 +51,7 @@ def annotate(course_dir, ch):
     va_buffer = []
     inserted = 0
     for line in lines:
-        m = slide_re.match(line)
+        m = SLIDE_RE.match(line)
         if m:
             if in_va and va_buffer:
                 before = len(va_buffer)
@@ -63,7 +63,7 @@ def annotate(course_dir, ch):
             in_va = False
             out.append(line)
             continue
-        f = field_re.match(line)
+        f = FIELD_RE.match(line)
         if f:
             # 이전 Visual asset 블록 종료 처리
             if in_va and va_buffer:

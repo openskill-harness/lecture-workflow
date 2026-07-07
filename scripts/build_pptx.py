@@ -10,6 +10,8 @@ from pathlib import Path
 from pptx import Presentation
 from pptx.util import Inches, Pt
 
+from manuscript_grammar import SLIDE_RE, FIELD_RE, IMG_PATH_RE
+
 # 자산 임베드 안전 여백 정책: EMBED_SAFE_MARGIN_RATIO = 0.05 (스펙 §3.0-A canonical)
 # PPTX target 구현 상수 — 슬라이드 가장자리에서 확보할 안전 여백.
 PPTX_EMBED_MARGIN = Inches(0.5)
@@ -33,10 +35,6 @@ def _image_px_size(path):
     with Image.open(path) as im:
         im = ImageOps.exif_transpose(im)
         return im.size  # (w, h)
-
-SLIDE_RE = re.compile(r"^## Slide (\d+)\.\s*(.+)$")
-FIELD_RE = re.compile(r"^\*\*(Screen|Easy analogy|Practical case|Visual asset|Source|Narration|Practice|Assessment)\*\*")
-IMG_PATH_RE = re.compile(r"(assets[/\\][^\s)`\"']+\.(?:png|jpg|jpeg|webp))", re.IGNORECASE)
 
 # Screen 필드의 최상위 라벨 줄: `- 제목: ...`, `- 짧은 문구:` 등.
 SCREEN_LABEL_RE = re.compile(r"^\s*[-*]\s*([^:：]+?)\s*[:：]\s*(.*)$")

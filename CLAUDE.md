@@ -30,7 +30,7 @@
 - `image-gen` — GPT 이미지 생성·교체 (주 호출자: `visual-assets`)
 - `pub-d2-diagram` — D2 모노톤 도형 렌더 (opt-in 폴백 엔진 — 기본 시각자산은 GPT 이미지, 원고에 `주 시각자료: D2` 마커가 있는 슬라이드에서만 `visual-assets`가 호출)
 - `panseo-board` — 빈 판서보드, 명시 요청 시만
-- `humanizer` — 책 문체 교정 (Task 13에서 이식 예정, book-build가 사용)
+- `humanizer` — 책 문체 교정 (이식 완료, book-build가 §3에서 호출해 사용)
 
 ## 트리거 라우팅
 
@@ -87,8 +87,8 @@ courses/{course-id}/
 
 ## 강의 현황
 
-`spring-boot-basic` — 파일럿 진행 중. ch01은 GPT가 만든 원고/스토리보드/PPT 프리뷰(골든 템플릿의 원본)를 이어받아 원고확정(`manuscript-final`) 단계부터 재개한다. 상태: `courses/spring-boot-basic/status.md`.
+`spring-boot-basic` — 파일럿. ch01은 11단계를 전 구간 통과해(원고~책·시뮬·PPTX 산출 완료) 시각자산 D2→GPT 재빌드 후 사용자 시각 검토만 남은 사실상 완주 상태다. 상태·다음 할 일: `courses/spring-boot-basic/status.md`.
 
 ---
 
-구축 상태: 스킬 구현 진행 중 (구현 계획 참조)
+구축 상태: 16개 스킬·파이썬 도구체인 구현 완료, ch01 파일럿 전 구간 드라이런 통과. 잔여 항목은 `docs/superpowers/plans/2026-07-07-harness-review-fixes.md` 참조.

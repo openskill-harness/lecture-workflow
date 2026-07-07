@@ -66,7 +66,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
 ### 4. manifest 생성 (SSOT)
 
 - `python scripts/build_asset_manifest.py courses/{course-id} chNN` 를 실행한다(레포 루트 스크립트, 수정하지 않고 그대로 호출).
-- 결과 `courses/{course-id}/assets/manifest.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`)가 담긴다.
+- 결과 `courses/{course-id}/assets/manifest.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`/`stale`)가 담긴다.
 - **기본은 이미지 primary**: 이미지 프롬프트가 있으면 `image.primary = true`, D2는 있어도 `d2.primary = false`(폴백 소스로 보존). `주 시각자료: D2` 마커가 있는 슬라이드만 `d2.primary = true`가 되고 이미지가 `deferred`로 강등된다. 이미지 프롬프트가 없는 D2-only 슬라이드는 D2가 primary다.
 - **이미지 미생성 처리**: 이미지가 primary인데 아직 안 만들었으면 `missing`(하드 게이트가 막음)이다. 의도적으로 나중으로 미루려면 원고 Visual asset 필드에 `- 이미지 보류` 한 줄을 넣어라 — 그러면 `deferred`로 표기되어 커버로 인정된다.
 - **원고 자산 병기**: `python scripts/annotate_manuscript_assets.py <course_dir> <chNN>`는 이제 슬라이드별 primary 자산 한 줄만 병기하고 옛 병기 라인은 제거한다(build_pptx가 원고 첫 경로를 임베드하므로 primary가 유일 경로여야 한다).
@@ -75,7 +75,7 @@ description: 확정 원고(`manuscripts/chNN.md`)의 Visual asset 필드(이미�
 ### 5. 원고 주석 (보조 — SSOT 아님)
 
 - 실제 생성/렌더가 완료된 슬라이드의 Visual asset 필드에 사람이 읽기 위한 병기를 남긴다: 이미지는 `→ 생성됨: assets/images/chNN/slideNN.png`, D2는 `→ 렌더됨: assets/diagrams/chNN-slideNN-*.png`(실제 파일명 그대로). 프롬프트/D2 원문은 지우지 않는다(재생성 근거).
-- 이 주석은 사람이 읽기 위한 보조 표기일 뿐이다 — **manifest.json이 SSOT**다. 소비 스킬(`storyboard`/`ppt-preview`/`pptx-build`/`panseo-slide`/`book-build`)의 "원고 주석이 아니라 manifest 확정 경로를 읽도록" 계약 전환은 이 스킬의 책임 범위 밖(제안 E 조건 4, 별도 반영 — 각 소비 스킬의 SKILL.md 개정 필요)이다. 전환 전까지는 두 표기(원고 주석 + manifest)가 병존한다.
+- 이 주석은 사람이 읽기 위한 보조 표기일 뿐이다 — **manifest.json이 SSOT**다. 소비 스킬의 "manifest 확정 경로 직독" 계약 전환은 이미 완료됐다(각 소비 SKILL.md에 반영). `pptx-build`만은 annotate 브릿지 경로를 읽는 예외로 계약화됐다(스펙 §3.0-A). 따라서 visual-assets는 생성 후 반드시 `annotate_manuscript_assets.py`를 돌려 원고에 primary 경로를 최신화한다 — 이 브릿지가 pptx-build의 유일한 자산 소스이기 때문이다.
 
 ### 6. 하드 게이트 (기본값 — placeholder로 조용히 넘어가지 않는다)
 
@@ -102,7 +102,7 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 
 - [ ] **manifest 존재 및 판정 명시**: `assets/manifest.json`이 존재하고 `overall_status`가 `present`이거나, 사용자가 실제로 선택한 `deferred`/`partial`이다(임의로 `missing`을 방치한 채 넘어가지 않았다).
 - [ ] **파일 실존·용량**: manifest에 `status: "present"`로 표시된 모든 자산(`image`/`d2`)이 실제로 파일로 존재하고 크기 > 0 바이트다.
-- [ ] **커버 안 된 시각 슬라이드 0**: Visual asset 필드가 있는 슬라이드 중 `present`도 `deferred`도 아닌(`missing`) 슬라이드가 0개다. 남아 있다면 사용자에게 구체적으로(어느 슬라이드) 보고하고 생성/보류 여부를 재확인한다.
+- [ ] **커버 안 된 시각 슬라이드 0**: Visual asset 필드가 있는 슬라이드 중 `present`도 `deferred`도 아닌(`missing`/`stale`) 슬라이드가 0개다. 남아 있다면 사용자에게 구체적으로(어느 슬라이드) 보고하고 생성/보류 여부를 재확인한다.
 - [ ] **브릿지 위생**: 스크래치 파일이 실행 후 삭제됐고, 원고 `chNN.md`에는 image-gen용 HTML 주석 블록이 남아 있지 않다.
 - [ ] **D2 파일명 계약(opt-in 슬라이드 한정)**: `주 시각자료: D2`로 실제 렌더한 D2 산출물이 있다면 `assets/diagrams/{chNN}-slide{NN}-*.png` 형식으로 저장돼 있다. 이미지 primary 슬라이드는 D2 렌더가 없어도 무방하다.
 

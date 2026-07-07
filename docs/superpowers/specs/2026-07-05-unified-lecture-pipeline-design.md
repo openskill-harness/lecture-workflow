@@ -183,7 +183,7 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - 슬라이드 본문: 제목, 짧은 문구, 이미지(assets), D2 렌더 PNG, 핵심 코드.
 - **발표자 노트에 Narration 삽입** — python-pptx의 `notes_slide` API가 발표자 노트를 정식 지원한다(codex가 blocker로 지적했으나 과대평가로 판단). 다만 구현 초기에 "슬라이드 1장 + 노트 삽입 + PowerPoint에서 열어 확인" spike를 먼저 수행해 확정한다.
 - 강의장에서 바로 쓸 수 있는 실제 .pptx가 목표.
-- **시각 자산과의 관계(2026-07-06 개정)**: `pptx-build`(10단계) 코드 자체는 바뀌지 않는다 — 원고에 병기된 `assets/...png|jpg` 경로를 정규식으로 잡는 방식 그대로다. 이제 `visual-assets`(4단계)가 원고확정 직후 실행되므로, `pptx-build`가 호출되는 시점엔 원고에 이미 실자산 경로가 병기되어 있는 것이 정상 경로다(과거처럼 placeholder만 있는 상태로 넘어와 재빌드가 필요한 상황이 줄어든다).
+- **시각 자산과의 관계(2026-07-06 개정)**: `pptx-build`의 기본은 **이미지 모드**로 바뀌었다(제안 `2026-07-06_pptx-image-mode.md` 반영): 승인된 `ppt_previews/chNN.html`을 `render_preview_slides.py`로 렌더한 PNG를 각 장 전체 배경으로 넣는다. 원고를 python-pptx로 직접 파싱하는 방식은 대안 **네이티브 모드**(`--from-images` 미지정)로 남아 있으며, 그 모드는 annotate 브릿지 경로(§3.0-A)를 정규식으로 잡는다. 이제 `visual-assets`(4단계)가 원고확정 직후 실행되므로, `pptx-build`가 호출되는 시점엔 원고에 이미 실자산 경로가 병기되어 있는 것이 정상 경로다(과거처럼 placeholder만 있는 상태로 넘어와 재빌드가 필요한 상황이 줄어든다).
 
 ## 10. PDF책 (`book-build`) — lecture-book-workflow 이식
 

@@ -414,7 +414,15 @@ git commit -m "docs(storytelling): 정의는 개념 앵커에 + 장 제목 이�
 - Consumes: Task 3(렌더 기구), Task 4·5(저작 규칙), `courses/spring-boot-basic/manuscripts/ch01.md`(핵심 정의 씨앗), `assets/diagrams/ch01-slide{05,08,10,15,20}-*.png`(D2)
 - Produces: 장마다 개념 앵커가 든 ch01 책 PDF
 
-- [ ] **Step 1: 장별 핵심 개념 선정 + 앵커 삽입**
+- [ ] **Step 1a: 코스 book_base.typ 재동기화 (필수 — 안 하면 앵커 함수 미정의로 빌드 실패)**
+
+ch01 책 빌드는 골든 템플릿이 아니라 **코스 자체 복사본** `courses/spring-boot-basic/book/book_base.typ`를 쓴다(driver의 `template=book/book.typ` → `merge_template_and_content`가 `book/book_base.typ`를 base로 사용). 이 복사본에 `#concept-anchor` 함수가 없으면 앵커 RawBlock 컴파일 시 미정의 오류가 난다. Task 3에서 갱신된 골든 템플릿을 코스 복사본으로 재동기화한다:
+
+Run: `cp .claude/skills/book-build/references/templates/book_base.typ courses/spring-boot-basic/book/book_base.typ`
+검증: `grep -c "concept-anchor" courses/spring-boot-basic/book/book_base.typ` → `>=1`.
+(골든의 render-book-frontmatter 리팩터가 함께 들어오며, typst_builder가 그 함수 호출을 주입한다 — Task 3 리뷰에서 코스 book.typ 바인딩과 함께 컴파일 정상 검증됨.)
+
+- [ ] **Step 1b: 장별 핵심 개념 선정 + 앵커 삽입**
 
 `courses/spring-boot-basic/book/ch01_원고.md`의 각 장에서 핵심 개념 1–2개를 골라(원고 `manuscripts/ch01.md`의 해당 슬라이드 `핵심 정의` 근거) 그 개념 도입부에 `::: concept-anchor` 블록을 삽입한다. 기존 5개 D2(HTTP·WAS·내장Tomcat·WebMVC·요청흐름)를 도식으로 재활용한다. 예(2장):
 
@@ -455,8 +463,8 @@ Task 4 Step 2의 하드 체크를 수행한다: 장마다 앵커 1–2개, 각 �
 - [ ] **Step 6: 커밋**
 
 ```bash
-git add courses/spring-boot-basic/book/ch01_원고.md courses/spring-boot-basic/book/ch01.pdf courses/spring-boot-basic/status.md
-git commit -m "content(ch01): 책 개념 앵커 적용 — 장별 기술명+D2+정의 앵커"
+git add courses/spring-boot-basic/book/book_base.typ courses/spring-boot-basic/book/ch01_원고.md courses/spring-boot-basic/book/ch01.pdf courses/spring-boot-basic/status.md
+git commit -m "content(ch01): 책 개념 앵커 적용 — 장별 기술명+D2+정의 앵커 + book_base 재동기화"
 ```
 
 ---

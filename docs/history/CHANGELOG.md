@@ -5,6 +5,7 @@
 
 | 날짜 | 변경 | 대상 | 사유 | 레코드 |
 |------|------|------|------|--------|
+| 2026-07-07 | SSOT 규율(R1~R4) 도입 + CLAUDE.md 슬림화 + 이력 docs/history 일원화 + harness-maintain 스킬 신설(외부 플러그인 대체) | CLAUDE.md, course-pipeline, harness-maintain, docs/ | old+new 공존·중복·3중관리 제거, 유지보수 in-repo 자립 | [2026-07-07_ssot-discipline](2026-07-07_ssot-discipline/) |
 | 2026-07-07 | manuscript-verify 스킬 신설(3.5단계) | skills/manuscript-verify, CLAUDE.md | 원고 기술주장 적대적 검증 | [2026-07-07_manuscript-verify](2026-07-07_manuscript-verify/) |
 | 2026-07-07 | book-build 개념 앵커 도입 | skills/book-build | 개념 누락 방지 | [2026-07-07_book-concept-anchor](2026-07-07_book-concept-anchor/) |
 | 2026-07-06 | pptx 이미지 모드 기본화 | skills/pptx-build | 프리뷰 픽셀 동일 | [2026-07-06_pptx-image-mode](2026-07-06_pptx-image-mode/) |

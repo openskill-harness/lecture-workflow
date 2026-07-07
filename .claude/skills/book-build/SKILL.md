@@ -154,6 +154,7 @@ typst_builder.build(config)
 - 캐릭터 부재 구간이 발견되면 해당 챕터(또는 인접 챕터)에 짧은 대사 1개만 추가해 규칙을 충족시킨다.
 - 개념 누락이 발견되면 누락된 개념만 가장 관련 있는 기술 파트 문단에 추가한다.
 - PDF 렌더 실패(빈 페이지·이미지 깨짐 등)는 원고 재집필이 아니라 빌드 문제다 — 먼저 Task 13 드라이런 기록(`docs/history/2026-07-05_v2-redesign/typst-windows-dryrun.md`, Task 13 보고서 `.superpowers/sdd/task-13-report.md`)에 이미 알려진 이슈(예: 마지막 파일 뒤 구분자로 인한 이미지 근처 빈 페이지)인지 먼저 확인하고, 아니면 이미지 경로/`typst_builder.py` 후처리 로직을 점검한다.
+- **레이아웃 도구화**: "PDF 렌더 정상" 검증은 육안 외에 `pub-layout-check`(감지) → `pub-page-fit`(수정 전략)으로 도구화할 수 있다. 감지된 고아줄·빈 페이지·이미지 밀림은 챕터 재집필이 아니라 이미지 max-width·수평선·pagebreak 조정으로 해소한 뒤 `typst_builder.py`로 재빌드한다. 이 두 스킬은 book-build 내부 도구이며 파이프라인 게이트가 아니다.
 
 ## 라이선스 주의
 

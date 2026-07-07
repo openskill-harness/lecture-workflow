@@ -55,7 +55,7 @@ text_blocks = [b for b in blocks
 
 **조건**: 콘텐츠 사용률 45% 미만 AND 텍스트 4줄 초과
 **원인**: 큰 이미지나 코드 블록이 다음 페이지로 밀림
-**해결**: image-optimize 스킬로 이미지 크기 조절, 또는 코드 블록 앞뒤 텍스트 조정
+**해결**: pub-page-fit(이미지 max-width 축소) 또는 typst_builder.py의 autocrop으로 이미지 크기 조절, 또는 코드 블록 앞뒤 텍스트 조정
 
 ### 4. 과대 이미지 (severity: medium)
 

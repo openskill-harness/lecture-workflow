@@ -10,7 +10,7 @@
 시도 3: max-width - 0.2 (예: 0.4)
 ```
 
-build_pdf_typst.py의 `_detect_image_max_width()`를 수정하거나,
+typst_builder.py의 `_detect_image_max_width()`를 수정하거나,
 특정 이미지에 대한 오버라이드를 추가.
 
 ## 전략 2: 수평선 제거
@@ -112,7 +112,7 @@ Typst에서는 `#set page(margin: ...)` 를 중간에 삽입할 수 있지만,
 
 ### 빌드 스크립트 적용 방식
 
-`build_pdf_typst.py`의 후처리에서 자동 적용하려면:
+`typst_builder.py`의 후처리에서 자동 적용하려면:
 
 1. `== 이야기 파트` ~ `== 기술 파트` 범위 감지
 2. 해당 범위 내에서 이미지·코드·표·인용 없는 연속 텍스트 구간 찾기

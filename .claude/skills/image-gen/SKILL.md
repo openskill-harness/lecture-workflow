@@ -12,6 +12,21 @@ description: "[IMAGE PROMPT] 플레이스홀더를 Codex(GPT) CLI 이미지로 �
 - **Codex CLI**(구독 로그인, API 키 불필요). 헤드리스 호출: `node <npm-global>/@openai/codex/bin/codex.js exec --json --skip-git-repo-check -` (프롬프트 stdin). 평문 `codex exec "..."`는 non-TTY에서 실패.
 - 생성 PNG는 `~/.codex/generated_images/{thread_id}/ig_*.png`에 저장됨(thread_id는 JSONL `thread.started`에서 파싱) → 스크립트가 플레이스홀더의 `path:`(project_root 상대)가 가리키는 곳으로 이동. 경로는 전적으로 `path:` 기준이며, 강의 하네스 표준 위치는 `courses/{id}/outputs/03_시각자산/images/chNN/`(호출자 visual-assets가 지정).
 
+## 참고 이미지 (image-to-image)
+
+플레이스홀더 블록에 `ref: <경로>` 한 줄을 넣으면 그 파일 경로를 프롬프트 앞에 세워 Codex가 읽는다 — 사용자가 준 손그림 스케치·참고 화면을 반영해 다시 그릴 때 쓴다. 별도 API 인자가 아니라 워크스페이스 파일 읽기다.
+
+```
+<!-- [IMAGE PROMPT: ch02-slide07]
+A clean educational illustration of a factory method, no text, 16:9
+ref: inbox/slide07-sketch.png
+path: outputs/03_시각자산/images/ch02/slide07.png
+-->
+![ch02-slide07](placeholder.png)
+```
+
+`ref:`/`path:` 줄은 프롬프트 본문에서 제외된다. `ref:`가 없으면 기존과 동일하게 텍스트→이미지로 동작한다.
+
 ## 사용
 ```bash
 # 한 챕터 처리

@@ -121,7 +121,7 @@ courses/{course-id}/
 `status.md` 형식: 차시×단계 체크 테이블 + "다음 할 일" + **산출물 인덱스/보류 섹션** (Registry 폐기의 경량 대체 — codex 검증 반영). 예:
 
 ```markdown
-# spring-boot-basic 진행 상태
+# design-pattern 진행 상태
 | 차시 | 원고초안 | 원고확정 | 시각자산 | 코드 | 스토리보드 | PPT프리뷰 | 판서 | 시뮬 | PPTX | 책 |
 |---|---|---|---|---|---|---|---|---|---|---|
 | ch01 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔄 | ⬜ | ⬜ | ⬜ | ⬜ |
@@ -181,7 +181,7 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 - **요약 모드**: 확정 원고를 판서용으로 요약한 저밀도 슬라이드 생성 (판서 여백 확보).
 - **그대로 모드**: `outputs/06_PPT프리뷰/chNN.html`의 슬라이드 내용을 그대로 가져오고 판서 기능 레이어만 얹음.
 
-실행 시 사용자에게 모드를 묻는다. 판서대본도 함께 생성한다. 기존 "복사본 + 하네스 통합 재정의 섹션" 방식은 폐기하고 스킬 본문을 직접 새로 쓴다. `panseo-board`(빈 칠판 단독)는 명시 요청 시 사용하는 보조 스킬로 유지한다.
+실행 시 사용자에게 모드를 묻는다. 판서대본도 함께 생성한다. 판서 슬라이드의 정의는 `panseo-slide` SKILL.md 본문이 직접 담는다. `panseo-board`(빈 칠판 단독)는 명시 요청 시 사용하는 보조 스킬이다.
 
 **시각 자산 소비(2026-07-06 개정)**: 그대로 모드는 `outputs/06_PPT프리뷰/chNN.html`의 DOM(이미지 포함)을 그대로 이식하므로, 실자산 여부는 그 상위 단계인 `ppt-preview`가 `outputs/03_시각자산/manifest.json`을 읽어 이미 반영한 상태를 그대로 물려받는다(panseo-slide 자신이 manifest를 직접 읽지 않는다 — 간접 소비).
 
@@ -223,34 +223,18 @@ GPT가 만든 `ch01_server-webapp-runtime.md` 포맷을 표준으로 채택한�
 
 **시각 자산 소비(2026-07-06 개정)**: 이미지·D2 PNG 삽입 시 원고에 병기된 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`에서 해당 슬라이드의 확정 경로(image가 `present`면 그 path, 없고 d2가 `present`면 그 path)를 읽어 참조한다. 둘 다 `present`가 아니면(`deferred`/`missing`) 해당 장면은 삽화 없이 텍스트만으로 진행한다.
 
-## 11. 삭제 / 보존 / 이동
-
-**삭제** (legacy snapshot 커밋 후):
-- 스킬: `filmed-lecture`, `offline-lecture`, `online-lecture`, `lecture-harness`
-- 에이전트: `.claude/agents/` 17개 전부
-- 문서: `docs/harness-design-v1.md`, `docs/claude-handoff-lecture-harness.md`, `docs/harness-changelog.md`, `docs/history/`
-- 강의: `courses/spring-mvc-2026`, `courses/spring-mvc-offline-2026`, `courses/spring-mvc-online-2026`
-
-**보존(엔진, 단 7·8절대로 재작성 대상 포함)**: `panseo-slide`(재작성), `panseo-board`, `edu-sim-builder`(재작성), `image-gen`, `pub-d2-diagram`, `참고스킬/` 백업 폴더.
-
-**이동**: 루트의 `ch01_server-webapp-runtime.md`, `ch01_storyboard.html`, `ch01_ppt_preview.html` → 새 파일럿 과정 `courses/spring-boot-basic/`의 1차시 산출물로 배치하고, 동시에 각 스킬의 골든 템플릿(디자인·포맷 레퍼런스)으로 참조.
-
-**재작성**: `CLAUDE.md`를 새 하네스(단일 파이프라인, 단계별 확정, 스킬 목록) 기준으로 다시 쓴다. 구조 변경 시 codex 사전 검증 규칙은 유지한다.
-
-**이후 추가 (2026-07-06)**: 위 삭제/보존/이동은 이 문서 최초 작성 시점(10단계)의 1회성 마이그레이션 기록이며 이미 실행 완료됨. 이후 §3.0-A 신설로 스킬 `visual-assets`(`.claude/skills/visual-assets/`)가 신규 추가되었다 — 이 스킬은 위 삭제/보존/이동 대상이 아니라 파이프라인 재편(10→11단계)에 따른 신규 스킬이다.
-
-## 12. 되돌리기
+## 11. 되돌리기
 
 - 삭제 직전 저장소 전체를 "legacy snapshot" 커밋으로 남긴다 (현재 커밋 0개이므로 이 커밋이 최초 커밋). 필요 시 해당 커밋에서 어떤 파일이든 복원 가능.
 - 새 구조는 그 위에 별도 커밋(들)로 쌓는다.
 
-## 13. 기각된 대안
+## 12. 기각된 대안
 
 - **라인 전용 산출물을 옵션 단계로 보존**: 하네스 복잡도가 유지되어 기각. 필요 시 추후 단계 추가가 더 저렴.
 - **게이트 축소 유지(핵심 게이트 2~3개)**: 단계별 확정 흐름과 중복. 기각.
 - **기존 강의 마이그레이션**: 파일럿(스프링부트 기초)부터 새로 시작하는 편이 검증에 유리. 기각.
 
-## 14. 구현 순서 (개요)
+## 13. 구현 순서 (개요)
 
 1. legacy snapshot 커밋 → 삭제/이동 실행 → CLAUDE.md 재작성 (삭제분은 git 이력에서 언제든 복원 가능)
 2. 골든 템플릿 배치 + `status.md`/디렉터리 규약 확정

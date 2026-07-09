@@ -11,6 +11,7 @@ class Placeholder:
     raw_block: str   # 주석+이미지줄+캡션 전체(교체 대상)
     img_line: str
     caption: str | None
+    ref: str | None = None   # 참고 이미지(손그림 스케치 등) 경로 — 있으면 image-to-image
 
 _BLOCK = re.compile(
     r'<!--\s*\[(?:GEMINI|IMAGE) PROMPT:\s*(?P<id>[^\]]+)\]\s*\n'
@@ -20,6 +21,8 @@ _BLOCK = re.compile(
     re.S,
 )
 _PATH = re.compile(r'^\s*path:\s*(?P<path>\S+)\s*$', re.M)
+# 참고 이미지 경로(선택). 있으면 Codex가 그 파일을 읽어 스케치를 반영한다.
+_REF = re.compile(r'^\s*ref:\s*(?P<ref>\S+)\s*$', re.M)
 
 import json
 from pathlib import Path
@@ -30,9 +33,11 @@ def scan_placeholders(md_text: str) -> list[Placeholder]:
         body = m.group('body')
         pm = _PATH.search(body)
         path = pm.group('path') if pm else ''
-        # prompt = body에서 path:줄과 Style:줄 제외
+        rm = _REF.search(body)
+        ref = rm.group('ref') if rm else None
+        # prompt = body에서 지시 라인(path:/ref:) 제외
         lines = [l for l in body.splitlines()
-                 if not l.strip().startswith('path:')]
+                 if not l.strip().startswith(('path:', 'ref:'))]
         prompt = '\n'.join(l for l in lines if l.strip()).strip()
         out.append(Placeholder(
             id=m.group('id').strip(),
@@ -41,6 +46,7 @@ def scan_placeholders(md_text: str) -> list[Placeholder]:
             raw_block=m.group(0),
             img_line=m.group('img'),
             caption=(m.group('caption') or None),
+            ref=ref,
         ))
     return out
 
@@ -88,12 +94,18 @@ def _default_codex_js() -> str:
     base = os.environ.get('APPDATA') or str(Path.home())
     return str(Path(base) / 'npm' / 'node_modules' / '@openai' / 'codex' / 'bin' / 'codex.js')
 
-def run_codex_image(prompt: str, codex_js=None, codex_home=None) -> str | None:
+def run_codex_image(prompt: str, ref: str | None = None, codex_js=None, codex_home=None) -> str | None:
     """codex --json 헤드리스로 이미지 생성 → 생성 PNG 경로 반환. (S1 검증된 호출)
     프롬프트는 stdin으로 전달. 평문 `codex exec "..."`는 non-TTY에서 실패하므로
-    `node codex.js exec --json --skip-git-repo-check -` 를 쓴다."""
+    `node codex.js exec --json --skip-git-repo-check -` 를 쓴다.
+
+    ref가 있으면 그 파일 경로를 프롬프트 앞에 세워 Codex가 읽게 한다(image-to-image).
+    손그림 스케치를 참고 자료로 넘길 때 쓴다 — 별도 API 인자가 아니라 워크스페이스 파일 읽기다."""
     codex_js = str(codex_js or _default_codex_js())
     full = '다음 설명으로 이미지 한 장을 생성해서 PNG 파일로 저장해줘:\n' + prompt
+    if ref:
+        full = (f'참고 이미지 파일: {Path(ref).resolve()}\n'
+                '이 그림의 구도·요소 배치를 따르되 아래 설명대로 다시 그려줘.\n\n' + full)
     res = subprocess.run(
         ['node', codex_js, 'exec', '--json', '--skip-git-repo-check', '-'],
         input=full, capture_output=True, text=True, encoding='utf-8',
@@ -112,10 +124,11 @@ def process_file(md_path, project_root, generate=run_codex_image,
     count = 0
     for ph in phs:
         if dry_run:
-            print(f"[dry-run] {ph.id} → {ph.path}")
+            print(f"[dry-run] {ph.id} → {ph.path}" + (f" (ref: {ph.ref})" if ph.ref else ""))
             count += 1
             continue
-        saved = generate(ph.prompt)
+        # ref가 없으면 1-인자로 호출한다 — 참조 이미지를 모르는 기존 generate 스텁 호환.
+        saved = generate(ph.prompt, ph.ref) if ph.ref else generate(ph.prompt)
         if not saved:
             print(f"[skip] 생성 실패: {ph.id}")
             continue

@@ -20,3 +20,23 @@
 
 ## 전환 이유 (요지)
 유지 비용(다중 오케스트레이터·라인별 승인 게이트·전용 에이전트)이 큰 데 비해 실제 제작 흐름은 하나였고, 외부(GPT) 산출물이 품질·가독성에서 더 나았다. — 상세 판단 근거는 현행 spec §1 배경 참조(이 "이유"는 현행 문서에 남긴다).
+
+---
+
+## v2 재설계 시점의 삭제 / 보존 / 이동 (spec §11에서 이관, 2026-07-09)
+
+최초 spec(10단계)에 인라인으로 있던 1회성 마이그레이션 지시다. 이미 실행 완료됐고, 여기 언급된 파일럿 과정 `courses/spring-boot-basic`은 2026-07-09에 삭제됐다. R1(권위 문서엔 현행 진실만)에 따라 spec에서 옮겨 왔다.
+
+**삭제** (legacy snapshot 커밋 후):
+- 스킬: `filmed-lecture`, `offline-lecture`, `online-lecture`, `lecture-harness`
+- 에이전트: `.claude/agents/` 17개 전부
+- 문서: `docs/harness-design-v1.md`, `docs/claude-handoff-lecture-harness.md`, `docs/harness-changelog.md`, `docs/history/`
+- 강의: `courses/spring-mvc-2026`, `courses/spring-mvc-offline-2026`, `courses/spring-mvc-online-2026`
+
+**보존(엔진, 단 7·8절대로 재작성 대상 포함)**: `panseo-slide`(재작성), `panseo-board`, `edu-sim-builder`(재작성), `image-gen`, `pub-d2-diagram`, `참고스킬/` 백업 폴더.
+
+**이동**: 루트의 `ch01_server-webapp-runtime.md`, `ch01_storyboard.html`, `ch01_ppt_preview.html` → 새 파일럿 과정 `courses/spring-boot-basic/`의 1차시 산출물로 배치하고, 동시에 각 스킬의 골든 템플릿(디자인·포맷 레퍼런스)으로 참조.
+
+**재작성**: `CLAUDE.md`를 새 하네스(단일 파이프라인, 단계별 확정, 스킬 목록) 기준으로 다시 쓴다. 구조 변경 시 codex 사전 검증 규칙은 유지한다.
+
+**이후 추가 (2026-07-06)**: 위 삭제/보존/이동은 이 문서 최초 작성 시점(10단계)의 1회성 마이그레이션 기록이며 이미 실행 완료됨. 이후 §3.0-A 신설로 스킬 `visual-assets`(`.claude/skills/visual-assets/`)가 신규 추가되었다 — 이 스킬은 위 삭제/보존/이동 대상이 아니라 파이프라인 재편(10→11단계)에 따른 신규 스킬이다.

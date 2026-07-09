@@ -33,7 +33,7 @@
 - 교육용 시나리오: 신입 개발자가 회사에 들어와 “로컬에서 서버를 켰는데 왜 브라우저에서 화면이 보이나요?”라고 묻는다. 이번 차시는 그 질문에 답하는 첫 출발점이다.
 
 **Visual asset**
-- GPT image prompt: `A clean educational illustration of a beginner developer looking at a laptop browser connected to a small Spring Boot server box, simple lines, bright classroom style, no text, 16:9 slide composition.`
+- GPT image prompt: `초보 개발자가 노트북 브라우저를 보고 있고, 그 브라우저가 작은 스프링부트 서버 상자와 선으로 연결된 교육용 일러스트, 단순한 선, 밝은 강의실 분위기, 글자 없이, 16:9 슬라이드 구도`
 
 **Source**
 - Spring Boot 공식 문서: 독립 실행 가능한 Spring 기반 애플리케이션을 만들고 실행할 수 있다는 설명.
@@ -67,7 +67,7 @@
 - 실무사례형 시나리오: 공공 프로젝트에 투입된 개발자가 기존 JSP 화면 중심 프로젝트만 경험했다. 그런데 새 예제 저장소를 보니 BackEnd와 FrontEnd가 분리되어 있고, BackEnd는 Spring Boot로 실행된다. 이 개발자는 “서버 프로그램이 화면을 직접 그리는 것”과 “API로 데이터를 제공하는 것”의 차이를 먼저 이해해야 한다.
 
 **Visual asset**
-- GPT image prompt: `Split-screen educational illustration. Left side: old monolithic web application with JSP pages and a heavy external server rack. Right side: modern API backend built with Spring Boot connected to a separate frontend browser, clean Korean corporate training style, no readable text.`
+- GPT image prompt: `좌우 분할 교육용 일러스트. 왼쪽은 JSP 페이지와 무거운 외부 서버 랙으로 이루어진 낡은 모놀리식 웹 애플리케이션, 오른쪽은 스프링부트로 만든 현대적 API 백엔드가 별도의 프런트엔드 브라우저와 연결된 모습, 깔끔한 기업 교육 자료 스타일, 글자·라벨 없이`
 
 **Source**
 - eGovFrame 심플홈페이지 BackEnd GitHub: https://github.com/eGovFramework/egovframe-template-simple-backend
@@ -102,7 +102,7 @@
 - 교육용 시나리오: 실무에서 장애가 났을 때 “브라우저 문제인지, 웹 서버 문제인지, 애플리케이션 코드 문제인지”를 구분하지 못하면 원인 분석이 느려진다. 오늘 내용은 나중에 장애를 분리해서 보는 기초가 된다.
 
 **Visual asset**
-- GPT image prompt: `Three-step visual roadmap for a Spring Boot beginner lesson: server role, HTTP request-response, embedded server run button. Clean icons, light background, no text.`
+- GPT image prompt: `스프링부트 입문 강의의 3단계 시각 로드맵: 서버의 역할, HTTP 요청과 응답, 내장 서버 실행 버튼. 깔끔한 아이콘, 밝은 배경, 글자 없이`
 
 **Source**
 - `[과정개요서] 스프링 부트 기초_v3(완료).hwpx`의 1차시 학습내용.
@@ -135,7 +135,7 @@
 - 교육용 시나리오: 회사의 사내 게시판에서 사용자가 “공지사항 목록”을 클릭한다. 서버 프로그램은 목록 요청을 받고, 데이터베이스에서 공지사항을 찾아, 브라우저가 이해할 수 있는 응답으로 돌려준다.
 
 **Visual asset**
-- GPT image prompt: `A friendly restaurant kitchen analogy for server program: customer sends an order ticket, kitchen processes it, waiter returns a dish. Educational, flat illustration, no text, 16:9.`
+- GPT image prompt: `서버 프로그램을 식당 주방에 비유한 그림: 손님이 주문서를 건네고, 주방이 그것을 처리하고, 종업원이 요리를 내온다. 교육용 플랫 일러스트, 글자 없이, 16:9`
 
 **Source**
 - MDN HTTP Overview: HTTP는 웹에서 데이터를 교환하는 기반이며 클라이언트-서버 프로토콜이라고 설명.
@@ -229,7 +229,7 @@ response -> screen: "응답 표시"
 - 실무사례형 시나리오: 프론트엔드 개발자가 “서버에서 오류가 나요”라고 말한다. 백엔드 개발자는 브라우저 개발자 도구의 Network 탭을 열어 요청 경로, 메서드, 응답 상태 코드를 먼저 확인한다.
 
 **Visual asset**
-- GPT image prompt: `Educational split layout showing an HTTP request form and HTTP response form as simple readable documents, with highlighted method, path, and status areas, clean Korean lecture slide style, no actual readable text.`
+- GPT image prompt: `HTTP 요청서와 HTTP 응답서를 단순한 서식 문서 두 장으로 나란히 보여주는 교육용 분할 레이아웃. 메서드·경로·상태 영역이 색으로 강조됨. 깔끔한 강의 슬라이드 스타일, 실제 글자는 넣지 않고 형태만`
 - Code block for slide:
 
 ```http
@@ -275,7 +275,7 @@ Hello Spring Boot
 - 실무사례형 시나리오: 회사 홈페이지의 로고 이미지, CSS 파일, JavaScript 파일은 매번 복잡한 비즈니스 로직을 거칠 필요가 없다. 이런 정적 리소스는 웹 서버가 빠르게 전달하는 것이 효율적이다.
 
 **Visual asset**
-- GPT image prompt: `A web server as a front desk clerk handing static files like HTML, CSS, JavaScript, and images to a browser, simple technical metaphor, flat vector, no readable text.`
+- GPT image prompt: `웹 서버를 안내 데스크 직원에 비유해 HTML·CSS·자바스크립트·이미지 같은 정적 파일을 브라우저에 건네주는 그림, 단순한 기술 은유, 플랫 벡터, 읽을 수 있는 글자 없이`
 
 **Source**
 - MDN HTTP Overview: 클라이언트가 서버에 요청하고 서버가 문서나 리소스를 제공한다는 설명.
@@ -365,7 +365,7 @@ web -> browser: "정적 응답"
 - 실무사례형 시나리오: 예전 프로젝트에서는 개발자가 로컬 Tomcat 버전, 서버 설정, 배포 경로가 달라 실행 오류를 겪는 일이 잦았다. 같은 코드라도 누구의 PC에서는 되고, 누구의 PC에서는 안 되는 문제가 생겼다.
 
 **Visual asset**
-- GPT image prompt: `A developer carrying a WAR package box to a separate large Tomcat server rack, old-style deployment metaphor, slightly humorous but professional, no readable text.`
+- GPT image prompt: `개발자가 WAR 패키지 상자를 들고 별도의 커다란 톰캣 서버 랙으로 옮기는, 예전 방식 배포를 은유한 그림. 약간 유머러스하되 전문적인 분위기, 읽을 수 있는 글자 없이`
 
 **Source**
 - Spring Boot 공식 문서: Spring Boot는 `java -jar` 실행 또는 전통적인 WAR 배포를 모두 언급한다.
@@ -452,7 +452,7 @@ tomcat -> ready: "서버 준비 완료"
 - 실무사례형 시나리오: 과거에는 XML 설정이나 서버 설정을 많이 만져야 했지만, Spring Boot 4 프로젝트에서는 `spring-boot-starter-webmvc`를 추가하면 웹 애플리케이션에 필요한 기본 구성이 자동으로 잡힌다. 덕분에 신입 개발자가 처음부터 복잡한 설정 파일에 파묻히지 않는다.
 
 **Visual asset**
-- GPT image prompt: `Spring Boot as a helpful setup assistant looking inside a project backpack and automatically preparing web server, MVC routing, and default configuration tools, clean technical cartoon, no text.`
+- GPT image prompt: `스프링부트를 친절한 설정 도우미로 표현한 그림: 프로젝트 배낭 안을 들여다보며 웹 서버·MVC 라우팅·기본 설정 도구를 알아서 챙겨 주는 모습, 깔끔한 기술 만화 스타일, 글자 없이`
 
 **Source**
 - Spring Boot 첫 애플리케이션 튜토리얼: `@EnableAutoConfiguration`은 추가된 jar 의존성을 기준으로 Spring 구성을 추정하고, `spring-boot-starter-webmvc`가 Tomcat과 Spring MVC를 추가하면 웹 애플리케이션으로 설정한다고 설명.
@@ -484,7 +484,7 @@ tomcat -> ready: "서버 준비 완료"
 - 교육용 시나리오: 신입 개발자 민수는 기존 Java 웹 프로젝트를 처음 실행하면서 Tomcat 설치, 서버 런타임 등록, WAR 배포 경로 때문에 반나절을 보냈다. 옆자리 개발자 지연은 Spring Boot 프로젝트를 열고 `Run As > Spring Boot App`으로 바로 실행해 보라고 알려준다. 민수는 먼저 서버가 뜨는 경험을 하고, 이후에 요청 흐름과 코드를 차근차근 배운다.
 
 **Visual asset**
-- Comic panel prompt: `Two-panel comic for a programming lecture. Panel 1: beginner developer overwhelmed by external server setup dialogs and configuration papers. Panel 2: teammate points to a simple Run Spring Boot App button and browser shows localhost running. Warm office style, no readable text.`
+- Comic panel prompt: `프로그래밍 강의용 2컷 만화. 1컷: 초보 개발자가 외부 서버 설치 대화상자와 설정 서류에 파묻혀 압도된 모습. 2컷: 동료가 간단한 스프링부트 실행 버튼을 가리키자 개발자가 안도하는 모습. 깔끔한 선화, 글자·말풍선 없이`
 
 **Source**
 - Spring Tools 공식 페이지: Spring Initializr와 Spring Guides 통합으로 빠르게 실행 가능한 Spring Boot 앱을 시작할 수 있다는 설명.
@@ -563,7 +563,7 @@ tomcat -> ready: "서버 준비 완료"
 
 **Visual asset**
 - Screenshot plan: STS4 Spring Starter Project wizard.
-- GPT support image prompt: `A simple visual metaphor of choosing project options like selecting ingredients before starting a small server shop, clean educational style, no text.`
+- GPT support image prompt: `작은 서버 가게를 열기 전에 재료를 고르듯 프로젝트 옵션을 선택하는 장면을 단순한 시각적 은유로 표현, 깔끔한 교육용 스타일, 글자 없이`
 
 **Source**
 - Spring Tools 공식 페이지: Spring Initializr 통합으로 빠르게 Spring Boot 앱을 시작할 수 있다는 설명.
@@ -881,7 +881,7 @@ response -> browser: "HTTP 응답"
 - 실무사례형 시나리오: 신입 개발자가 `/hello`가 안 된다고 말한다. 선배는 먼저 콘솔에서 서버가 Started 되었는지 보고, 다음으로 주소가 `localhost:8080/hello`인지 확인하고, 마지막으로 Controller의 매핑 경로가 `/hello`인지 확인한다.
 
 **Visual asset**
-- GPT image prompt: `Troubleshooting checklist illustration for a beginner backend developer: server log, browser URL, controller code, three checkpoints connected by arrows, clean lecture slide style, no text.`
+- GPT image prompt: `초보 백엔드 개발자를 위한 문제 해결 체크리스트 일러스트: 서버 로그, 브라우저 주소창, 컨트롤러 코드 세 지점이 화살표로 이어진 그림, 깔끔한 강의 슬라이드 스타일, 글자 없이`
 
 **Source**
 - MDN HTTP Overview, Spring Boot 첫 애플리케이션 튜토리얼.

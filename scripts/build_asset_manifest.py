@@ -5,20 +5,29 @@
 manifest.json 을 만든다. 경로는 course_layout 이 배치(outputs/ 규약·루트 평면)를
 판별해 결정한다.
 
-주 시각자료(primary): 기본은 GPT 이미지. 원고 Visual asset에 `주 시각자료: D2` 마커가 있거나
-이미지 프롬프트가 없으면 D2가 primary. image/d2 블록 모두 명시 `primary`(bool)를 갖는다.
+주 시각자료(primary): 사용자가 직접 준 파일(`User image:`)이 최우선. 그다음 `주 시각자료: D2`
+마커, 그다음 GPT 이미지 프롬프트, 마지막으로 D2. image/d2 블록 모두 명시 `primary`(bool)를 갖는다.
+
+자산 출처(origin, image 블록): 하네스가 그 자산을 덮어써도 되는지를 가른다.
+  agent       — `GPT image prompt:` (하네스 작성). 해시 stale 적용, 자유롭게 재생성·개선.
+  user-prompt — `User image prompt:` (사용자 제시). 해시 stale 적용, 문구 임의 수정 금지.
+  user-file   — `User image: <경로>` (사용자 제공 파일). prompt_hash 없음, stale 비교 제외, 덮어쓰기 금지.
+user-file 경로는 원고에 적힌 값을 그대로 쓴다 — 소비 스킬이 그 파일을 캐노니컬 경로
+({assets_rel}/images/{ch}/slideNN.png)로 복사한 뒤 원고에 기록하므로, annotate 병기 경로와
+build_pptx의 IMG_PATH_RE가 집는 첫 경로가 모두 같은 값이 된다.
 
 manifest 스키마(슬라이드별):
   {
     "slide": 5,
-    "image": {"path": "outputs/03_시각자산/images/ch01/slide05.png", "prompt_hash": "...", "status": "present|deferred|missing", "primary": true},
+    "image": {"path": "outputs/03_시각자산/images/ch01/slide05.png", "prompt_hash": "...|null", "status": "present|deferred|missing|stale", "primary": true, "origin": "agent|user-prompt|user-file"},
     "d2":    {"path": "outputs/03_시각자산/diagrams/ch01-slide05-http.png", "d2_hash": "...", "status": "present|deferred|missing", "primary": false}
   }
 status(이미지): 파일 present → present / primary 아니거나 `이미지 보류` 마커면 deferred / 그 외 missing.
 status(자산 단계 전체): primary 자산이 present·deferred인 슬라이드 수 / 예상 수 로 present|partial|missing 판정.
 prompt_hash/d2_hash = 원고 해당 소스 텍스트 SHA1 앞 12자. 재빌드 시 이전 manifest.json의
 해시와 비교해, 파일은 있으나 프롬프트가 바뀐 자산을 status="stale"로 표기한다(stale은 커버로
-인정하지 않으므로 하드 게이트가 재생성을 유도한다).
+인정하지 않으므로 하드 게이트가 재생성을 유도한다). origin=user-file은 이 비교를 건너뛴다 —
+prompt_hash가 None이라 이전 해시와 무조건 달라져 stale로 오판되기 때문이다.
 
 사용:
   python scripts/build_asset_manifest.py <course_dir> <chNN>
@@ -30,7 +39,10 @@ import sys
 from pathlib import Path
 
 import course_layout
-from manuscript_grammar import SLIDE_RE, FIELD_RE, IMG_PROMPT_RE, D2_PRIMARY_RE, IMG_DEFER_RE
+from manuscript_grammar import (
+    SLIDE_RE, FIELD_RE, IMG_PROMPT_RE, D2_PRIMARY_RE, IMG_DEFER_RE,
+    USER_PROMPT_RE, USER_IMG_FILE_RE,
+)
 
 
 def _hash(text):
@@ -79,7 +91,8 @@ def parse_visual_assets(md_text):
             if cur is not None:
                 out[cur]["_va"] = "\n".join(va_lines)
             cur = int(m.group(1))
-            out[cur] = {"prompt": None, "d2": None, "d2_primary": False, "img_defer": False, "_va": ""}
+            out[cur] = {"prompt": None, "d2": None, "d2_primary": False, "img_defer": False,
+                        "user_file": None, "user_prompt": False, "_va": ""}
             field, va_lines = None, []
             continue
         if cur is None:
@@ -98,6 +111,11 @@ def parse_visual_assets(md_text):
                 out[cur]["d2_primary"] = True
             if IMG_DEFER_RE.search(line):
                 out[cur]["img_defer"] = True
+            uf = USER_IMG_FILE_RE.search(line)
+            if uf and not out[cur]["user_file"]:
+                out[cur]["user_file"] = uf.group(1).strip().rstrip("`").strip()
+            if USER_PROMPT_RE.search(line):
+                out[cur]["user_prompt"] = True
             pm = IMG_PROMPT_RE.search(line)
             if pm and not out[cur]["prompt"]:
                 out[cur]["prompt"] = pm.group(1).strip().rstrip("`").strip()
@@ -119,17 +137,21 @@ def build_manifest(course_dir, ch):
     for num in sorted(va):
         entry = {"slide": num}
         info = va[num]
-        has_img = bool(info["prompt"])
+        user_file = info["user_file"]
+        has_img = bool(info["prompt"]) or bool(user_file)
         has_d2 = bool(info["d2"])
 
-        # 자산 파일 실존 여부
+        # 자산 파일 실존 여부. user-file은 원고에 적힌 경로를 그대로 쓴다(캐노니컬 복사는 소비 스킬의 책임).
         d2_matches = sorted(dia_dir.glob(f"{ch}-slide{num:02d}-*.png")) if (has_d2 and dia_dir.exists()) else []
         d2_file_ok = bool(d2_matches) and d2_matches[0].stat().st_size > 0
-        img_path = f"{assets_rel}/images/{ch}/slide{num:02d}.png"
+        img_path = user_file or f"{assets_rel}/images/{ch}/slide{num:02d}.png"
         img_file_ok = has_img and (course / img_path).exists() and (course / img_path).stat().st_size > 0
 
-        # 주 시각자료 선택: 기본은 GPT 이미지. D2는 opt-in 마커가 있거나 이미지 프롬프트가 없을 때만 primary.
-        if info["d2_primary"] and has_d2:
+        # 주 시각자료 선택: 사용자가 직접 준 파일이 최우선(사용자 확정이 원고를 이긴다).
+        # 그 외 기본은 GPT 이미지. D2는 opt-in 마커가 있거나 이미지 프롬프트가 없을 때만 primary.
+        if user_file:
+            primary = "image"
+        elif info["d2_primary"] and has_d2:
             primary = "d2"
         elif has_img:
             primary = "image"
@@ -156,10 +178,20 @@ def build_manifest(course_dir, ch):
                 "primary": primary == "d2",
             }
         if has_img:
-            cur_hash = _hash(info["prompt"])
+            if user_file:
+                origin = "user-file"
+            elif info["user_prompt"]:
+                origin = "user-prompt"
+            else:
+                origin = "agent"
+            cur_hash = None if user_file else _hash(info["prompt"])
             prior_hash = prior.get(num, {}).get("image")
             # 주의: stale은 프롬프트 변경 후 첫 재빌드에서만 감지된다(새 해시를 저장하므로). 재생성 전 중복 빌드 금지 — visual-assets §7 흐름 준수.
-            if img_file_ok and prior_hash is not None and prior_hash != cur_hash:
+            if origin == "user-file":
+                # 사용자가 준 파일은 하네스가 덮어쓰지 않는다. prompt_hash가 None이라 해시 비교에
+                # 넣으면 이전 해시와 무조건 달라져 stale로 오판되므로 비교 자체를 건너뛴다.
+                img_status = "present" if img_file_ok else "missing"
+            elif img_file_ok and prior_hash is not None and prior_hash != cur_hash:
                 img_status = "stale"          # 파일은 있으나 프롬프트가 바뀜 → 재생성 필요
             elif img_file_ok:
                 img_status = "present"
@@ -174,6 +206,7 @@ def build_manifest(course_dir, ch):
                 "prompt_hash": cur_hash,
                 "status": img_status,
                 "primary": primary == "image",
+                "origin": origin,
             }
         slides.append(entry)
 

@@ -140,3 +140,85 @@ def test_comic_panel_prompt_is_counted_as_image(tmp_path):
     assert s["image"]["status"] == "missing"
     assert manifest["visual_slides_total"] == 1
     assert manifest["overall_status"] != "present"
+
+
+# --- 자산 출처(origin) — 사용자 확정이 원고를 이긴다 ---
+
+_USER_FILE = (
+    "## Slide 5. HTTP\n\n"
+    "**Visual asset**\n"
+    "- User image: `assets/images/ch01/slide05.png`\n\n"
+    "**Source**\n- x\n"
+)
+
+_USER_FILE_OVER_D2 = (
+    "## Slide 5. HTTP\n\n"
+    "**Visual asset**\n"
+    "- 주 시각자료: D2\n"
+    "- User image: `assets/images/ch01/slide05.png`\n"
+    f"{_D2_FENCE}\n\n"
+    "**Source**\n- x\n"
+)
+
+_USER_PROMPT = (
+    "## Slide 5. HTTP\n\n"
+    "**Visual asset**\n"
+    "- User image prompt: `A hand-drawn style HTTP request flow, no text, 16:9`\n\n"
+    "**Source**\n- x\n"
+)
+
+
+def test_agent_origin_is_default(tmp_path):
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5(manifest)["image"]["origin"] == "agent"
+
+
+def test_user_prompt_origin_still_hashes(tmp_path):
+    # 사용자가 준 프롬프트도 프롬프트다 — 해시·stale 대상. origin만 다르다(문구 임의 수정 금지 신호).
+    course = _make_course(tmp_path, _USER_PROMPT, img=True, d2=False)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    s = _slide5(manifest)
+    assert s["image"]["origin"] == "user-prompt"
+    assert s["image"]["prompt_hash"] is not None
+    assert s["image"]["status"] == "present"
+
+
+def test_user_file_beats_d2_primary_marker(tmp_path):
+    # codex 조건 2: user-file 분기가 d2_primary 분기보다 앞. 안 그러면 `주 시각자료: D2`가 계속 이긴다.
+    course = _make_course(tmp_path, _USER_FILE_OVER_D2, img=True, d2=True)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    s = _slide5(manifest)
+    assert s["image"]["primary"] is True
+    assert s["image"]["origin"] == "user-file"
+    assert s["d2"]["primary"] is False
+
+
+def test_user_file_never_goes_stale(tmp_path):
+    # codex 조건 1: agent 이미지가 있던 슬라이드를 user-file로 교체하면 prior_hash(non-null) != None
+    # 이라 stale로 오판된다. origin=user-file은 해시 비교를 건너뛴다.
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    m1, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5(m1)["image"]["prompt_hash"] is not None   # 이전 해시가 실제로 기록됨
+    (course / "manuscripts" / "ch01.md").write_text(_USER_FILE, encoding="utf-8")
+    m2, _ = bam.build_manifest(str(course), "ch01")
+    s = _slide5(m2)
+    assert s["image"]["origin"] == "user-file"
+    assert s["image"]["prompt_hash"] is None
+    assert s["image"]["status"] == "present"      # stale 아님
+    assert m2["overall_status"] == "present"
+
+
+def test_user_file_missing_blocks_hard_gate(tmp_path):
+    course = _make_course(tmp_path, _USER_FILE, img=False, d2=False)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5(manifest)["image"]["status"] == "missing"
+    assert manifest["overall_status"] != "present"
+
+
+def test_user_file_path_matches_annotate_canonical_path(tmp_path):
+    # codex 조건 4: `User image:` 경로 == annotate 병기 경로. 다르면 build_pptx가 첫 경로를 집어 어긋난다.
+    course = _make_course(tmp_path, _USER_FILE, img=True, d2=False)
+    manifest, _ = bam.build_manifest(str(course), "ch01")
+    canonical = f"assets/images/ch01/slide05.png"
+    assert _slide5(manifest)["image"]["path"] == canonical

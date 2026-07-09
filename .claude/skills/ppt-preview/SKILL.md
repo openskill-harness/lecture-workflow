@@ -25,7 +25,8 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 - 폰트: `"Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif`.
 - 캔버스 규격: `.ppt-canvas { aspect-ratio: 16/9; background:#fff; border:1px solid #cdd5df; border-radius:8px; box-shadow:0 12px 28px rgba(28,38,54,.12); padding:42px 48px; }`. 폭은 `.ppt-slide { width: min(1120px, calc(100vw - 36px)); }`로 화면에 맞춰 축소된다.
 - 레이아웃 원칙: 캔버스 안에는 **제목(`h2`) + 짧은 문구/불릿 + 이미지 또는 D2/순서도/코드**만 놓는다. 긴 설명·나레이션 전문은 넣지 않는다 — 그건 원고(`outputs/02_원고/chNN.md`)와 스토리보드(`outputs/05_스토리보드/chNN.html`)의 몫이다.
-- 골든이 이미 여러 캔버스 위젯 패턴을 제공한다: 표지(`cover-canvas`/`cover-text`/`cover-image`), 이미지 2단(`image-canvas`/`ppt-two-col`/`ppt-media img`), 순서도(`.flow`/`.node`/`.node.input`/`.node.key`/`.arrow`), 비교 패널(`.split`/`.panel`/`.old`/`.new`), 코드(`code-canvas`/`.ppt-code-layout`/`pre`/`code`), IDE 목업(`.ide`/`.tree`/`.editor`), 브라우저 목업(`.browser`/`.bar`/`.result`), 평가(`assessment-canvas`/`.ppt-question`/`.question`/`.choice`), 참고자료(`sources-canvas`/`.ppt-source-list`). 새 시각 패턴이 필요해도 이 팔레트·구조 안에서만 스타일을 추가한다.
+- 골든이 이미 여러 캔버스 위젯 패턴을 제공한다: 표지(`cover-canvas`/`cover-text`/`cover-image`), 이미지 2단(`image-canvas`/`ppt-two-col`/`ppt-media img`), 순서도(`.flow`/`.node`/`.node.input`/`.node.key`/`.arrow`), 비교 패널(`.split`/`.panel`/`.old`/`.new`), 코드(`code-canvas`/`.ppt-code-layout`/`pre`/`code`), IDE 목업(`.ide`/`.tree`/`.editor`), 브라우저 목업(`.browser`/`.bar`/`.result`), 평가(`assessment-canvas`/`.ppt-question`/`.question`/`.choice`), 참고자료(`sources-canvas`/`.ppt-source-list`).
+- **위젯 종류는 자유다.** 표·타임라인 등 골든에 없는 시각 패턴을 슬라이드 성격에 맞게 새로 만들어도 된다 — 제약은 **위 CSS 변수·구조·여백 규칙 안에서만** 스타일을 정의한다는 것뿐이다(새 색상표·다크 테마 금지). 무엇을 보여줄지는 이 스킬의 판단이고, 어떻게 보이는지가 골든의 규범이다.
 
 ## 출력 계약 (필수 — 후속 단계 파싱 대상)
 
@@ -54,6 +55,11 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 - Screen 필드의 화면 구성 지시(제목/짧은 문구/배치)를 그대로 재현한다. Screen이 표지·순서도·비교·코드·IDE·브라우저·평가 중 어떤 성격인지 보고 골든의 해당 위젯 패턴을 고른다.
 - 본문 텍스트(불릿·문구)는 Screen 필드 문구를 압축해 옮긴다 — **원고 문장을 그대로 길게 붙이지 않는다.** 캔버스당 제목 제외 본문 45단어 이내를 권장한다.
 - 코드 슬라이드는 `code-canvas`/`.ppt-code-layout` + `pre code`에 실제 코드(실습 검증된 코드, `practice-code` 산출물 우선)를 넣는다.
+- **코드 무스크롤 규칙(중요)**: 골든 `pre`는 `overflow: auto`라 코드가 16:9 캔버스 높이를 넘기면 캔버스 안에서 스크롤된다. 그러나 `pptx-build` 이미지 모드는 이 캔버스를 프레임 그대로 렌더하므로 **스크롤 아래쪽(코드 후반부)이 PPTX에서 잘린다**(브라우저에선 스크롤로 다 보여 프리뷰 확정 때 놓치기 쉽다). 따라서 코드가 캔버스를 넘길 상황이면 스크롤되는 `pre`를 그대로 두지 말고, 아래 중 하나로 **스크롤 없이 전체를 한 화면에** 노출한다:
+  - (a) **2분할 코드 이미지** — 정의부/실행부 등 논리 경계로 코드를 나눠 각 조각을 이미지로 렌더해 캔버스에 나란히 배치(스크롤 없는 flex, 예: `.code-two-up { display:flex; gap:26px; height:calc(100% - 92px); }` + 각 `img { max-width:calc(50% - 13px); max-height:100%; object-fit:contain; }`). 이미지는 **검증된 소스**(`practice-code` 산출물/정답본)에서 렌더하고 `outputs/03_시각자산/images/chNN/slideNN-*.png`에 저장하며, 코드가 바뀌면 재생성한다(이 인라인 코드 이미지는 manifest 관리 대상이 아니다 — 코드블록이 원래 인라인이었던 것과 동일).
+  - (b) **슬라이드 분할** — 원고(SSOT) Slide N을 두 슬라이드로 나눔(`manuscript-final` 경유, 슬라이드 번호·평가 관련학습보기 재동기화 수반).
+  - (c) **fit-to-canvas 축소** — 좌측 설명 칼럼 제거·빈 줄 정리·폰트 축소로 스크롤 없이 한 캔버스에.
+  - 우선순위: 코드가 길면 (a) 또는 (b), 짧게 줄일 수 있으면 (c). (a)의 코드 이미지에는 `.ppt-media > img` 안전 여백 규칙이 아니라 위 `.code-two-up` 규칙을 쓴다(별도 컨테이너).
 - 평가 슬라이드는 `assessment-canvas` + `.question`/`.choice`로 문제·보기만 노출한다(정답·해설은 넣지 않음 — 그건 스토리보드의 강사 전용 패널 몫).
 - 참고자료 슬라이드는 `sources-canvas`로 원고 Source 목록을 나열한다.
 
@@ -61,15 +67,14 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 
 **자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
 
-1. `image.status == "present"`이면 `image.path`를 사용한다.
-2. 아니고 `d2.status == "present"`이면 `d2.path`를 사용한다.
-3. 둘 다 `present`가 아니면(`deferred`/`missing`) placeholder로 처리한다.
+1. `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`를 임베드한다.
+2. primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) placeholder로 처리한다. **비-primary 자산으로 대체하지 않는다** — 소비물마다 다른 그림이 들어가는 원인이 된다.
 
-- (1) 이미지: `.ppt-media img` 또는 `.cover-image img`에 실제 상대경로로 삽입한다. manifest의 경로는 과정 루트 기준이므로 **소비 파일(`outputs/06_PPT프리뷰/chNN.html`) 위치 기준으로 재계산**한다(문자열 접두 부착이 아니라 `os.path.relpath` 상당의 계산) — `outputs/` 형제 배치에서는 `outputs/` 접두를 `../`로 바꾸면 된다(`../03_시각자산/images/chNN/...`, 골든과 동일 패턴). 원고의 `→ 생성됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
-- (2) D2: 그 렌더 결과(svg/png)를 동일하게 삽입한다. 재현이 필요하면 골든처럼 `.flow`/`.node`/`.arrow`로 간단히 재현한다.
-- (3) placeholder: `--line` 테두리의 placeholder 박스를 두고 프롬프트 원문을 짧게 표시한다 — 실제 픽셀 이미지를 대신 만들지 않는다.
+primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료: D2` 마커 > 이미지 프롬프트 > D2). 이 스킬은 그 결과를 읽기만 한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
 
-**자산 선택 계약**: 슬라이드별로 `outputs/03_시각자산/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`outputs/03_시각자산/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
+- 이미지 primary: `.ppt-media img` 또는 `.cover-image img`에 실제 상대경로로 삽입한다. manifest의 경로는 과정 루트 기준이므로 **소비 파일(`outputs/06_PPT프리뷰/chNN.html`) 위치 기준으로 재계산**한다(문자열 접두 부착이 아니라 `os.path.relpath` 상당의 계산) — `outputs/` 형제 배치에서는 `outputs/` 접두를 `../`로 바꾸면 된다(`../03_시각자산/images/chNN/...`, 골든과 동일 패턴).
+- D2 primary: 그 렌더 결과(svg/png)를 동일하게 삽입한다. 재현이 필요하면 골든처럼 `.flow`/`.node`/`.arrow`로 간단히 재현한다.
+- placeholder: `--line` 테두리의 placeholder 박스를 두고 프롬프트 원문을 짧게 표시한다 — 실제 픽셀 이미지를 대신 만들지 않는다.
 
 **자산 임베드 안전 여백 (2026-07-06 개정)**: 임베드된 이미지/D2가 `.ppt-media` 셀 가장자리에 닿지 않게, 이미지 전용 셀렉터 `.ppt-media > img`에만 `box-sizing: border-box; padding: clamp(10px, 4%, 28px);`를 적용한다(`object-fit: contain`은 기존 규칙 유지). **`.ppt-media`/`.cover-image` 자체나 `.flow`/`pre`/`.split` 등 비이미지 위젯에는 patting을 주지 않는다** — 그 컨테이너 안에는 이미지 외에도 순서도·코드·비교 패널이 들어가므로 전역 padding은 레이아웃을 깬다. `%` 단독 padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거: `docs/history/2026-07-06_asset-embed-safe-margin/proposal.md`(제안 B), codex 조건 2: `docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md`.
 
@@ -80,23 +85,44 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 
 ### 5. 확정
 
-사용자에게 프리뷰를 보여주고(브라우저로 열기 등) 확인을 받은 뒤:
+`python scripts/check_preview_layout.py outputs/06_PPT프리뷰/chNN.html --manuscript outputs/02_원고/chNN.md`로 레이아웃 위반이 error 0건인지 확인하고, 사용자에게 프리뷰를 보여주고 확인을 받은 뒤:
 
 - `courses/{course-id}/status.md`의 해당 차시 `PPT프리뷰` 칸을 ✅로 갱신한다.
 - "산출물 인덱스"에 `- chNN PPT프리뷰: outputs/06_PPT프리뷰/chNN.html (확정 YYYY-MM-DD)`를 추가한다.
 - "다음 할 일"을 `chNN 판서슬라이드 작성(panseo-slide)`로 갱신한다.
 
+### 6. 사용자 개입 (프리뷰를 보고 내용을 바꿔 달라고 할 때)
+
+**사용자 확정이 원고를 이긴다.** 원고확정(3단계) 이후 단계에서 사용자가 다르게 확정하면 원고를 최소 범위로 역수정한다 — `practice-code` §4(실행 검증 결과가 원고와 다르면 사용자 승인 후 역수정)와 같은 패턴이다. 이 절은 자동 repair(§repair 규칙)와 다르다: 저기서는 원고가 불변이고, 여기서는 사용자 지시가 원고를 갱신한다.
+
+**프리뷰 HTML만 고치고 끝내지 않는다.** manifest를 경유해야 스토리보드·PPTX·책이 같은 그림을 쓴다. 프리뷰만 고치면 `book-build`는 옛 자산을 임베드한다.
+
+| 사용자 지시 | 처리 |
+|---|---|
+| "이 프롬프트로 다시 만들어" | 원고 Visual asset의 라벨을 `User image prompt:`로 바꾸고 문구를 사용자 원문으로 **제자리 교체**(옛 프롬프트 줄 삭제) → `visual-assets` §7 stale 경로로 그 슬라이드만 재생성 → manifest 재빌드 → 해당 캔버스만 갱신 |
+| "내가 준 이 파일로 바꿔" | 파일을 캐노니컬 경로(`{시각자산}/images/chNN/slideNN.png`)로 복사 → 원고를 `User image: <경로>`로 제자리 교체 → manifest 재빌드(`origin: user-file`, stale 면제) → 해당 캔버스만 갱신 |
+| "내 스케치를 참고해서 다시 그려" | `visual-assets` §2 브릿지 블록에 `ref: <스케치 경로>`를 넣어 재생성(image-to-image) → 이하 위와 동일 |
+| "여긴 표로" / "여긴 순서도로" | 캔버스 위젯을 교체하고 원고 **Screen** 필드의 화면 배치 서술을 최소 역수정. 이미지를 빼면 `- 이미지 보류` 한 줄을 추가해 manifest가 `deferred`로 잡게 한다 |
+
+**역수정은 승인을 받고 한다.** 지시("이 사진 바꿔줘")와 역수정 범위 승인("원고 Slide 7의 이 줄을 이렇게 바꿉니다")은 별개다. 원고 diff를 최소 범위로 보여준 뒤 반영한다. 어긋난 필드만 고치고 다른 슬라이드·필드는 건드리지 않는다.
+
+개입 후 그 슬라이드를 소비한 하류 산출물만 **"재검수 필요"로 보고**한다 — 스토리보드, `panseo-slide` 그대로 모드(프리뷰를 소비), `pptx-build` 이미지 모드, 책. 전체 재생성은 하지 않는다(stale이 이미 슬라이드 단위로 잡는다).
+
+개입 범위는 원고와 이 프리뷰까지다. 스토리보드·판서·책 단계에 개입 통로를 만들지 않는다 — 사용자가 눈으로 보고 확정하는 지점이 원고와 프리뷰이기 때문이다.
+
 ## 확정 체크리스트
 
 - [ ] **슬라이드 수 일치 + 연번**: `outputs/06_PPT프리뷰/chNN.html`의 `[data-slide]` 개수가 원고 `## Slide N.` 블록 수와 정확히 같고, `data-slide` 값이 1부터 빠짐없이 연번이다.
+- [ ] **레이아웃 기계 검증 통과**: `python scripts/check_preview_layout.py <preview.html> --manuscript <chNN.md>` 가 **error 0건**이다(`code-scroll`/`overflow`/`slide-seq`/`palette`). `word-count`는 warn이며 §2 축약 권고 대상이다. 이 스크립트가 코드 스크롤·삐져나옴·새 색상 도입·연번 불일치를 한 번에 검사하므로 육안 확인으로 대체하지 않는다.
 - [ ] **캔버스당 과밀 금지**: 각 `.ppt-canvas` 안 본문(제목 `h2` 제외) 단어 수가 45단어 이내다(권고 — 초과 시 repair 대상으로 표시).
+- [ ] **코드 슬라이드 무스크롤**: 코드 캔버스에서 `pre`가 캔버스 높이를 넘겨 스크롤되지 않는다. 넘치면 §2 코드 무스크롤 규칙 (a)/(b)/(c)로 처리한다 — 스크롤 방치 시 pptx-build 이미지 모드에서 잘린다.
 - [ ] **라이트 팔레트 준수**: 골든 CSS 변수(`--ink #17202a`/`--muted #5d6875`/`--line #d9dee7`/`--soft #f5f7fa`, 배경 `#e8ebf1`)를 그대로 사용하고, 새 색상표나 다크 테마가 도입되지 않았다.
 - [ ] **출력 계약 준수**: 모든 슬라이드가 `<section class="ppt-slide" data-slide="N">` 루트 + 내부 `.ppt-canvas` + 캔버스 내 `h2` 구조를 따른다.
-- [ ] **브라우저 열림 확인**: 완성 파일을 브라우저에서 열어(Playwright 또는 사용자 육안 확인) 캔버스가 정상 렌더되는지 확인했다.
+- [ ] **사용자 확인**: 완성 파일을 사용자가 실제로 보고 확정했다(기계 검증은 렌더 품질만 본다 — 내용 확정은 사용자 몫).
 
 ## repair 규칙
 
-체크리스트 중 하나라도 실패하면 전체를 다시 만들지 않는다. **원고(`outputs/02_원고/chNN.md`)는 불변** — 캔버스 과밀은 원고를 고치지 않고 캔버스 쪽 문구만 축약한다.
+체크리스트 중 하나라도 실패하면 전체를 다시 만들지 않는다. **자동 repair에서 원고(`outputs/02_원고/chNN.md`)는 불변** — 캔버스 과밀은 원고를 고치지 않고 캔버스 쪽 문구만 축약한다. (사용자 지시로 내용을 바꾸는 경우는 §6이며, 거기서는 원고를 역수정한다.)
 
 - 과밀 슬라이드(45단어 초과)는 해당 캔버스의 불릿·문구만 더 짧게 축약한다(핵심어 위주로 재작성). 다른 캔버스는 건드리지 않는다.
 - 슬라이드 수 불일치(`data-slide` 누락/중복/원고 수와 불일치)는 누락되거나 잘못 병합된 슬라이드 번호만 찾아 **그 캔버스만** 추가·재생성한다.
@@ -112,6 +138,8 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 - 순서 참고용 스토리보드: `outputs/05_스토리보드/chNN.html` (`storyboard` 스킬 산출물)
 - 시각자산 SSOT: `outputs/03_시각자산/manifest.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 - status.md 형식: `templates/status_template.md`
+- 레이아웃 기계 검증: `scripts/check_preview_layout.py` (감지 전용 — 수정은 위 repair 규칙)
+- 자산 출처(`origin`)·역수정 원칙: `.claude/skills/manuscript-draft/references/manuscript-schema.md` §4, `.claude/skills/practice-code/SKILL.md` §4(같은 역수정 패턴의 원형)
 - 파이프라인 표·디렉터리 구조: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3(7단계), §3.0-A(visual-assets), §4(`outputs/06_PPT프리뷰/chNN.html` 경로 규약), §7(panseo-slide 그대로 모드)
 - pptx-build와의 관계: `.claude/skills/pptx-build/SKILL.md` "참고" — pptx-build **기본 이미지 모드**는 `outputs/06_PPT프리뷰/chNN.html`을 `render_preview_slides.py`로 렌더해 소비한다(`.ppt-slide`/`.ppt-canvas` DOM 계약에 의존). 대안 **네이티브 모드**만 이 HTML 대신 원고(`outputs/02_원고/chNN.md`)를 직접 파싱한다.
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

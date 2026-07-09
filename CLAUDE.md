@@ -6,7 +6,7 @@
 
 **하네스 유지보수:** 하네스 점검·감사·동기화·스킬 추가/수정 요청("하네스 점검", "스킬 추가", "에이전트/스킬 동기화" 등)은 이 repo의 `harness-maintain` 스킬을 쓴다. 외부 harness 플러그인(harness:harness)은 이 프로젝트에서 사용하지 않는다 — 유지보수 규율(R1~R4)과 이력 모델(docs/history)이 다르기 때문이다.
 
-**진행 상태:** 각 과정의 단계×차시 상태는 `courses/{course-id}/status.md`가 SSOT다. 파일럿 `spring-boot-basic`의 다음 할 일도 그 status.md에서 확인한다.
+**진행 상태:** 각 과정의 단계×차시 상태는 `courses/{course-id}/status.md`가 SSOT다. 다음 할 일도 그 status.md에서 확인한다.
 
 ## 유지 규칙 (SSOT 규율)
 

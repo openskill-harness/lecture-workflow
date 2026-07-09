@@ -36,6 +36,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(�
   ```
   - `id`는 `chNN-slideNN` 형식(예: `ch01-slide05`)으로 슬라이드를 식별한다.
   - `path:`가 실제 저장 경로를 결정한다(project_root=`courses/{course-id}` 기준 상대경로, `outputs/03_시각자산/images/chNN/slideNN.png` 고정 — `pptx-build`의 `IMG_PATH_RE`가 이 패턴만 인식하므로 어긋나면 안 된다).
+  - 사용자가 손그림 스케치·참고 화면을 준 슬라이드는 `path:` 위에 `ref: <경로>` 한 줄을 넣는다. `image_gen.py`가 그 파일 경로를 프롬프트 앞에 세워 Codex가 읽게 한다(image-to-image). 말로 100줄 설명하는 것보다 스케치 1장이 정확하다.
   - `![...](...)` 줄의 `alt`/`src`는 아무 값이나 무방하다(정규식 매치 목적일 뿐, 실사용 안 됨).
 - `python .claude/skills/image-gen/scripts/image_gen.py <스크래치.md> courses/{course-id}` 를 실행한다. 성공한 슬라이드는 지정한 `path:`로 PNG가 이동된다. 실패한 슬라이드는 플레이스홀더가 보존되고 스킬 실행 로그로만 표시된다(원고엔 영향 없음).
 - **지연 경고**: Codex 이미지 생성은 장당 1~2분, 직렬 처리다. 26장이면 30~50분 걸릴 수 있다.
@@ -47,7 +48,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(�
 ### 3. D2 렌더 (opt-in — 원고에 `주 시각자료: D2` 마커가 있거나 이미지 프롬프트가 없는 슬라이드만)
 
 - **기본값은 GPT 이미지다.** 슬라이드에 이미지 프롬프트가 있으면 그 슬라이드는 §2(이미지)로 처리하고 D2는 렌더하지 않는다(원고에 D2 코드펜스가 남아 있어도 폴백 소스로만 보존). D2를 그 슬라이드의 주 시각자료로 쓰려면 원고 Visual asset 필드에 `- 주 시각자료: D2` 한 줄을 넣는다(그때만 아래 렌더를 수행).
-- 이 스크립트의 파일명은 파일 내 D2 블록 **등장 순서**(`{접두사}-d{i}.svg`)로 매겨진다 — 슬라이드 번호 기반이 아니다. 반면 `build_asset_manifest.py`(§4)와 기존 소비 계약은 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-{요지}.png` 형식(슬라이드 번호 포함, PNG)을 기대한다(`courses/spring-boot-basic/assets/diagrams/ch01-slide05-http.png` 등 기존 실사례 참고). 따라서:
+- 이 스크립트의 파일명은 파일 내 D2 블록 **등장 순서**(`{접두사}-d{i}.svg`)로 매겨진다 — 슬라이드 번호 기반이 아니다. 반면 `build_asset_manifest.py`(§4)와 소비 계약은 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-{요지}.png` 형식(슬라이드 번호 포함, PNG)을 기대한다(예: `ch01-slide05-http.png`). 따라서:
   1. 렌더된 `{접두사}-d{i}.svg`를 원고 순서와 대조해 어느 슬라이드에 대응하는지 확인한다.
   2. `pub-d2-diagram` SKILL.md의 "Windows 렌더" 절(headless Chromium 스크린샷, 고정 뷰포트/스케일/투명배경)에 따라 SVG → PNG로 변환한다.
   3. 최종 파일을 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-{요지}.png`로 저장(또는 리네임)한다 — `{요지}`는 다이어그램 내용을 요약한 짧은 영문/한글 슬러그.
@@ -67,7 +68,10 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(�
 
 - `python scripts/build_asset_manifest.py courses/{course-id} chNN` 를 실행한다(레포 루트 스크립트, 수정하지 않고 그대로 호출).
 - 결과 `courses/{course-id}/outputs/03_시각자산/manifest.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`/`stale`)가 담긴다.
-- **기본은 이미지 primary**: 이미지 프롬프트가 있으면 `image.primary = true`, D2는 있어도 `d2.primary = false`(폴백 소스로 보존). `주 시각자료: D2` 마커가 있는 슬라이드만 `d2.primary = true`가 되고 이미지가 `deferred`로 강등된다. 이미지 프롬프트가 없는 D2-only 슬라이드는 D2가 primary다.
+- **사용자 제공 파일이 최우선**: 원고에 `User image: <경로>`가 있으면 그 슬라이드는 `image.primary = true`, `origin = "user-file"`이 되고 `주 시각자료: D2` 마커보다 우선한다(사용자 확정이 원고를 이긴다).
+- **그 아래로는 이미지 primary**: 이미지 프롬프트가 있으면 `image.primary = true`, D2는 있어도 `d2.primary = false`(폴백 소스로 보존). `주 시각자료: D2` 마커가 있는 슬라이드만 `d2.primary = true`가 되고 이미지가 `deferred`로 강등된다. 이미지 프롬프트가 없는 D2-only 슬라이드는 D2가 primary다.
+- **자산 출처(`origin`)**: image 블록은 `agent`(`GPT image prompt:`) / `user-prompt`(`User image prompt:`) / `user-file`(`User image:`) 중 하나를 갖는다. 이 필드가 하네스의 덮어쓰기 권한을 정한다 — `user-prompt`의 문구를 임의로 다듬지 않고, `user-file`은 재생성하지 않는다. 스키마는 `manuscript-schema.md` §4의 출처 표가 SSOT다.
+- **user-file 경로**: 사용자 제공 파일은 반드시 캐노니컬 경로(`{시각자산}/images/chNN/slideNN.png`)로 **복사**한 뒤 원고에 그 경로를 적는다. `annotate_manuscript_assets.py`가 병기하는 primary 경로와 같아야 `pptx-build`(원고 첫 이미지 경로를 임베드)가 어긋나지 않는다.
 - **이미지 미생성 처리**: 이미지가 primary인데 아직 안 만들었으면 `missing`(하드 게이트가 막음)이다. 의도적으로 나중으로 미루려면 원고 Visual asset 필드에 `- 이미지 보류` 한 줄을 넣어라 — 그러면 `deferred`로 표기되어 커버로 인정된다.
 - **원고 자산 병기**: `python scripts/annotate_manuscript_assets.py <course_dir> <chNN>`는 이제 슬라이드별 primary 자산 한 줄만 병기하고 옛 병기 라인은 제거한다(build_pptx가 원고 첫 경로를 임베드하므로 primary가 유일 경로여야 한다).
 - 최상위 `overall_status`(present/partial/missing)와 `visual_slides_covered`/`visual_slides_total`를 확인해 §6·§7 판단의 근거로 삼는다.
@@ -94,6 +98,11 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 자동 비교해, 프롬프트가 바뀐 present 자산을 `status: "stale"`로 표기한다. stale 슬라이드는 커버로
 인정되지 않아 overall_status가 `partial`로 떨어지고, 하드 게이트가 해당 슬라이드의 재생성을 요구한다.
 스킬은 stale로 표기된 슬라이드만 골라 image-gen/pub-d2로 재생성하면 된다(전체 재생성 불필요).
+
+**`origin: user-file`은 stale 비교에서 제외된다.** 사용자가 준 파일은 프롬프트가 없어 `prompt_hash`가
+`null`인데, 그대로 비교하면 이전 해시와 무조건 달라져 stale로 오판되고 하네스가 사용자의 그림을
+덮어쓰게 된다. 빌더가 이 분기를 명시적으로 건너뛴다. 사용자 그림을 바꾸는 유일한 방법은 사용자가
+다시 지시하는 것이다.
 
 - `build_asset_manifest.py`를 다시 실행하면 manifest에 이미 stale 슬라이드가 표시돼 있다 — 그 슬라이드만 §2(이미지) 또는 §3(D2)을 다시 수행해 파일을 교체한 뒤 manifest를 재생성한다.
 - stale로 재생성한 슬라이드는 후속 산출물(스토리보드 등)에도 "이 슬라이드만 재검수 필요"로 보고한다 — 다른 슬라이드까지 재작업 대상으로 넓히지 않는다.
@@ -123,6 +132,5 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 - 이미지 엔진: `.claude/skills/image-gen/SKILL.md` + `scripts/image_gen.py`(브릿지 블록 정규식·이동 로직의 원본)
 - D2 엔진: `.claude/skills/pub-d2-diagram/SKILL.md`(Windows 렌더·종횡비 절 포함) + `scripts/render_md_diagrams.py`
 - 원고 스키마(Visual asset 하위 유형): `.claude/skills/manuscript-draft/references/manuscript-schema.md` §4
-- 기존 실사례(수동으로 이 절차를 먼저 밟아본 파일럿): `courses/spring-boot-basic/assets/manifest.json`, `courses/spring-boot-basic/assets/diagrams/ch01-d2-manifest.md`
 - **범위 밖(별도 반영 대상)**: `status.md`의 `시각자산` 열 신설(제안 C), `CLAUDE.md`/설계 문서/`course-pipeline` 매핑 표에 이 스킬을 11단계 파이프라인으로 편입(제안 D). 소비 스킬의 "manifest 우선 소비" 계약 전환(제안 E 조건 4)은 완료됐으며, `pptx-build`만 annotate 브릿지로 계약화됐다(스펙 §3.0-A, §5 참조).
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

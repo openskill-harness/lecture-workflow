@@ -77,3 +77,53 @@ def test_process_file_moves_and_replaces(tmp_path):
     # 본문 교체됨
     text = md.read_text(encoding='utf-8')
     assert '<img src=' in text and '<!--' not in text
+
+
+# --- 참고 이미지(ref) — 손그림 스케치를 image-to-image 참조로 넘긴다 ---
+
+_REF_MD = """<!-- [IMAGE PROMPT: ch02-slide07]
+A clean educational illustration of a factory method, no text, 16:9
+ref: inbox/slide07-sketch.png
+path: outputs/03_시각자산/images/ch02/slide07.png
+-->
+![ch02-slide07](placeholder.png)
+"""
+
+
+def test_ref_parsed_and_excluded_from_prompt():
+    ph = scan_placeholders(_REF_MD)[0]
+    assert ph.ref == 'inbox/slide07-sketch.png'
+    assert ph.path == 'outputs/03_시각자산/images/ch02/slide07.png'
+    assert 'ref:' not in ph.prompt and 'path:' not in ph.prompt
+    assert ph.prompt.startswith('A clean educational illustration')
+
+
+def test_ref_absent_defaults_none():
+    md = _REF_MD.replace('ref: inbox/slide07-sketch.png\n', '')
+    assert scan_placeholders(md)[0].ref is None
+
+
+def test_process_file_passes_ref_to_generate(tmp_path):
+    from image_gen import process_file
+    proj = tmp_path / 'proj'; (proj / 'inbox').mkdir(parents=True)
+    md = proj / 'ch.md'; md.write_text(_REF_MD, encoding='utf-8')
+    src = tmp_path / 'gen.png'; src.write_bytes(b'PNG')
+    seen = {}
+
+    def fake_generate(prompt, ref=None):
+        seen['prompt'], seen['ref'] = prompt, ref
+        return str(src)
+
+    assert process_file(md, proj, generate=fake_generate) == 1
+    assert seen['ref'] == 'inbox/slide07-sketch.png'
+    assert (proj / 'outputs/03_시각자산/images/ch02/slide07.png').exists()
+
+
+def test_process_file_one_arg_generate_still_works(tmp_path):
+    """ref 없는 블록은 1-인자 스텁으로 호출된다(하위호환)."""
+    from image_gen import process_file
+    proj = tmp_path / 'proj'; proj.mkdir()
+    md = proj / 'ch.md'
+    md.write_text(_REF_MD.replace('ref: inbox/slide07-sketch.png\n', ''), encoding='utf-8')
+    src = tmp_path / 'gen.png'; src.write_bytes(b'PNG')
+    assert process_file(md, proj, generate=lambda prompt: str(src)) == 1

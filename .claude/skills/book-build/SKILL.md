@@ -36,9 +36,8 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 비유(Easy analogy)�
 - 챕터는 이야기 파트(문제 등장 → 비유로 기술 소개 → Try/Fail 시행착오 → 결과)로 시작하고, 이후 기술 파트(정식 정의·심화 설명·실습 코드)로 이어진다. 두 파트를 가르는 라벨형 H2("## 이야기", "## 기술 설명" 등)는 달지 않는다 — 자연스러운 장 제목(예: `## 1장. 팔찌를 잃어버린 날`)만 쓴다.
 - 원고의 핵심 개념·실습·평가문항이 하나도 누락되지 않도록 챕터 전체에 분배한다(한 슬라이드 = 반드시 한 장면일 필요는 없다. 여러 슬라이드를 하나의 장면으로 압축하거나, 한 슬라이드를 여러 장면으로 늘려도 된다).
 - 캐릭터 등장 규칙(2개 챕터 연속 부재 금지)을 지킨다.
-- **자산 해석 규칙(필수, 2026-07-06 개정)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `image.status == "present"`이면 `image.path`, (2) 아니고 `d2.status == "present"`이면 `d2.path`, (3) 둘 다 `present`가 아니면(`deferred`/`missing`) 그 장면은 삽화 없이 텍스트만으로 쓴다. 실사용 경로는 `outputs/10_책/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
+- **자산 해석 규칙(필수)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`, (2) primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) 그 장면은 삽화 없이 텍스트만으로 쓴다 — **비-primary 자산으로 대체하지 않는다**(소비물마다 다른 그림이 들어가는 원인). primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료: D2` 마커 > 이미지 프롬프트 > D2). 실사용 경로는 `outputs/10_책/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 
-- **자산 선택 계약**: 슬라이드별로 `outputs/03_시각자산/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`outputs/03_시각자산/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
 
 ### 개념 앵커 (필수)
 

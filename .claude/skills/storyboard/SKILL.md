@@ -34,27 +34,26 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 슬라이드를 1:1 �
   2. **쉬운 비유** — Easy analogy 필드.
   3. **실무사례** — Practical case 필드.
   4. *(선택)* **그림 읽는 순서** — 순서도/D2 다이어그램 슬라이드에서만, 화살표를 어떤 순서로 읽는지 한 문장으로 짚는다(골든 Slide 5·8 사례).
-  5. **시각 자료** (`class="lecture-block visual-asset"`) — Visual asset 필드 원문(프롬프트 문구, D2 소스, 코드 블록 등)을 그대로 옮긴다.
+  5. **시각 자료** (`class="lecture-block visual-asset"`) — Visual asset 필드 원문(프롬프트 문구, D2 소스, 코드 블록 등)을 그대로 옮긴다. (코드가 프리뷰 셀을 넘겨 `ppt-preview`가 2분할 코드 이미지로 처리한 슬라이드라면, 그 이미지를 재사용할 수 있다 — 강사 검수 카드라 스크롤이 치명적이진 않으나 프리뷰와 일관되게.)
   6. **출처** (`class="lecture-block source-block"`) — Source 필드.
   7. **나레이션** (`class="lecture-block lecture-script"`, `grid-column: 1 / -1`로 전체 폭) — Narration 필드 전문. **모든 카드에 이 섹션이 있어야 한다** (확정 체크리스트 대상, 압축·요약 금지).
   8. **실습/진행** — Practice 필드(`- 없음.`이면 그대로 표시).
   9. *(평가 슬라이드만)* **평가 문항** (`class="lecture-block instructor-only"`) — Assessment 구조화 필드(유형/정답/난이도/해설/관련학습보기)를 그대로 옮긴다. 수강자 화면(`slide-preview`)에는 문제와 보기만 노출하고 정답·해설은 이 강사 전용 패널에만 둔다.
   10. **PPT 반영 메모** — 골든 고정 문구를 그대로 쓴다: "슬라이드 화면에는 핵심 문구와 이미지 또는 다이어그램을 크게 배치하고, 자세한 설명은 강사용 패널과 발표자 노트에 반영한다."
 
-### 3. 이미지/다이어그램 자산 연결 (manifest 기반, 2026-07-06 개정)
+### 3. 이미지/다이어그램 자산 연결 (manifest 기반)
 
 **자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
 
-1. `image.status == "present"`이면 `image.path`를 사용한다.
-2. 아니고 `d2.status == "present"`이면 `d2.path`를 사용한다.
-3. 둘 다 `present`가 아니면(`deferred`/`missing`) placeholder로 처리한다.
+1. `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`를 임베드한다.
+2. primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) placeholder로 처리한다. **비-primary 자산으로 대체하지 않는다** — 소비물마다 다른 그림이 들어가는 원인이 된다.
 
-- (1) 이미지 경로: `slide-preview` 안에 `<img src="{상대경로}" alt="...">`로 삽입한다. manifest의 경로는 과정 루트 기준이므로 **소비 파일(`outputs/05_스토리보드/chNN.html`) 위치 기준으로 재계산**한다(문자열 접두 부착이 아니라 `os.path.relpath` 상당의 계산) — `outputs/` 형제 배치에서는 `outputs/` 접두를 `../`로 바꾸면 된다(골든 실제 참조 패턴 `../03_시각자산/images/ch01/...`). 원고에 병기된 `→ 생성됨:` 문구는 사람이 읽는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
-- (2) D2 경로: 그 렌더 결과(svg/png)를 동일하게 삽입한다.
-- (3) placeholder: `slide-preview` 안에 `--line` 테두리의 placeholder 박스를 두고, `deferred`/`missing`이면 원고의 `GPT image prompt:`(또는 `Comic panel prompt:`)/D2 소스 원문을, 재현이 어려운 D2는 골든 Slide 5·8처럼 `.flow`/`.node`/`.arrow`로 흐름을 간단히 재현하거나 `<pre class="asset-code">`로 노출한다(골든 그대로). 실제 픽셀 이미지를 대신 만들지 않는다.
+primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료: D2` 마커 > 이미지 프롬프트 > D2). 이 스킬은 그 결과를 읽기만 한다.
+
+- (1) 이미지 primary 경로: `slide-preview` 안에 `<img src="{상대경로}" alt="...">`로 삽입한다. manifest의 경로는 과정 루트 기준이므로 **소비 파일(`outputs/05_스토리보드/chNN.html`) 위치 기준으로 재계산**한다(문자열 접두 부착이 아니라 `os.path.relpath` 상당의 계산) — `outputs/` 형제 배치에서는 `outputs/` 접두를 `../`로 바꾸면 된다(골든 실제 참조 패턴 `../03_시각자산/images/ch01/...`). 원고에 병기된 `→ 생성됨:` 문구는 사람이 읽는 보조 표기일 뿐 신뢰 소스가 아니다 — manifest와 다르면 manifest를 따른다.
+- (2) D2 primary 경로: 그 렌더 결과(svg/png)를 동일하게 삽입한다.
+- (3) placeholder: `slide-preview` 안에 `--line` 테두리의 placeholder 박스를 두고, `deferred`/`missing`/`stale`이면 원고의 `GPT image prompt:`(또는 `Comic panel prompt:`)/D2 소스 원문을, 재현이 어려운 D2는 골든 Slide 5·8처럼 `.flow`/`.node`/`.arrow`로 흐름을 간단히 재현하거나 `<pre class="asset-code">`로 노출한다(골든 그대로). 실제 픽셀 이미지를 대신 만들지 않는다.
 - 화면 캡처 계획(`Screenshot plan:`)뿐이고 manifest에도 항목이 없으면 캡처 대상 목록을 placeholder 텍스트로 보여준다.
-
-**자산 선택 계약**: 슬라이드별로 `outputs/03_시각자산/manifest.json`에서 `primary: true`인 자산(`image` 또는 `d2`)의 `path`를 임베드한다. 기본은 GPT 이미지(`outputs/03_시각자산/images/chNN/slideNN.png`)이며 `d2.primary=true` 슬라이드만 D2 PNG를 쓴다. 원고 주석이 아니라 manifest가 SSOT다(원고 병기는 annotate가 primary 한 줄만 남긴다).
 
 **자산 임베드 안전 여백 (2026-07-06 개정)**: 임베드된 이미지/D2가 `.slide-preview` 셀 가장자리에 닿지 않게, 이미지 전용 셀렉터 `.slide-preview > img`에만 `box-sizing: border-box; padding: clamp(12px, 4%, 32px);`를 적용한다(`object-fit: contain`은 기존 규칙 유지). **`.slide-preview` 자체나 `.flow`/`pre`/`.split` 등 비이미지 위젯에는 padding을 주지 않는다** — 그 컨테이너 안에는 이미지 외에도 순서도·코드·비교 패널이 들어가므로 전역 padding은 레이아웃을 깬다. `%` 단독 padding은 width 기준이라 세로형 이미지에서 과하게 먹으므로 반드시 `clamp()`를 쓴다. 근거: `docs/history/2026-07-06_asset-embed-safe-margin/proposal.md`(제안 B), codex 조건 2: `docs/history/2026-07-06_asset-embed-safe-margin/codex-review.md`.
 

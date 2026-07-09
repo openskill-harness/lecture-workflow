@@ -12,8 +12,18 @@ FIELD_RE = re.compile(
 )
 # 영문 이미지 프롬프트 라인(백틱 안 우선). `GPT image prompt:`/`시각자료 프롬프트(영문):`/
 # 만화 2컷 `Comic panel prompt:`(manuscript-schema.md:85) 모두 인식한다.
+# `User image prompt:`(사용자가 준 프롬프트)도 `image prompt` 부분 문자열로 여기 매치된다 —
+# 프롬프트 추출은 동일하고, 출처 구분만 USER_PROMPT_RE가 담당한다.
 IMG_PROMPT_RE = re.compile(
     r"(?:image prompt|comic panel prompt|시각자료 프롬프트\(영문\))\s*[:：]\s*`?(.+)",
+    re.IGNORECASE,
+)
+# 자산 출처(origin) 마커 — 하네스가 덮어써도 되는지를 가른다(visual-assets §origin).
+# `User image prompt:` = 사용자가 준 프롬프트(재생성만 허용, 문구 임의 수정 금지)
+USER_PROMPT_RE = re.compile(r"user\s+image\s+prompt\s*[:：]", re.IGNORECASE)
+# `User image: <경로>` = 사용자가 준 파일(덮어쓰기 금지, stale 비교 제외)
+USER_IMG_FILE_RE = re.compile(
+    r"user\s+image\s*[:：]\s*`?([^\s`]+\.(?:png|jpg|jpeg|webp))",
     re.IGNORECASE,
 )
 # 이미지 자산 경로(렌더된 png/jpg만 — .d2 소스는 제외).

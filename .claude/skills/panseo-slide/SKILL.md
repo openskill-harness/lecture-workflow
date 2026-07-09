@@ -8,8 +8,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 파이프라인 8단계(`docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3 표).
 확정 원고 `outputs/02_원고/chNN.md`(3단계) 또는 PPT 프리뷰 `outputs/06_PPT프리뷰/chNN.html`(7단계)을 입력으로
 받아, 판서 엔진이 내장된 강의 슬라이드 `outputs/07_판서/chNN.html`과 판서대본 `outputs/07_판서/chNN_대본.md`를
-만든다. 이 스킬은 하네스의 **판서 엔진 소유 스킬**이다 — 엔진(펜/모눈/선택이동/지우개/판서모드
-전환/전체화면)의 요구 명세는 `reference/engine.md`, 소유 템플릿은 `template/`에 있다.
+만든다. 이 스킬은 하네스의 **판서 엔진 소유 스킬**이다 — 엔진(펜[검정 포함 6색]/모눈/선택이동/
+지우개/판서모드 전환/전체화면/형광펜)의 요구 명세는 `reference/engine.md`, 소유 템플릿은 `template/`에 있다.
 
 **시각자산(4단계)과의 관계**: 이 스킬은 `outputs/03_시각자산/manifest.json`을 직접 읽지 않는다 — 그대로 모드는
 `outputs/06_PPT프리뷰/chNN.html`(7단계, `ppt-preview`가 manifest를 읽어 이미 실자산을 반영한 산출물)을
@@ -48,13 +48,13 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 2. 모드별 템플릿 선택
 
-두 모드 모두 `reference/engine.md`의 엔진(펜/모눈/✂선택이동/✋획이동/지우개/판서모드전환/
-전체화면)을 **그대로 복사**해서 쓴다. `<script>`는 절대 다시 타이핑하지 않는다. 템플릿은 다음
-기본값을 따른다(사용자가 다른 테마를 명시적으로 요청하면 그쪽을 쓴다):
+두 모드 모두 `reference/engine.md`의 엔진(펜[검정 포함 6색]/모눈/✂선택이동/✋획이동/지우개/
+판서모드전환/전체화면/🖍형광펜)을 **그대로 복사**해서 쓴다. `<script>`는 절대 다시 타이핑하지 않는다. **두 모드 모두 라이트
+템플릿 `template/board_template_light.html`을 쓴다**(다크 네이비는 쓰지 않는다):
 
 | 모드 | 템플릿 | 이유 |
 |------|--------|------|
-| 요약 모드 | `template/board_template.html` (다크 네이비) | 판서 대비가 좋은 원래 정체성. 저밀도 컷 + 넓은 판서 여백에 어울림 |
+| 요약 모드 | `template/board_template_light.html` (라이트) | 요약 컷 컴포넌트는 색을 `:root` 변수로 참조하고 라이트 템플릿이 그 변수를 모두 정의하므로 라이트에서 그대로 렌더됨 |
 | 그대로 모드 | `template/board_template_light.html` (라이트) | `outputs/06_PPT프리뷰/chNN.html`이 라이트 팔레트라 이질감 없이 이식됨 |
 
 `outputs/07_판서/chNN.html`로 복사한다.
@@ -70,7 +70,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
    `.step` 기본 규칙 자체는 건드리지 않는다).
 4. `{{DECK_TITLE}}`을 강의명으로, `{{KICKER}}`(쓴다면)를 첫 컷 라벨로 치환한다. 첫 `.step`에만
    `class="step active"`.
-5. 톤에 맞으면 `:root` 강조색 변수만 조정한다(기본: 다크 네이비 테크).
+5. 톤에 맞으면 `:root` 강조색 변수만 조정한다(기본: 라이트 — 그대로 모드와 동일 팔레트).
 
 ## 4. 그대로 모드 절차
 
@@ -97,7 +97,9 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
    `.ppt-two-col`/`.ppt-media`, `.flow`/`.node`/`.arrow`, `.split`/`.panel`/`.old`/`.new`,
    `.code-canvas`/`.ppt-code-layout`/`pre`/`code`, `.ide`/`.tree`/`.editor`,
    `.browser`/`.bar`/`.result`, `.assessment-canvas`/`.ppt-question`/`.question`/`.choice`,
-   `.sources-canvas`/`.ppt-source-list` — 실제 파일에 있는 것만). **`*`, `body`, `header`,
+   `.sources-canvas`/`.ppt-source-list` — 실제 파일에 있는 것만). `ppt-preview`가 긴 코드를
+   2분할 코드 이미지(`.code-two-up`)로 처리한 슬라이드라면 그 규칙·이미지도 그대로 이식된다(자동 상속 —
+   그대로 모드는 `ppt-preview` 캔버스를 손대지 않으므로 별도 처리 불필요). **`*`, `body`, `header`,
    `h1`, `main` 같은 페이지 레벨 규칙은 가져오지 않는다**(엔진 자체 배경·레이아웃과 충돌한다).
 5. 복사한 스타일의 `:root{...}` 변수 중 엔진과 이름이 겹치는 6개(`--ink`/`--muted`/`--line`/
    `--green`/`--blue`/`--soft`)는 텍스트 치환으로 `--ppt-ink`/`--ppt-muted`/`--ppt-line`/
@@ -156,9 +158,9 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 확정 체크리스트
 
-- [ ] **엔진 기능 7종 전부 동작** — `reference/engine.md`의 7종(펜 드로잉/모눈 격자/✂ 사각형
-  선택 이동/✋ 획 객체 이동/파괴적 지우개/판서모드 전환/전체화면)을 브라우저(Playwright 또는
-  사용자 육안)로 실제 조작해 확인했다.
+- [ ] **엔진 기능 8종 전부 동작** — `reference/engine.md`의 8종(펜 드로잉[검정 포함 6색]/모눈 격자/
+  ✂ 사각형 선택 이동/✋ 획 객체 이동/파괴적 지우개/판서모드 전환/전체화면/🖍 형광펜)을
+  브라우저(Playwright 또는 사용자 육안)로 실제 조작해 확인했다.
 - [ ] **슬라이드 수 일치** — 요약 모드: `.step` 수 = 원고 `## Slide N.` 블록 수. 그대로 모드:
   `.step`으로 이식된 `data-slide` 개수 = `outputs/06_PPT프리뷰/chNN.html`의 `[data-slide]` 개수, 값이
   1부터 연번.
@@ -172,8 +174,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 체크리스트 중 하나라도 실패하면 전체를 다시 만들지 않는다.
 
-- **엔진 결함**(7종 중 하나라도 오작동, `node --check` 실패)은 `reference/engine.md` 명세와
-  `template/board_template.html` 또는 `template/board_template_light.html` 원본을 기준으로,
+- **엔진 결함**(8종 중 하나라도 오작동, `node --check` 실패)은 `reference/engine.md` 명세와
+  `template/board_template_light.html` 원본을 기준으로,
   `<script>` 블록만 원본에서 그대로 재복사한다(다른 부분은 손대지 않는다).
 - **콘텐츠 결함**(오탈자, 슬라이드 순서 어긋남, 요약 과밀, 그대로 모드 이식 누락)은 해당
   `.step` 하나만 다시 만든다. 다른 컷은 건드리지 않는다.
@@ -183,9 +185,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 
 ## 참고
 
-- 엔진 명세(기능 7종 + 이벤트 처리 방식 + 데이터 모델): `reference/engine.md`
-- 소유 템플릿: `template/board_template.html`(다크), `template/board_template_light.html`(라이트)
-  — `<script>` 바이트 동일, `<style>` 색 토큰만 다름
+- 엔진 명세(기능 8종 + 이벤트 처리 방식 + 데이터 모델): `reference/engine.md`
+- 소유 템플릿: `template/board_template_light.html`(라이트) — 두 모드 공용. 다크 네이비 템플릿은 사용하지 않는다.
 - 요약 모드 컷 컴포넌트: `reference/components.md`
 - 판서 대본 형식·톤·인용 규칙: `reference/script_guide.md`
 - 그대로 모드가 소비하는 출력 계약(작성 주체는 `ppt-preview` 스킬): `.claude/skills/ppt-preview/SKILL.md`

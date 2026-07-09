@@ -6,7 +6,7 @@
 판서는 픽셀이 아니라 **획 객체 배열**로 저장된다.
 
 ```
-stroke = { color, size, erase:false, pts:[{x, y, p}, ...] }   // p = 필압
+stroke = { color, size, erase:false, hl:false, pts:[{x, y, p}, ...] }   // p = 필압, hl = 형광펜 여부
 ```
 
 - 손을 내릴 때(pointerdown)부터 뗄 때(pointerup)까지 = **한 획 = 객체 하나**.
@@ -19,6 +19,10 @@ stroke = { color, size, erase:false, pts:[{x, y, p}, ...] }   // p = 필압
 - `liftStrokes(idxs)`: 고른 획(들)을 배열에서 빼서 떠 있는 상태로. 끌어 옮긴 뒤 `commitFloat()`이 좌표를 더해 다시 배열에 넣는다.
 - ✂선택은 사각형에 닿는 획들을, ✋이동은 누른 한 획을 들어올린다.
 - 이동 모드에선 커서가 `grab`/`grabbing`으로 바뀐다.
+
+## 펜 색 · 형광펜
+- 색 스와치 6종: 흰/노랑/파랑/빨강/초록/**검정**(`#1a1f2e`). 검정은 밝은 배경 판서용.
+- **🖍 형광펜**(`hlBtn`): 스트로크에 `hl:true`가 붙어 반투명(`HL_ALPHA` 0.32)·굵게(`HL_W`=max(16, 굵기×4.5)) 렌더된다. 한 획을 단일 path로 그려 이음새 이중겹침을 막고, 손 떼면 `render()`로 정리. 지우개·선택·이동과 상호배타. 형광 획은 도형 스냅에서 제외되고, 선택/이동 hit-test는 `effW`가 형광 폭을 반영한다.
 
 ## 지우개 (파괴적)
 - 라이브로는 `destination-out`으로 지워 보여주고, 손을 떼면 `applyErase(path)`가 **경로 근처(반경 ≈ 굵기×1.7)의 점을 실제로 잘라내** 획을 여러 조각으로 분할한다.

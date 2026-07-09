@@ -5,9 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>{{DECK_TITLE}}</title>
 <!--
-  board_template_light.html — 라이트 테마 판서 엔진 (panseo-slide 스킬 소유, v1.7: rich 프로파일용. 촬영강의 고정·오프라인 선택. 구 filmed-lecture/assets에서 이관)
-  원본: .claude/skills/panseo-slide/template/board_template.html (panseo-slide v3, 다크 네이비)
-  파생 사유: 촬영강의 라이트 테마 — 밝은 배경 슬라이드에 맞춰 <style> 색 토큰만 반전.
+  board_template_light.html — 라이트 테마 판서 엔진 (panseo-slide 스킬 소유). 요약·그대로 두 모드 공용 유일 템플릿.
+  라이트 테마 — 밝은 배경 슬라이드에 맞춰 <style> 색 토큰만 라이트로, <script>는 무수정.
   ★ <script> 블록 무수정 — 펜/판서모드(b)/모눈(g)/도형스냅(s)/선택(✂)·이동(✋)/지우개/전체화면(⛶)/←→ 네비 로직은
      원본과 바이트 동일. color/background/border-color/box-shadow 색상값만 라이트로 반전(레이아웃·크기·position 불변).
   ★ 판서모드 칠판은 초록 유지(판서 가독성). 흰색 펜 기본값은 JS 하드코딩(color='#ffffff')이라 미변경 —
@@ -173,6 +172,7 @@
     <div class="swatch" style="background:#5cc8ff" data-c="#5cc8ff"></div>
     <div class="swatch" style="background:#ff5c6e" data-c="#ff5c6e"></div>
     <div class="swatch" style="background:#54e3a0" data-c="#54e3a0"></div>
+    <div class="swatch" style="background:#1a1f2e" data-c="#1a1f2e" title="검정 펜"></div>
     <div class="sep"></div>
     <div class="sizes">
       <div class="sz" data-s="2"><i style="width:5px;height:5px"></i></div>
@@ -182,6 +182,7 @@
     <div class="sep"></div>
     <button class="btn" id="selBtn" title="선택 — 사각형으로 묶어 끌기">✂ 선택</button>
     <button class="btn" id="moveBtn" title="이동 — 그림을 눌러 이어진 부분을 끌어 옮기기">✋ 이동</button>
+    <button class="btn" id="hlBtn" title="형광펜 — 반투명 굵은 마커">🖍 형광펜</button>
     <button class="btn" id="eraser">지우개</button>
     <button class="btn" id="undo">되돌리기</button>
     <button class="btn" id="clear">전체지움</button>
@@ -224,16 +225,27 @@
   function clearCanvas(){ctx.clearRect(0,0,innerWidth,innerHeight);}
   function lineW2(s,pr){ return Math.max(1, s.size*(0.45 + pr*1.1)); }
   function drawStroke(s,ox,oy){ ox=ox||0; oy=oy||0; const pts=s.pts; if(!pts.length) return;
+    ctx.save();
+    if(s.hl){                                              // 형광펜: 반투명 + 단일 path(이음새 이중겹침 방지) + 각진 끝
+      ctx.globalAlpha=HL_ALPHA; ctx.strokeStyle=s.color; ctx.fillStyle=s.color; ctx.lineCap='butt'; ctx.lineJoin='round';
+      const w=HL_W(s.size);
+      if(pts.length===1){ ctx.beginPath(); ctx.arc(pts[0].x+ox,pts[0].y+oy,w/2,0,Math.PI*2); ctx.fill(); }
+      else { ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(pts[0].x+ox,pts[0].y+oy); for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x+ox,pts[i].y+oy); ctx.stroke(); }
+      ctx.restore(); return;
+    }
     ctx.globalCompositeOperation = s.erase?'destination-out':'source-over';
     ctx.strokeStyle=s.color; ctx.fillStyle=s.color;
     if(pts.length===1){ const w=lineW2(s,pts[0].p); ctx.beginPath(); ctx.arc(pts[0].x+ox,pts[0].y+oy,(s.erase?w*2.4:w)/2,0,Math.PI*2); ctx.fill(); }
     else { for(let i=1;i<pts.length;i++){ const w=s.erase?lineW2(s,pts[i].p)*2.6:lineW2(s,pts[i].p);
       ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(pts[i-1].x+ox,pts[i-1].y+oy); ctx.lineTo(pts[i].x+ox,pts[i].y+oy); ctx.stroke(); } }
-    ctx.globalCompositeOperation='source-over';
+    ctx.restore();
   }
   function render(){ clearCanvas(); for(const s of strokes) drawStroke(s,0,0); }
 
   let drawing=false, color='#ffffff', size=4, erasing=false, last=null, curStroke=null;
+  let highlighting=false;                                  // 형광펜(반투명 굵은 마커) 모드
+  const HL_ALPHA=0.32; function HL_W(sz){ return Math.max(16, sz*4.5); }  // 형광펜 불투명도·굵기
+  function effW(s){ return s.hl ? HL_W(s.size) : s.size; }               // 선택/이동 hit-test용 유효 폭
   let eraseGesture=false, erasePath=null;
   const ERS=72;                                            // 큰 네모 지우개 한 변(px)
   const ERASER_CURSOR="url(\"data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Crect%20x='2'%20y='2'%20width='68'%20height='68'%20fill='white'%20fill-opacity='0.12'%20stroke='white'%20stroke-width='2'/%3E%3C/svg%3E\") 36 36, crosshair";
@@ -246,24 +258,24 @@
   const DASH='#5cc8ff';
   function getFull(){ return ctx.getImageData(0,0,pad.width,pad.height); }
   function dashedRect(x,y,w,h){ ctx.save(); ctx.setLineDash([7,5]); ctx.lineWidth=1.5; ctx.strokeStyle=DASH; ctx.strokeRect(x,y,w,h); ctx.restore(); }
-  function bboxOf(arr){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; for(const s of arr){ const m=s.size+4; for(const q of s.pts){ if(q.x-m<x0)x0=q.x-m; if(q.y-m<y0)y0=q.y-m; if(q.x+m>x1)x1=q.x+m; if(q.y+m>y1)y1=q.y+m; } } return {x:x0,y:y0,w:x1-x0,h:y1-y0}; }
+  function bboxOf(arr){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; for(const s of arr){ const m=effW(s)+4; for(const q of s.pts){ if(q.x-m<x0)x0=q.x-m; if(q.y-m<y0)y0=q.y-m; if(q.x+m>x1)x1=q.x+m; if(q.y+m>y1)y1=q.y+m; } } return {x:x0,y:y0,w:x1-x0,h:y1-y0}; }
   function distSeg(p,a,b){ const dx=b.x-a.x, dy=b.y-a.y, L=dx*dx+dy*dy; let t=L?((p.x-a.x)*dx+(p.y-a.y)*dy)/L:0; t=Math.max(0,Math.min(1,t)); return Math.hypot(p.x-(a.x+t*dx), p.y-(a.y+t*dy)); }
   function distStroke(p,s){ const pts=s.pts; if(pts.length===1) return Math.hypot(p.x-pts[0].x,p.y-pts[0].y); let m=1e9; for(let i=1;i<pts.length;i++) m=Math.min(m,distSeg(p,pts[i-1],pts[i])); return m; }
-  function pickStroke(p){ for(let i=strokes.length-1;i>=0;i--){ const s=strokes[i]; if(s.erase) continue; if(distStroke(p,s)<=12+s.size) return i; } return -1; }
+  function pickStroke(p){ for(let i=strokes.length-1;i>=0;i--){ const s=strokes[i]; if(s.erase) continue; const tol=12+(s.hl?HL_W(s.size)/2:s.size); if(distStroke(p,s)<=tol) return i; } return -1; }
   function strokeInRect(s,x,y,w,h){ for(const q of s.pts){ if(q.x>=x&&q.x<=x+w&&q.y>=y&&q.y<=y+h) return true; } return false; }
   function insideFloat(p){ return floatStrokes && p.x>=floatBB.x+floatDX && p.x<=floatBB.x+floatDX+floatBB.w && p.y>=floatBB.y+floatDY && p.y<=floatBB.y+floatDY+floatBB.h; }
   function redrawFloat(){ if(!floatStrokes) return; ctx.putImageData(floatBase,0,0); for(const s of floatStrokes) drawStroke(s,floatDX,floatDY); dashedRect(floatBB.x+floatDX,floatBB.y+floatDY,floatBB.w,floatBB.h); }
   function liftStrokes(idxs){ idxs.sort((a,b)=>a-b); floatStrokes=idxs.map(i=>strokes[i]); for(let k=idxs.length-1;k>=0;k--) strokes.splice(idxs[k],1); render(); floatBase=getFull(); floatBB=bboxOf(floatStrokes); floatDX=0; floatDY=0; redrawFloat(); }
-  function commitFloat(){ if(!floatStrokes) return; for(const s of floatStrokes){ strokes.push({color:s.color,size:s.size,erase:s.erase,pts:s.pts.map(q=>({x:q.x+floatDX,y:q.y+floatDY,p:q.p}))}); } floatStrokes=null; floatBase=null; floatBB=null; floatDX=0; floatDY=0; render(); }
+  function commitFloat(){ if(!floatStrokes) return; for(const s of floatStrokes){ strokes.push({color:s.color,size:s.size,erase:s.erase,hl:s.hl,pts:s.pts.map(q=>({x:q.x+floatDX,y:q.y+floatDY,p:q.p}))}); } floatStrokes=null; floatBase=null; floatBB=null; floatDX=0; floatDY=0; render(); }
   function discardFloat(){ if(!floatStrokes) return; floatStrokes=null; floatBase=null; floatBB=null; floatDX=0; floatDY=0; render(); }  // 선택한 획 삭제(되돌리기 가능)
   // 지우개: 지나간 경로 근처의 점을 '실제로' 잘라내 획을 분할(영구 삭제 → 이동해도 복원 안 됨)
   function applyErase(path){ if(!path||!path.length) return; const er=ERS/2; const out=[];
     for(const s of strokes){ let run=[];
       for(const q of s.pts){ let hit=false;
         for(let j=0;j<path.length;j++){ const e=path[j]; if(Math.abs(q.x-e.x)<=er && Math.abs(q.y-e.y)<=er){ hit=true; break; } }
-        if(hit){ if(run.length){ out.push({color:s.color,size:s.size,erase:false,pts:run}); run=[]; } }
+        if(hit){ if(run.length){ out.push({color:s.color,size:s.size,erase:false,hl:s.hl,pts:run}); run=[]; } }
         else run.push(q); }
-      if(run.length) out.push({color:s.color,size:s.size,erase:false,pts:run}); }
+      if(run.length) out.push({color:s.color,size:s.size,erase:false,hl:s.hl,pts:run}); }
     setLayer(out);
   }
 
@@ -317,7 +329,7 @@
   function ptsBox(pts){ let a=1e9,b=1e9,c=-1e9,d=-1e9; for(const q of pts){ if(q.x<a)a=q.x; if(q.y<b)b=q.y; if(q.x>c)c=q.x; if(q.y>d)d=q.y; } return {a:a,b:b,c:c,d:d}; }
   function boxNear(p,q,g){ return p.a<=q.c+g && q.a<=p.c+g && p.b<=q.d+g && q.b<=p.d+g; }
   function clusterFrom(seed){
-    const GAP=28, idx=[]; for(let i=0;i<strokes.length;i++){ if(!strokes[i].erase) idx.push(i); }
+    const GAP=28, idx=[]; for(let i=0;i<strokes.length;i++){ if(!strokes[i].erase && !strokes[i].hl) idx.push(i); }
     const box={}; for(const i of idx) box[i]=ptsBox(strokes[i].pts);
     const si=strokes.indexOf(seed); if(si<0) return [];
     const inSet=new Set([si]); const m={a:box[si].a,b:box[si].b,c:box[si].c,d:box[si].d};
@@ -378,8 +390,8 @@
       ctx.fillRect(p.x-ERS/2, p.y-ERS/2, ERS, ERS);
       ctx.globalCompositeOperation='source-over'; return; }
     drawing=true; last=p;
-    curStroke={color:color,size:size,erase:false,pts:[{x:p.x,y:p.y,p:p.p}]}; strokes.push(curStroke);
-    drawStroke(curStroke,0,0); holdArm(p);
+    curStroke={color:color,size:size,erase:false,hl:highlighting,pts:[{x:p.x,y:p.y,p:p.p}]}; strokes.push(curStroke);
+    drawStroke(curStroke,0,0); if(!highlighting) holdArm(p);
   },{passive:false});
   pad.addEventListener('pointermove',e=>{
     const p=pos(e);
@@ -395,8 +407,11 @@
     if(!drawing) return; e.preventDefault();
     const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [e];
     for(const ev of evs){ const q=pos(ev); curStroke.pts.push({x:q.x,y:q.y,p:q.p});
-      ctx.strokeStyle=color; ctx.lineWidth = lineW(q.p);
-      ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(q.x,q.y); ctx.stroke(); last=q; }
+      ctx.save();
+      if(curStroke.hl){ ctx.globalAlpha=HL_ALPHA; ctx.lineCap='butt'; ctx.lineWidth=HL_W(size); }
+      else { ctx.lineWidth=lineW(q.p); }
+      ctx.strokeStyle=color;
+      ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(q.x,q.y); ctx.stroke(); ctx.restore(); last=q; }
     holdTrack(last);
   },{passive:false});
   pad.addEventListener('pointerup',e=>{
@@ -409,14 +424,14 @@
       const idxs=[]; for(let i=0;i<strokes.length;i++){ if(!strokes[i].erase && strokeInRect(strokes[i],x,y,w,h)) idxs.push(i); }
       if(idxs.length){ snapshot(); liftStrokes(idxs); } else render();
       return; }
-    if(drawing){ drawing=false; curStroke=null; ctx.globalCompositeOperation='source-over'; }
+    if(drawing){ const wasHl=curStroke&&curStroke.hl; drawing=false; curStroke=null; ctx.globalCompositeOperation='source-over'; if(wasHl) render(); }
   });
   function endStroke(){
     holdCancel();
     if(eraseGesture){ eraseGesture=false; applyErase(erasePath); erasePath=null; render(); return; }
     if(movingFloat){ movingFloat=false; pad.style.cursor=moveMode?'grab':'crosshair'; return; }
     if(selecting){ selecting=false; if(selBase){ctx.putImageData(selBase,0,0);selBase=null;} render(); return; }
-    if(drawing){ drawing=false; curStroke=null; ctx.globalCompositeOperation='source-over'; }
+    if(drawing){ const wasHl=curStroke&&curStroke.hl; drawing=false; curStroke=null; ctx.globalCompositeOperation='source-over'; if(wasHl) render(); }
   }
   pad.addEventListener('pointercancel',endStroke);
   pad.addEventListener('pointerleave',endStroke);
@@ -434,12 +449,15 @@
     s.classList.add('sel'); size=+s.dataset.s;
   }));
   const eraserBtn=document.getElementById('eraser');
-  function setEraser(on){ erasing=on; eraserBtn.classList.toggle('on',on); if(on){ commitFloat(); clearModes(); } pad.style.cursor = on ? ERASER_CURSOR : 'crosshair'; }
+  const hlBtn=document.getElementById('hlBtn');
+  function setHighlight(on){ highlighting=on; hlBtn.classList.toggle('on',on); if(on){ commitFloat(); clearModes(); setEraser(false); } }  // 형광펜 켜면 지우개·선택·이동 해제
+  function setEraser(on){ erasing=on; eraserBtn.classList.toggle('on',on); if(on){ commitFloat(); clearModes(); setHighlight(false); } pad.style.cursor = on ? ERASER_CURSOR : 'crosshair'; }
+  hlBtn.addEventListener('click',()=>{ setHighlight(!highlighting); });
   eraserBtn.addEventListener('click',()=>{ if(floatStrokes){ discardFloat(); return; } setEraser(!erasing); });  // 선택된 게 떠 있으면 삭제, 아니면 지우개 토글
   selBtn.addEventListener('click',()=>{ commitFloat();
-    if(selMode){ clearModes(); } else { setEraser(false); clearModes(); selMode=true; selBtn.classList.add('on'); } });
+    if(selMode){ clearModes(); } else { setEraser(false); setHighlight(false); clearModes(); selMode=true; selBtn.classList.add('on'); } });
   moveBtn.addEventListener('click',()=>{ commitFloat();
-    if(moveMode){ clearModes(); } else { setEraser(false); clearModes(); moveMode=true; moveBtn.classList.add('on'); pad.style.cursor='grab'; } });
+    if(moveMode){ clearModes(); } else { setEraser(false); setHighlight(false); clearModes(); moveMode=true; moveBtn.classList.add('on'); pad.style.cursor='grab'; } });
   function doClear(){ commitFloat(); snapshot(); setLayer([]); render(); }
   function doUndo(){ commitFloat(); if(!undoStack.length) return; setLayer(undoStack.pop()); render(); }
   document.getElementById('clear').addEventListener('click',doClear);

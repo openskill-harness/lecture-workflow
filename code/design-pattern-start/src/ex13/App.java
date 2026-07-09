@@ -1,12 +1,10 @@
 package ex13;
 
-import ex13.lib.DB;
-import ex13.lib.Driver;
+import ex13.lib.MariaDB;
 
 public class App {
     public static void main(String[] args) {
-        DBFactory factory = DBFactory.getInstance();
-        DB oralceDB = factory.createDB(Driver.MARIA); // DB, MaraiDB
-        oralceDB.execute("select");
+        MariaDB mariaDB = new MariaDB();
+        mariaDB.execute("select");
     }
 }

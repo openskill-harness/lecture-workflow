@@ -1,13 +1,11 @@
 package ex12;
 
 /**
- * 결제 게이트 '계약(인터페이스)'
- *
- * 이 인터페이스만 먼저 합의하면,
- *  - 프론트(주문 로직) 팀은 '가짜(Mock)'로 개발을 시작하고
- *  - 백엔드(결제) 팀은 '진짜(Real)'를 동시에 만든다.  ← 병렬 개발
+ * 아직 개발 중인 진짜 결제 시스템. 결제사 연동이 아직 끝나지 않았다.
  */
-public interface PayGate {
-    // 결제 성공하면 true, 실패하면 false
-    boolean 결제(int amount);
+public class PayGate {
+
+    public boolean 결제(int amount) {
+        throw new UnsupportedOperationException("결제 시스템 연동 아직 안 됨");
+    }
 }

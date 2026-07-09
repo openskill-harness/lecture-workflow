@@ -1,35 +1,40 @@
-# design-pattern-start (시작코드)
+# 디자인 패턴 실습 - 시작 코드 (design-pattern-start)
 
-강의 3단계 실습의 **1단계**. 학생에게 배포하는 스켈레톤입니다.
-도메인 클래스와 틀(구조)은 채워져 있고, **각 예제 디자인패턴의 핵심 메서드 본문만 `// TODO`** 로 비어 있습니다.
-학생은 TODO만 채우면 됩니다. 컴파일은 되지만(더미 반환), 실행 결과는 TODO를 채워야 정상입니다.
+이 폴더는 강의 실습용 "시작 코드"입니다. 각 예제(`exNN`)에는 디자인 패턴을 적용하기 *전* 상태의
+코드만 들어 있습니다. 강의 중 강사와 함께 이 코드를 리팩토링하며 패턴을 적용해봅니다.
 
-- 대상 예제: ex02 ~ ex14 (패턴별 1개)
-- 정답: `../design-pattern-end`
-- 함께 볼 안티패턴(왜 패턴이 필요한가): `../design-pattern-middle`
+## 사전 준비 (폐쇄망 1회)
+1. **JDK** 설치 (JRE 아님) — javac 필요
+2. **VS Code + Extension Pack for Java** 설치
 
-## 실행
+(외부 JAR·JUnit 라이브러리 불필요)
+
+## 예제 목차
+
+| 예제 | 무엇을 보게 될까 |
+|:---:|---|
+| `ex01` | 스택/힙/스태틱 메모리와 다형성 기본기 워밍업 |
+| `ex02` | 도형 종류가 늘어날 때마다 계산 로직의 if-else를 계속 고쳐야 하는 코드 |
+| `ex03` | 동물 종류가 늘어날 때마다 instanceof 분기를 계속 고쳐야 하는 문지기 코드 |
+| `ex04` | 아무 통제 없이 누구나 통과시키는 문지기 - 검사 로직을 어디에 추가할지 고민되는 상황 |
+| `ex05` | 이름 가져오는 방식이 다른 외부 클래스 때문에 코드를 중복 작성하게 되는 상황 |
+| `ex06` | 아무 데서나 새로 만들 수 있는 문지기 때문에 카운트가 어긋나는 상황 |
+| `ex07` | 선생님 클래스마다 똑같이 반복되는 수업 진행 코드 |
+| `ex08` | 한 클래스가 모든 과목 숙제를 다 알고 처리하느라 점점 커지는 코드 |
+| `ex09` | 실시간 반응을 흉내내려고 계속 물어봐야 하는(polling) 코드 |
+| `ex10` | 알림 조합이 늘어날수록 플래그와 if문이 늘어나는 코드 |
+| `ex11` | 아직 완성 안 된 하드웨어 때문에 화면 개발이 막히는 상황 |
+| `ex12` | 아직 완성 안 된 결제 시스템 때문에 주문 로직 개발/테스트가 막히는 상황 |
+| `ex14` | DB 종류가 늘어날 때마다 생성 로직의 if-else를 계속 고쳐야 하는 코드 |
+| `ex15` | 커피 종류가 늘어날 때마다 if-else를 계속 고쳐야 하는 코드 |
+
+## 실행 방법
 
 ```bash
-# 예: ex02
-javac -encoding UTF-8 -d bin $(find src/ex02 -name '*.java')
-java -cp bin ex02.App
+javac -encoding UTF-8 -d bin src/exNN/*.java
+java -cp bin exNN.App
 ```
 
-## 예제 ↔ 패턴
-
-| 예제 | 패턴 | 채울 TODO(핵심) |
-|------|------|----------------|
-| ex02 | OCP / 다형성 | `Circle·Rectangle.넓이()` |
-| ex03 | Strategy | `Doorman.setTarget()·쫒아내()` |
-| ex04 | Proxy | `DoormanProxy·DoormanProxy2.쫓아내()` |
-| ex05 | Adapter | `RabbitAdapter.getName()` |
-| ex06 | Singleton | `Doorman.쫒아내()` |
-| ex07 | Template Method | 각 `Teacher.강의하기()` |
-| ex08 | Delegation | 학생 `doHomework()·isSameHomework()`, `delegateHomework()` |
-| ex09 | Observer (push) | `Mart.add()·remove()·notify()` |
-| ex10 | Decorator | `Email·SmsNotifier.send()` |
-| ex11 | DI / Mock | `MeterService.render()`, `getStep()` |
-| ex12 | DI / Mock + 테스트 | `OrderService.주문()`, `결제()` |
-| ex13 | Simple Factory | `DBFactory.createDB()` |
-| ex14 | Factory Method | `Maria·OracleDBFactory.생성()` |
+`exNN`은 실습할 예제 번호로 바꿔서 실행하세요 (예: `ex01`). 진입점은 각 패키지의 `App.java`입니다.
+일부 예제는 하위 패키지(예: `ex09.polling`)를 포함하므로, 그 경우 `javac` 대상 경로와 `java -cp`
+실행 시 클래스 이름에 하위 패키지까지 포함해야 합니다.

@@ -1,10 +1,11 @@
 package ex11;
 
-// 작업자가 진짜로
-public class RealMeter implements Meter{
+/**
+ * 아직 개발 중인 진짜 만보기. 하드웨어 연동이 아직 끝나지 않았다.
+ */
+public class RealMeter {
 
     public int getStep() {
-        // TODO: 실제 걸음 수를 return 하세요 (예: 100)
-        return 0;
+        throw new UnsupportedOperationException("만보기 하드웨어 연동 아직 안 됨");
     }
 }

@@ -1,58 +1,22 @@
 package ex10;
 
-import ex10.notification.BasicNotifier;
-import ex10.notification.EmailNotifier;
-import ex10.notification.Notifier;
-import ex10.notification.SmsNotifier;
+import ex10.notification.NotificationService;
 
-/**
- * 목표 : 기능확장 (데코레이터 패턴) -> 알림서비스 개발하기
- */
 public class App {
     public static void main(String[] args) {
-        // 1. 전체 알림 (기본알림 -> 문자알림 -> 이메일알림)
-        Notifier allNotifier = new EmailNotifier(new SmsNotifier(new BasicNotifier()));
-        allNotifier.send();
+        NotificationService basic = new NotificationService(false, false);
+        basic.send();
         System.out.println("__end");
 
-        // 2. 전체 알림 (기본알림 -> 이메일알림 -> 문자알림)
-        Notifier allNotifier2 = new SmsNotifier(new EmailNotifier(new BasicNotifier()));
-        allNotifier2.send();
+        NotificationService sms = new NotificationService(true, false);
+        sms.send();
         System.out.println("__end");
 
-        // 3. 전체 알림 (기본알림 -> ~~~~~~~~)
-        Notifier allNotifier3 = new SmsNotifier(new EmailNotifier(new EmailNotifier(new BasicNotifier())));
-        allNotifier3.send();
+        NotificationService smsAndEmail = new NotificationService(true, true);
+        smsAndEmail.send();
         System.out.println("__end");
 
-        // 4. 기본 알림
-        Notifier basicNotifier = new BasicNotifier();
-        basicNotifier.send();
-        System.out.println("__end");
-
-        // 5. 기본 알림 + 문자 알림
-        Notifier smsNotifier = new SmsNotifier(new BasicNotifier());
-        smsNotifier.send();
-        System.out.println("__end");
-
-        // 6. 기본 알림 + 이메일 알림
-        Notifier emailNotifier = new EmailNotifier(new BasicNotifier());
-        emailNotifier.send();
-        System.out.println("__end");
-
-        // 7. 이메일 알림
-        Notifier onlyEmailNotifier = new EmailNotifier();
-        onlyEmailNotifier.send();
-        System.out.println("__end");
-
-        // 8. 문자 알림
-        Notifier onlySmsNotifier = new SmsNotifier();
-        onlySmsNotifier.send();
-        System.out.println("__end");
-
-        // 9. 문자알림 + 이메일알림
-        Notifier smsAndEmailNotifier = new EmailNotifier(new SmsNotifier());
-        smsAndEmailNotifier.send();
-        System.out.println("__end");
+        // 이메일을 문자보다 먼저 보내고 싶다면? 순서를 바꿀 방법이 없다.
+        // 이메일을 두 번 보내고 싶다면? 그것도 안 된다.
     }
 }

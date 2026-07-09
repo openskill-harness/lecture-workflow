@@ -1,19 +1,18 @@
 package ex03;
 
-// [Context] 달라진 곳은 여기뿐!
-// 원본은 쫒아내(Animal a)로 매번 받았지만,
-// 여기선 전략(Animal)을 "필드로 보유"하고 setter로 갈아끼운다.
+/**
+ * 문제 : 동물 종류가 늘어날 때마다 쫓아내() 안의 instanceof 분기를 계속 고쳐야 한다.
+ */
 public class Doorman {
 
-    private Animal target; // 보유한 전략 (has-a)
+    private Mouse mouse;
 
-    // 런타임에 "쫒아내는 대상/방식"을 갈아끼운다 — 전략패턴의 핵심
-    public void setTarget(Animal target) {
-        // TODO: 전달받은 전략(target)을 필드에 저장하세요
+    public Doorman(Mouse mouse) {
+        this.mouse = mouse;
     }
 
-    // 파라미터 없이, 현재 보유한 전략에게 위임한다
-    public void 쫒아내() {
-        // TODO: 현재 보유한 전략(target)의 이름으로 "OO 쫒아내"를 출력하세요
+    public void 쫓아내() {
+        System.out.println(mouse.getName() + " 쫓아내");
+        // 새 동물(예: 토끼)이 생기면? 여기 instanceof 분기를 또 추가해야 한다.
     }
 }

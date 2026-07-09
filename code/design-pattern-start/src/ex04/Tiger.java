@@ -1,6 +1,6 @@
 package ex04;
 
-// 쥐
+// 호랑이
 public class Tiger extends Animal {
     private String name = "호랑이";
 

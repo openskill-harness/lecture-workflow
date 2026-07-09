@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>디자인패턴 1차시 PPT 미리보기 - 다형성·동적바인딩 워밍업</title>
+  <style>
+    :root {
+      --ink: #17202a;
+      --muted: #5d6875;
+      --line: #d9dee7;
+      --green: #5aa05a;
+      --blue: #2f6fcb;
+      --soft: #f5f7fa;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", Arial, sans-serif;
+      background: #e8ebf1;
+      color: var(--ink);
+    }
+    header {
+      padding: 26px 34px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+    h1 { margin: 0 0 6px; font-size: 30px; }
+    header p { margin: 0; color: var(--muted); }
+    main {
+      display: grid;
+      gap: 28px;
+      justify-items: center;
+      padding: 28px 18px 72px;
+    }
+    .ppt-slide {
+      width: min(1120px, calc(100vw - 36px));
+    }
+    .ppt-canvas {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #fff;
+      border: 1px solid #cdd5df;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 12px 28px rgba(28, 38, 54, .12);
+      padding: 42px 48px;
+      position: relative;
+    }
+    .lesson-label {
+      margin: 0 0 10px;
+      color: #3b6f43;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .ppt-canvas h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.22;
+      letter-spacing: 0;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    .ppt-two-col,
+    .ppt-code-layout {
+      display: grid;
+      grid-template-columns: .78fr 1.22fr;
+      gap: 32px;
+      height: calc(100% - 92px);
+      margin-top: 28px;
+      align-items: stretch;
+    }
+    .image-canvas .ppt-two-col {
+      grid-template-columns: .7fr 1.3fr;
+    }
+    .ppt-copy {
+      display: flex;
+      align-items: center;
+    }
+    .ppt-copy ul {
+      margin: 0;
+      padding-left: 24px;
+      font-size: 22px;
+      line-height: 1.44;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    .ppt-copy li { margin: 0 0 10px; }
+    .ppt-media {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8fafc;
+      overflow: hidden;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
+    .ppt-media img,
+    .cover-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+    .ppt-media > img {
+      box-sizing: border-box;
+      padding: clamp(10px, 4%, 28px);
+      object-fit: contain;
+    }
+    .cover-canvas {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 34px;
+      align-items: center;
+      padding: 44px 52px;
+    }
+    .cover-text h2 {
+      font-size: 40px;
+      line-height: 1.2;
+      margin-bottom: 18px;
+      word-break: keep-all;
+      overflow-wrap: break-word;
+    }
+    .cover-text p:last-child {
+      font-size: 24px;
+      line-height: 1.45;
+      color: #3c4653;
+    }
+    .cover-image {
+      height: 100%;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    .code-canvas .ppt-code-layout {
+      grid-template-columns: .58fr 1.42fr;
+    }
+    .code-canvas .ppt-media {
+      align-items: stretch;
+    }
+    pre {
+      width: 100%;
+      margin: 0;
+      padding: 18px;
+      background: #101820;
+      color: #e8f2ff;
+      overflow: auto;
+      font-size: 15px;
+      line-height: 1.45;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    code { font-family: Consolas, "Courier New", monospace; }
+    .code-two-up {
+      display: flex;
+      gap: 26px;
+      height: calc(100% - 92px);
+      margin-top: 28px;
+      align-items: center;
+      justify-content: center;
+    }
+    .code-two-up img {
+      max-width: calc(50% - 13px);
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(20, 28, 40, .16);
+    }
+    .flow {
+      width: 100%;
+      padding: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: linear-gradient(180deg, #fff, #f7f9fb);
+    }
+    .node {
+      min-width: 118px;
+      padding: 16px 18px;
+      border: 2px solid #111;
+      border-radius: 10px;
+      background: #fff;
+      text-align: center;
+      font-weight: 800;
+      font-size: 20px;
+      white-space: pre-line;
+    }
+    .node.input { background: #f0f0f0; }
+    .node.key {
+      border-width: 3px;
+      background: #f8f8f8;
+      clip-path: polygon(12% 0, 88% 0, 100% 50%, 88% 100%, 12% 100%, 0 50%);
+      border-radius: 0;
+    }
+    .arrow {
+      font-size: 28px;
+      color: #222;
+      font-weight: 800;
+      align-self: center;
+    }
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      width: 100%;
+      padding: 24px;
+      align-items: stretch;
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 22px;
+    }
+    .panel h4 { margin: 0 0 16px; font-size: 24px; }
+    .panel p { margin: 8px 0; font-size: 21px; }
+    .old { border-top: 7px solid #8b96a5; }
+    .new { border-top: 7px solid var(--green); }
+    .ide {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      background: #1f252d;
+      color: #dce6f2;
+      font-family: Consolas, "Courier New", monospace;
+      min-height: 100%;
+    }
+    .tree {
+      padding: 18px;
+      border-right: 1px solid #39424e;
+      background: #252c35;
+      font-size: 13px;
+      white-space: pre-line;
+    }
+    .editor { padding: 18px; min-width: 0; }
+    .editor .tab {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 7px 12px;
+      border-radius: 6px 6px 0 0;
+      background: #344052;
+      color: #fff;
+      font-size: 13px;
+    }
+    .browser {
+      width: 100%;
+      background: #fff;
+      padding: 28px;
+    }
+    .bar {
+      height: 38px;
+      border: 1px solid #cfd6df;
+      border-radius: 19px;
+      display: flex;
+      align-items: center;
+      padding: 0 18px;
+      color: #344054;
+      background: #f7f9fc;
+      font-family: Consolas, "Courier New", monospace;
+    }
+    .result {
+      margin-top: 70px;
+      text-align: center;
+      font-size: 44px;
+      font-weight: 800;
+      color: #202b38;
+    }
+    .assessment-canvas,
+    .sources-canvas {
+      display: flex;
+      flex-direction: column;
+    }
+    .ppt-question,
+    .ppt-source-list {
+      margin-top: 28px;
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+    }
+    .question {
+      padding: 26px;
+      width: 100%;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+    .question h4 {
+      margin: 0 0 20px;
+      font-size: 27px;
+      line-height: 1.38;
+    }
+    .choice {
+      margin: 11px 0;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fafafa;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>디자인패턴 1차시 — 다형성·동적바인딩 워밍업 · PPT 미리보기</h1>
+    <p>모든 디자인 패턴이 딛고 서 있는 한 가지 원리 - 실제 PPT 화면 검수용</p>
+  </header>
+  <main>
+    <section class="ppt-slide" data-slide="1" id="ppt-slide-1">
+      <div class="ppt-canvas cover-canvas">
+        <div class="cover-text">
+          <p class="lesson-label">디자인패턴 · 1차시</p>
+          <h2>다형성·동적바인딩 워밍업</h2>
+          <p>모든 디자인 패턴이 딛고 서 있는 한 가지 원리부터 확인한다</p>
+        </div>
+        <div class="cover-image"><img src="../03_시각자산/images/ch01/slide01.png" alt="추상 자동차가 소나타·제네시스로 나뉘는 표지 이미지"></div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="2" id="ppt-slide-2">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>패턴 책이 어려운 이유는 패턴이 아니라 다형성이다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>패턴 다이어그램의 화살표 = "추상에 의존"</li>
+            <li>그 원리 = 다형성 + 동적바인딩</li>
+            <li>건너뛰면 패턴은 암기 과목이 된다</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide02.png" alt="흐릿한 UML 다이어그램 위 인터페이스-구현 화살표에 물음표가 붙은 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="3" id="ppt-slide-3">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>오늘은 "한 문장"을 코드로 증명한다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>상위 타입 참조로 하위 객체를 다루는 다형성을 설명한다</li>
+            <li>재정의 메서드가 실행 시점에 선택되는 동적바인딩을 설명한다</li>
+            <li>추상 1개 + 구현 2개로 동적바인딩을 직접 구현한다</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide03.png" alt="추상 자동차 설계도·갈림길 화살표·키보드 아이콘 학습목표 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="4" id="ppt-slide-4">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>다형성 = 하나의 타입, 여러 개의 모습</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li><code>Car s = new Sonata();</code> — 부모 타입에 자식 객체</li>
+            <li>변수 타입은 Car, 실제 객체는 Sonata</li>
+            <li>"자동차"라 부르지만 소나타가 달린다</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide04.png" alt="같은 주차 구역에 소나타와 제네시스가 각각 주차된 비유 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="5" id="ppt-slide-5">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>추상 타입은 약속만, 구현 타입은 내용을</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li><code>abstract class Car</code> — "run이 있어야 한다"는 약속</li>
+            <li>Car는 <code>new</code> 불가</li>
+            <li>Sonata·Genesis가 각자 run을 채운다</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide05.png" alt="점선 설계도 Car에서 실선 소나타·제네시스로 내려오는 다이어그램 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="6" id="ppt-slide-6">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>@Override — 같은 서명, 새로운 내용</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>재정의: 부모 메서드를 같은 서명으로 다시 작성</li>
+            <li><code>@Override</code>로 컴파일러가 서명 일치를 검사</li>
+            <li>재정의되면 부모 메서드는 그 객체에서 가려진다</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide06.png" alt="자식 메서드가 부모 메서드 위에 도장처럼 찍혀 덮는 오버라이드 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="7" id="ppt-slide-7">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>호출할 메서드는 "실행 시점의 실제 객체"가 결정한다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>컴파일 시점: Car에 run이 있는지 확인만</li>
+            <li>실행 시점: 실제 객체 Sonata의 run이 선택</li>
+            <li>같은 <code>s.run()</code>이 객체에 따라 다르게 동작</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide07.png" alt="호출 화살표가 부모 run을 지나쳐 자식 run에 도착하는 흐름도 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="8" id="ppt-slide-8">
+      <div class="ppt-canvas code-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>한눈에 보는 전체 코드: 정의부 + 실행부</h2>
+        <div class="code-two-up">
+          <img src="../03_시각자산/images/ch01/slide08-def.png" alt="Mem02.java 정의부 — 추상 Car와 Sonata·Genesis의 run 재정의">
+          <img src="../03_시각자산/images/ch01/slide08-main.png" alt="Mem02.java 실행부 — main에서 부모 타입 변수로 호출해 서로 다른 결과 출력">
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="9" id="ppt-slide-9">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>패턴 = "다형성을 어디에 쓸 것인가"에 대한 검증된 답</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>전략: 갈아 끼울 행위를 추상 타입 뒤에</li>
+            <li>프록시: 같은 추상 타입 뒤에 대리자를</li>
+            <li>옵저버·팩토리·데코레이터도 같은 원리의 응용</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide09.png" alt="하나의 주춧돌 위에 여러 패턴 기둥이 선 신전 구도 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="10" id="ppt-slide-10">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 다형성·동적바인딩 워밍업</p>
+        <h2>16차시 전체 지도 — 오늘은 출발선이다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>오늘 ch01: 다형성·동적바인딩(출발선)</li>
+            <li>전략 → 프록시 → 어댑터 → 싱글톤 …</li>
+            <li>"모든 패턴은 다형성 위에 서 있다"</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide10.png" alt="준비운동 광장에서 봉우리들을 지나 정상에 이르는 로드맵 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="11" id="ppt-slide-11">
+      <div class="ppt-canvas standard-canvas">
+        <p class="lesson-label">실습 준비</p>
+        <h2>실습 환경 준비 — 여기서부터 직접 합니다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>설치 1: JDK 21 (LTS)</li>
+            <li>설치 2: VS Code</li>
+            <li>설치 3: Extension Pack for Java</li>
+            <li>확인: <code>java -version</code> → 21.x</li>
+          </ul></div>
+          <div class="ppt-media"><div class="ide">
+            <div class="tree">설치 체크리스트
+
+[ ] JDK 21
+[ ] VS Code
+[ ] Extension Pack for Java
+[ ] java -version 확인</div>
+            <div class="editor"><div class="tab">Terminal</div><pre><code>$ java -version
+openjdk version "21.x" 2024
+OpenJDK Runtime Environment
+OpenJDK 64-Bit Server VM</code></pre></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="12" id="ppt-slide-12">
+      <div class="ppt-canvas code-canvas">
+        <p class="lesson-label">실습 1</p>
+        <h2>직접 타이핑 → ▶ Run 클릭</h2>
+        <div class="ppt-code-layout">
+          <div class="ppt-copy"><ul>
+            <li><code>src/ex01/Mem02.java</code> 작성</li>
+            <li>main 위 ▶ Run 클릭</li>
+            <li>출력: 소나타 달린다 / 제네시스 달린다</li>
+          </ul></div>
+          <div class="ppt-media"><pre><code>package ex01;
+
+abstract class Car {
+    abstract void run();
+}
+
+class Sonata extends Car {
+    @Override
+    void run() { System.out.println("소나타 달린다"); }
+}
+
+class Genesis extends Car {
+    @Override
+    void run() { System.out.println("제네시스 달린다"); }
+}
+
+public class Mem02 {
+    public static void main(String[] args) {
+        Car s = new Sonata();
+        s.run();
+        Car g = new Genesis();
+        g.run();
+    }
+}</code></pre></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="13" id="ppt-slide-13">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">실습 2 · 과제</p>
+        <h2>과제 — 추상 타입 1개 + 구현 타입 2개</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>도메인 자유: Animal←Dog/Cat, Shape←Circle/Rect …</li>
+            <li>위치: <code>src/ex01/example</code></li>
+            <li>추상 메서드 1개 + 구현 2개가 각자 재정의</li>
+            <li>main은 반드시 부모 타입 변수로 호출</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide13.png" alt="추상 Animal 설계도 아래 Dog·Cat 구현과 체크리스트 과제 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="14" id="ppt-slide-14">
+      <div class="ppt-canvas image-canvas">
+        <p class="lesson-label">1차시 · 정리</p>
+        <h2>상위 타입으로 다루고, 실행 시점에 선택된다</h2>
+        <div class="ppt-two-col">
+          <div class="ppt-copy"><ul>
+            <li>다형성 — 부모 타입 참조에 자식 객체</li>
+            <li>추상 타입 — 약속만, <code>new</code> 불가</li>
+            <li>오버라이드 — 재정의하면 부모는 가려진다</li>
+            <li>동적바인딩 — 실행 시점의 실제 객체가 결정</li>
+          </ul></div>
+          <div class="ppt-media"><img src="../03_시각자산/images/ch01/slide14.png" alt="다형성·추상·오버라이드·동적바인딩 4단 요약 카드 이미지"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="15" id="ppt-slide-15">
+      <div class="ppt-canvas assessment-canvas">
+        <p class="lesson-label">평가하기</p>
+        <h2>평가하기</h2>
+        <div class="ppt-question"><div class="question">
+            <h4>다음 코드를 실행했을 때 출력과 그 이유로 가장 적절한 것은?<br><code>Car s = new Sonata(); s.run();</code></h4>
+            <div class="choice">1. "소나타 달린다" — 실행 시점에 실제 객체 Sonata의 재정의된 run이 선택된다.</div>
+            <div class="choice">2. 컴파일 오류 — 부모 타입 변수에 자식 객체를 담을 수 없다.</div>
+            <div class="choice">3. 아무것도 출력되지 않는다 — 몸통 없는 추상 메서드 run이 호출된다.</div>
+            <div class="choice">4. "소나타 달린다" — 컴파일 시점에 Sonata의 run을 호출하도록 확정된다.</div>
+          </div></div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="16" id="ppt-slide-16">
+      <div class="ppt-canvas assessment-canvas">
+        <p class="lesson-label">평가하기</p>
+        <h2>평가하기</h2>
+        <div class="ppt-question"><div class="question">
+            <h4>Java에서 부모(상위) 타입의 참조 변수에 자식(하위) 클래스의 객체를 담을 수 있다.</h4>
+            <div class="choice">O</div><div class="choice">X</div>
+          </div></div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="17" id="ppt-slide-17">
+      <div class="ppt-canvas assessment-canvas">
+        <p class="lesson-label">평가하기</p>
+        <h2>평가하기</h2>
+        <div class="ppt-question"><div class="question">
+            <h4>부모 타입 변수로 메서드를 호출하면, 어떤 메서드가 실행될지는 변수의 선언 타입에 따라 컴파일 시점에 최종 결정되므로 항상 부모의 메서드가 실행된다.</h4>
+            <div class="choice">O</div><div class="choice">X</div>
+          </div></div>
+      </div>
+    </section>
+
+    <section class="ppt-slide" data-slide="18" id="ppt-slide-18">
+      <div class="ppt-canvas sources-canvas">
+        <p class="lesson-label">참고자료</p>
+        <h2>참고자료</h2>
+        <div class="ppt-source-list"><div class="question">
+            <h4>참고자료</h4>
+            <div class="choice">Oracle Java Tutorials – Polymorphism · Overriding · Abstract Classes · Inheritance</div>
+            <div class="choice">Getting Started with Java in VS Code · Extension Pack for Java</div>
+            <div class="choice">Oracle JDK 다운로드</div>
+            <div class="choice">refactoring.guru 디자인패턴 카탈로그</div>
+            <div class="choice">mariofusco/from-gof-to-lambda (GitHub)</div>
+            <div class="choice">GoF 패턴의 2025년 유효성 리뷰 (Medium)</div>
+            <div class="choice">Modern Java Language Features (Java Code Geeks)</div>
+          </div></div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

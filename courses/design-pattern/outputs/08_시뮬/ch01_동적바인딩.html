@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>동적바인딩 시뮬레이터 — Car s = new Sonata()</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --ink:#17202a; --muted:#5d6875; --line:#d9dee7; --soft:#f5f7fa; --bg:#ffffff;
+  --surface:#ffffff; --surface-2:#f5f7fa; --blue:#2f6fcb; --blue-deep:#1f4f9c;
+  --green:#5aa05a; --green-deep:#3f7a3f; --amber:#c98a1a; --rose:#c0435a;
+  --mono:'JetBrains Mono',monospace;
+  --font:'Pretendard Variable',Pretendard,-apple-system,system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:26px 26px 60px}
+
+/* header */
+.badge{display:inline-block;font:600 12px var(--font);letter-spacing:.02em;color:var(--blue-deep);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;margin-bottom:12px}
+h1{font-size:26px;font-weight:800;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:15px;margin:0 0 20px}
+.sub code{font-family:var(--mono);font-size:13.5px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:6px;padding:1px 6px;color:var(--blue-deep)}
+
+/* toolbar */
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;
+  border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px;margin-bottom:16px}
+.tgroup{display:flex;align-items:center;gap:8px}
+.tgroup + .tgroup{padding-left:12px;border-left:1px solid var(--line)}
+.tlabel{font-size:12px;color:var(--muted);font-weight:600}
+button{font-family:var(--font);cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;
+  padding:8px 14px;font-size:14px;font-weight:600;transition:background .15s,border-color .15s,color .15s}
+.btn:hover:not(:disabled){border-color:var(--blue);color:var(--blue-deep)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover:not(:disabled){background:var(--blue-deep);border-color:var(--blue-deep);color:#fff}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.seg button{border:0;background:var(--surface);color:var(--muted);padding:8px 13px;font-size:13.5px;font-weight:600}
+.seg button.on{background:var(--blue);color:#fff}
+.seg.green button.on{background:var(--green);color:#fff}
+.dots{display:flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--line);transition:background .2s,transform .2s}
+.dot.on{background:var(--blue);transform:scale(1.15)}
+.dot.done{background:var(--blue-deep)}
+.counter{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--ink);min-width:40px;text-align:center}
+
+/* grid */
+.grid2{display:grid;grid-template-columns:1fr 400px;gap:18px;align-items:stretch}
+.card{border:1px solid var(--line);border-radius:16px;background:var(--surface)}
+.stage-card{padding:16px 16px 10px;display:flex;flex-direction:column;min-height:520px}
+.stage-head{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}
+.stage-num{font-family:var(--mono);font-weight:700;color:var(--blue);font-size:14px}
+.stage-title{font-size:16px;font-weight:700}
+.stage-wrap{flex:1;display:flex;align-items:center;justify-content:center}
+svg.stage{width:100%;height:auto;display:block}
+
+/* side */
+.side{display:flex;flex-direction:column;gap:14px}
+.side .card{padding:15px 16px}
+.side-h{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.03em;margin:0 0 10px;text-transform:uppercase}
+.phase{display:inline-block;font-size:12.5px;font-weight:700;border-radius:999px;padding:4px 12px;border:1px solid}
+.phase.decl{color:var(--blue-deep);border-color:var(--blue);background:#eef4fc}
+.phase.compile{color:var(--amber);border-color:var(--amber);background:#fbf3e3}
+.phase.runtime{color:var(--green-deep);border-color:var(--green);background:#edf5ed}
+.note{margin-top:11px;font-size:13.5px;color:var(--ink)}
+.note b{color:var(--blue-deep)}
+
+/* code panel */
+.code{background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:12px 12px;font-family:var(--mono);font-size:13.5px;overflow-x:auto}
+.cl{display:flex;flex-wrap:wrap;gap:0 10px;padding:4px 8px;border-radius:6px;white-space:pre;line-height:1.7}
+.cl.hi{background:#eef4fc;box-shadow:inset 3px 0 0 var(--blue)}
+.ck{color:var(--ink);font-weight:500}
+.cc{color:var(--muted);font-weight:500}
+.cl.hi .cc{color:var(--blue-deep)}
+
+/* description bar (fixed slot under grid) */
+.descbar{margin-top:18px;border:1px solid var(--line);border-radius:16px;background:var(--surface);
+  padding:16px 20px;display:flex;gap:14px;align-items:flex-start;min-height:78px}
+.desc-ic{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;
+  background:var(--surface-2);border:1px solid var(--line);font-size:18px}
+.desc-body{flex:1}
+.desc-kicker{font-size:11.5px;font-weight:700;letter-spacing:.04em;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+.desc-text{font-size:15.5px;color:var(--ink);line-height:1.55}
+.desc-text b{color:var(--green-deep)}
+
+/* svg element styles */
+svg text{font-family:var(--font)}
+.rlabel{fill:var(--muted);font-weight:600;font-size:12px}
+.bx{fill:var(--surface);stroke:var(--line);stroke-width:1.4}
+.bx-blue{stroke:var(--blue)}
+.bx-card{stroke:var(--line);fill:var(--surface-2)}
+.bx-card.hot{stroke:var(--amber);fill:#fbf3e3}
+.bx-obj{stroke:var(--green);fill:#f2f8f2}
+.tt{font-family:var(--mono);font-weight:700;font-size:16px;fill:var(--ink)}
+.tt.blue{fill:var(--blue-deep)}
+.tt.green{fill:var(--green-deep)}
+.tsub{font-weight:500;font-size:12px;fill:var(--muted)}
+.tok{fill:var(--surface);stroke:var(--line);stroke-width:1.2}
+.tok-sel{fill:#e7f2e7;stroke:var(--green);stroke-width:1.6}
+.tok-t{font-family:var(--mono);font-weight:700;font-size:13px;fill:var(--ink)}
+.tok-t.green{fill:var(--green-deep)}
+.tok-dead{fill:#f0eef0;stroke:var(--line);stroke-width:1.2}
+.tok-dead-t{font-family:var(--mono);font-weight:500;font-size:13px;fill:var(--muted)}
+.chip-r{stroke-width:1.2;rx:10}
+.chip-t{font-weight:700;font-size:11.5px}
+.arw-ref{fill:none;stroke:var(--blue);stroke-width:2.6}
+.arw-compile{fill:none;stroke:var(--muted);stroke-width:2;stroke-dasharray:5 5}
+.arw-call{fill:none;stroke:var(--green);stroke-width:3.4}
+.glow{fill:none;stroke:var(--green);stroke-width:9;opacity:.16}
+.strike{stroke:var(--rose);stroke-width:2.4;stroke-linecap:round}
+.bubble{fill:#fff;stroke:var(--green);stroke-width:1.8}
+.bubble-t{font-family:var(--mono);font-weight:700;font-size:15px;fill:var(--green-deep)}
+.reveal{opacity:0;transition:opacity .35s ease}
+.reveal.show{opacity:1}
+.pop{transform:scale(.7);transform-origin:center;transform-box:fill-box;opacity:0;
+  transition:transform .3s cubic-bezier(.2,1.3,.5,1),opacity .3s ease}
+.pop.show{transform:scale(1);opacity:1}
+
+@media (max-width:1024px){
+  .grid2{grid-template-columns:1fr}
+  .side{flex-direction:row;flex-wrap:wrap}
+  .side .card{flex:1;min-width:260px}
+  .stage-card{min-height:auto}
+}
+@media (max-width:560px){
+  .toolbar{gap:10px}
+  .tgroup + .tgroup{padding-left:0;border-left:0}
+  h1{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="badge">디자인패턴 · 1차시 · 인터랙티브 시뮬레이터</span>
+    <h1>다형성 · 동적바인딩</h1>
+    <p class="sub">하나의 코드 <code>Car s = new Sonata(); s.run()</code> 을 다섯 단계로 따라가며, <b>실행 시점에 실제 객체가 메서드를 결정</b>하는 원리를 눈으로 확인합니다.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="tgroup">
+      <button class="btn" id="prev">‹ 이전</button>
+      <div class="dots" id="dots"></div>
+      <span class="counter" id="counter">1 / 5</span>
+      <button class="btn primary" id="next">다음 ›</button>
+    </div>
+    <div class="tgroup">
+      <span class="tlabel">뷰</span>
+      <div class="seg" id="viewSeg">
+        <button data-view="concept" class="on">개념</button>
+        <button data-view="analogy">비유</button>
+      </div>
+    </div>
+    <div class="tgroup">
+      <span class="tlabel">속도</span>
+      <div class="seg green" id="speedSeg">
+        <button data-speed="0.5">0.5x</button>
+        <button data-speed="1" class="on">1x</button>
+        <button data-speed="2">2x</button>
+      </div>
+    </div>
+    <div class="tgroup">
+      <button class="btn" id="reset">↺ 리셋</button>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card stage-card">
+      <div class="stage-head">
+        <span class="stage-num" id="sNum">STEP 1</span>
+        <span class="stage-title" id="sTitle"></span>
+      </div>
+      <div class="stage-wrap">
+        <svg class="stage" id="svg" viewBox="0 0 780 470" role="img" aria-label="동적바인딩 애니메이션 무대">
+          <defs>
+            <marker id="ah-blue" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2f6fcb"/></marker>
+            <marker id="ah-green" markerWidth="10" markerHeight="10" refX="7.5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#5aa05a"/></marker>
+            <marker id="ah-grey" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#5d6875"/></marker>
+          </defs>
+          <g id="scene"></g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <div class="side-h">현재 코드</div>
+        <div class="code" id="codePanel"></div>
+      </div>
+      <div class="card">
+        <div class="side-h">단계 상태</div>
+        <span class="phase" id="phase"></span>
+        <div class="note" id="note"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="descbar">
+    <div class="desc-ic" id="descIc">🔎</div>
+    <div class="desc-body">
+      <div class="desc-kicker" id="descKicker">한 줄 설명</div>
+      <div class="desc-text" id="descText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------- 전역 상태 (딱 3개) + 타이머 배열 ---------- */
+var state = { step: 1, view: "concept", speed: 1 };
+var timers = [];
+function clearTimers(){
+  for (var i=0;i<timers.length;i++){ clearTimeout(timers[i]); }
+  timers = [];
+}
+function later(fn, ms){ timers.push(setTimeout(fn, ms / state.speed)); }
+
+/* ---------- 콘텐츠 데이터 ---------- */
+var STEPS = [
+  { // 1
+    title: "부모 타입 변수 선언",
+    phaseText: "선언 시점", phaseCls: "decl",
+    code: [ {c:"Car s;", note:"// 아직 빈 참조", hi:true} ],
+    note: "변수 타입은 <b>Car</b>. 아직 어떤 객체도 가리키지 않습니다.",
+    ic: "📝", kicker: "STEP 1 · 선언",
+    desc: {
+      concept: "부모 타입 <b>Car</b>로 변수 <b>s</b>를 선언했습니다. 아직 가리키는 객체는 없고, '자동차라면 이렇게 다룬다'는 규격만 정해진 상태입니다.",
+      analogy: "발레파킹 <b>주차권</b>을 한 장 발급했습니다. 표기는 늘 '고객 차량' — 아직 어떤 차가 연결될지는 비어 있습니다."
+    }
+  },
+  { // 2
+    title: "자식 객체 대입 (업캐스팅)",
+    phaseText: "대입 · 업캐스팅", phaseCls: "decl",
+    code: [ {c:"Car s = new Sonata();", note:"// 자식 객체를 부모 타입에", hi:true} ],
+    note: "변수 타입은 여전히 <b>Car</b>, 실제 객체는 <b>Sonata</b>. 이 담기가 업캐스팅입니다.",
+    ic: "🔗", kicker: "STEP 2 · 업캐스팅",
+    desc: {
+      concept: "<b>s = new Sonata();</b> 실제로 만들어진 건 Sonata 객체인데, 변수 타입은 그대로 Car입니다. 자식 객체를 부모 타입 변수에 담는 것 — 이것이 <b>업캐스팅</b>입니다.",
+      analogy: "주차권에 실제 차 한 대가 연결됐습니다. 주차권 표기는 그대로 '고객 차량'이지만, 실제로 들어온 차는 <b>소나타</b>입니다."
+    }
+  },
+  { // 3
+    title: "호출 — 컴파일 시점 검사",
+    phaseText: "컴파일 시점", phaseCls: "compile",
+    code: [ {c:"Car s = new Sonata();"}, {c:"s.run();", note:"// Car에 run() 있나? → 있음", hi:true} ],
+    note: "컴파일러는 <b>변수 타입 Car</b>에 run()이 선언됐는지만 확인합니다. <b>어떤 run을 실행할지는 아직 미정.</b>",
+    ic: "⚙️", kicker: "STEP 3 · 컴파일 시점",
+    desc: {
+      concept: "<b>s.run()</b> — 컴파일러는 변수 타입 Car에 run()이 선언돼 있는지만 확인합니다. 있으니 통과. 하지만 '<b>어떤</b> run을 실행할지'는 아직 정해지지 않습니다.",
+      analogy: "주차권을 창구에 내밀었습니다. 직원은 '이 주차권으로 출차 요청이 가능한가'라는 규격만 확인합니다 — 실제로 어떤 차가 나올지는 아직 모릅니다."
+    }
+  },
+  { // 4
+    title: "동적바인딩 — 실행 시점 선택",
+    phaseText: "실행 시점", phaseCls: "runtime",
+    code: [ {c:"Car s = new Sonata();"}, {c:"s.run();", note:"// 실행: 소나타 달린다", hi:true} ],
+    note: "실행 시점에 JVM이 실제 객체 <b>Sonata</b>를 보고 재정의된 run을 고릅니다. 부모 Car.run()은 무효화 — <b>가상 메서드 호출</b>.",
+    ic: "🚀", kicker: "STEP 4 · 실행 시점 (동적바인딩)",
+    desc: {
+      concept: "실행 시점에 JVM이 s가 가리키는 <b>실제 객체(Sonata)</b>를 보고, 재정의된 run을 선택합니다. 부모 Car.run()은 무효화됩니다 — 이것이 <b>가상 메서드 호출</b>입니다.",
+      analogy: "거는 쪽은 늘 같은 번호를 누르지만, 받는 사람은 그때그때의 <b>당번</b>입니다 — 실행 시점에 <b>실제 객체</b>가 메서드를 결정합니다."
+    }
+  },
+  { // 5
+    title: "반전 — 호출부는 그대로, 객체만 교체",
+    phaseText: "실행 시점", phaseCls: "runtime",
+    code: [ {c:"Car g = new Genesis();", hi:true}, {c:"g.run();", note:"// 실행: 제네시스 달린다", hi:true} ],
+    note: "호출부 모양은 s.run()과 똑같습니다. <b>실제 객체만 Genesis</b>로 갈아 끼웠더니 결과가 바뀝니다 — 이후 모든 패턴의 원리.",
+    ic: "🔁", kicker: "STEP 5 · 재사용의 원리",
+    desc: {
+      concept: "<b>Car g = new Genesis(); g.run();</b> 호출 코드 모양은 s.run()과 똑같습니다. 실제 객체만 Genesis로 갈아 끼웠더니 결과가 바뀝니다 — 이것이 <b>이후 모든 디자인 패턴</b>의 원리입니다.",
+      analogy: "같은 창구, 같은 절차입니다. 연결된 실제 차만 제네시스로 바꿨더니 나오는 차가 달라졌습니다. <b>호출부는 그대로, 객체만 갈아 끼우면</b> 됩니다."
+    }
+  }
+];
+
+/* ---------- 라벨 (뷰에 따라 텍스트만 교체, 도형 위치는 고정) ---------- */
+function labels(step, view){
+  var isGen = (step === 5);
+  var carKo = isGen ? "제네시스" : "소나타";
+  var carEn = isGen ? "Genesis" : "Sonata";
+  var varName = isGen ? "g" : "s";
+  var C = (view === "concept");
+  return {
+    regionVar:  C ? "스택 · 참조 변수"        : "접수대 · 주차권",
+    regionCard: C ? "타입 정의 (컴파일러가 보는 것)" : "출차 규격표 (창구가 보는 것)",
+    regionObj:  C ? "힙 · 실제 객체"          : "차고 · 실제 차",
+    varTitle:   C ? ("Car " + varName)        : "주차권",
+    varSub:     C ? "타입: Car"               : "표기: 고객 차량",
+    cardTitle:  C ? "Car (추상 타입)"          : "출차 창구",
+    cardTokDead:C ? "run()"                   : "규격만 통과",
+    strikeLbl:  C ? "무효화"                   : "실제 아님",
+    objTitle:   C ? (carEn + " 객체")          : ("실제 차: " + carKo),
+    objSub:     C ? "run() 재정의됨"           : ("run() = " + carKo + "식"),
+    objTok:     C ? ("run() → " + carKo + " 달린다") : (carKo + " 출차"),
+    refLbl:     C ? "참조"                     : "연결",
+    callLbl:    C ? "실행 시점 · 가상 메서드 호출" : "당번이 응답 (실행 시점)",
+    compileLbl: C ? "run() 선언 확인 ✓"        : "규격 확인 ✓",
+    output:     carKo + " 달린다",
+    typeBadge:  "타입: Car",
+    realBadge:  "실제: " + carEn
+  };
+}
+
+/* ---------- SVG 헬퍼 ---------- */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function chip(x,y,text,color){
+  var w = Math.max(52, text.length*11 + 18);
+  return '<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="21" rx="10.5" fill="#fff" stroke="'+color+'" stroke-width="1.3"/>'+
+         '<text x="'+(x+w/2)+'" y="'+(y+15)+'" text-anchor="middle" class="chip-t" fill="'+color+'">'+esc(text)+'</text></g>';
+}
+
+/* ---------- 무대 그리기 ---------- */
+function drawStage(){
+  var step = state.step, view = state.view;
+  var L = labels(step, view);
+  var s = [];
+
+  // region labels
+  s.push('<text x="118" y="182" text-anchor="middle" class="rlabel">'+esc(L.regionVar)+'</text>');
+  s.push('<text x="400" y="30" text-anchor="middle" class="rlabel">'+esc(L.regionCard)+'</text>');
+  if (step >= 2) s.push('<text x="635" y="238" text-anchor="middle" class="rlabel">'+esc(L.regionObj)+'</text>');
+
+  // --- variable box (left) ---
+  s.push('<rect x="40" y="192" width="156" height="82" rx="12" class="bx bx-blue"/>');
+  s.push('<text x="118" y="230" text-anchor="middle" class="tt blue">'+esc(L.varTitle)+'</text>');
+  s.push('<text x="118" y="252" text-anchor="middle" class="tsub">'+esc(L.varSub)+'</text>');
+  if (step === 1){
+    // dangling empty reference
+    s.push('<path d="M196,233 L262,233" class="arw-ref" stroke-dasharray="6 6" marker-end="url(#ah-blue)"/>');
+    s.push('<text x="286" y="238" text-anchor="middle" class="tt" style="font-size:22px;fill:#5d6875">?</text>');
+  }
+
+  // --- Car abstract card (top center) ---
+  var cardHot = (step === 3) ? " hot" : "";
+  s.push('<rect x="300" y="42" width="200" height="96" rx="12" class="bx bx-card'+cardHot+'"/>');
+  s.push('<text x="400" y="72" text-anchor="middle" class="tt">'+esc(L.cardTitle)+'</text>');
+  // token inside card (parent run) — struck at step>=4
+  if (step >= 4){
+    s.push('<rect x="335" y="88" width="130" height="30" rx="7" class="tok-dead"/>');
+    s.push('<text x="400" y="108" text-anchor="middle" class="tok-dead-t">'+esc(L.cardTokDead)+'</text>');
+    s.push('<line x1="345" y1="103" x2="455" y2="103" class="strike"/>');
+    s.push('<text x="400" y="134" text-anchor="middle" class="tsub" style="fill:#c0435a;font-weight:700">'+esc(L.strikeLbl)+'</text>');
+  } else {
+    s.push('<rect x="335" y="88" width="130" height="30" rx="7" class="tok"/>');
+    s.push('<text x="400" y="108" text-anchor="middle" class="tok-t">'+esc(L.cardTokDead)+'</text>');
+  }
+
+  // --- object box (right) ---
+  if (step >= 2){
+    s.push('<rect x="518" y="250" width="232" height="150" rx="12" class="bx bx-obj"/>');
+    s.push('<text x="634" y="288" text-anchor="middle" class="tt green">'+esc(L.objTitle)+'</text>');
+    s.push('<text x="634" y="310" text-anchor="middle" class="tsub">'+esc(L.objSub)+'</text>');
+    // selected run token
+    var selected = (step >= 4);
+    if (selected){
+      s.push('<rect x="536" y="330" width="196" height="34" rx="8" class="glow" style="stroke-width:14"/>');
+    }
+    s.push('<rect x="540" y="332" width="188" height="30" rx="7" class="'+(selected?"tok-sel":"tok")+'"/>');
+    s.push('<text x="634" y="352" text-anchor="middle" class="tok-t'+(selected?" green":"")+'">'+esc(L.objTok)+'</text>');
+  }
+
+  // --- badges (type vs real object) ---
+  // typeBadge on the variable (steps 2-4); realBadge on the object only 2-3
+  // (step 4+ the object top area is used by the output bubble)
+  if (view === "concept"){
+    if (step >= 2 && step <= 4) s.push(chip(150, 168, L.typeBadge, "#2f6fcb"));
+    if (step >= 2 && step <= 3) s.push(chip(560, 226, L.realBadge, "#3f7a3f"));
+  }
+
+  // --- reference arrow (assignment) step>=2 ---
+  if (step >= 2){
+    s.push('<path id="refArw" d="M196,238 C 320,300 420,320 536,322" class="arw-ref" marker-end="url(#ah-blue)"/>');
+    s.push('<text x="360" y="332" text-anchor="middle" class="tsub" style="fill:#2f6fcb;font-weight:700">'+esc(L.refLbl)+'</text>');
+  }
+
+  // --- compile-check arrow (dashed, s -> Car card) step>=3 ---
+  if (step >= 3){
+    s.push('<path d="M128,192 C 180,150 250,132 328,116" class="arw-compile" marker-end="url(#ah-grey)"/>');
+    s.push('<g class="reveal" id="compileLbl"><rect x="150" y="118" width="'+Math.max(120,(L.compileLbl.length*11+20))+'" height="22" rx="11" fill="#fff" stroke="#c98a1a" stroke-width="1.2"/>'+
+           '<text x="'+(150+Math.max(120,(L.compileLbl.length*11+20))/2)+'" y="133" text-anchor="middle" class="chip-t" fill="#c98a1a">'+esc(L.compileLbl)+'</text></g>');
+  }
+
+  // --- call/dispatch arrow (runtime) step>=4 : s -> object.run() ---
+  if (step >= 4){
+    s.push('<path id="callArw" d="M170,274 C 300,388 440,384 560,356" class="arw-call" marker-end="url(#ah-green)"/>');
+    s.push('<g class="reveal" id="callLbl"><rect x="300" y="400" width="'+Math.max(180,(L.callLbl.length*11+22))+'" height="24" rx="12" fill="#edf5ed" stroke="#5aa05a" stroke-width="1.2"/>'+
+           '<text x="'+(300+Math.max(180,(L.callLbl.length*11+22))/2)+'" y="416" text-anchor="middle" class="chip-t" fill="#3f7a3f">'+esc(L.callLbl)+'</text></g>');
+    // output bubble
+    var bw = Math.max(150, L.output.length*17 + 40);
+    s.push('<g class="pop" id="outBubble">'+
+           '<rect x="'+(634-bw/2)+'" y="174" width="'+bw+'" height="40" rx="20" class="bubble"/>'+
+           '<path d="M624,212 L644,212 L634,228 Z" class="bubble" stroke="none" fill="#fff"/>'+
+           '<text x="634" y="199" text-anchor="middle" class="bubble-t">'+esc(L.output)+'</text></g>');
+  }
+
+  document.getElementById("scene").innerHTML = s.join("");
+  document.getElementById("sNum").textContent = "STEP " + step;
+  document.getElementById("sTitle").textContent = STEPS[step-1].title;
+
+  // animations
+  if (step === 2){ animatePath("refArw", 700); }
+  if (step >= 4){
+    var d = document.getElementById("callArw");
+    if (d){
+      var len = d.getTotalLength();
+      d.style.strokeDasharray = len; d.style.strokeDashoffset = len; d.style.transition = "none";
+      d.getBoundingClientRect();
+      requestAnimationFrame(function(){
+        d.style.transition = "stroke-dashoffset " + (900/state.speed) + "ms cubic-bezier(.4,.1,.3,1)";
+        d.style.strokeDashoffset = "0";
+      });
+    }
+    var cl = document.getElementById("callLbl");
+    later(function(){ if(cl) cl.classList.add("show"); }, 500);
+    later(function(){ var b=document.getElementById("outBubble"); if(b) b.classList.add("show"); }, 950);
+  }
+  if (step >= 3){
+    var comp = document.getElementById("compileLbl");
+    later(function(){ if(comp) comp.classList.add("show"); }, 250);
+  }
+}
+
+function animatePath(id, dur){
+  var el = document.getElementById(id);
+  if (!el) return;
+  var len = el.getTotalLength();
+  el.style.strokeDasharray = len; el.style.strokeDashoffset = len; el.style.transition = "none";
+  el.getBoundingClientRect();
+  requestAnimationFrame(function(){
+    el.style.transition = "stroke-dashoffset " + (dur/state.speed) + "ms ease";
+    el.style.strokeDashoffset = "0";
+  });
+}
+
+/* ---------- 사이드 · 설명 · 툴바 ---------- */
+function drawCode(){
+  var lines = STEPS[state.step-1].code, html = "";
+  for (var i=0;i<lines.length;i++){
+    var ln = lines[i];
+    html += '<div class="cl'+(ln.hi?" hi":"")+'"><span class="ck">'+esc(ln.c)+'</span>'+
+            (ln.note ? '<span class="cc">'+esc(ln.note)+'</span>' : "") + '</div>';
+  }
+  document.getElementById("codePanel").innerHTML = html;
+}
+
+function drawSide(){
+  var st = STEPS[state.step-1];
+  var ph = document.getElementById("phase");
+  ph.className = "phase " + st.phaseCls;
+  ph.textContent = st.phaseText;
+  document.getElementById("note").innerHTML = st.note;
+}
+
+function drawDesc(){
+  var st = STEPS[state.step-1];
+  document.getElementById("descIc").textContent = st.ic;
+  document.getElementById("descKicker").textContent = st.kicker + " · " + (state.view === "concept" ? "개념 뷰" : "비유 뷰");
+  document.getElementById("descText").innerHTML = st.desc[state.view];
+}
+
+function drawToolbar(){
+  // dots
+  var dots = "";
+  for (var i=1;i<=STEPS.length;i++){
+    var cls = "dot" + (i === state.step ? " on" : (i < state.step ? " done" : ""));
+    dots += '<span class="'+cls+'"></span>';
+  }
+  document.getElementById("dots").innerHTML = dots;
+  document.getElementById("counter").textContent = state.step + " / " + STEPS.length;
+  document.getElementById("prev").disabled = (state.step === 1);
+  document.getElementById("next").disabled = (state.step === STEPS.length);
+  // seg active states
+  var vs = document.getElementById("viewSeg").children;
+  for (var a=0;a<vs.length;a++){ vs[a].classList.toggle("on", vs[a].getAttribute("data-view") === state.view); }
+  var ss = document.getElementById("speedSeg").children;
+  for (var b=0;b<ss.length;b++){ ss[b].classList.toggle("on", parseFloat(ss[b].getAttribute("data-speed")) === state.speed); }
+}
+
+/* ---------- 단일 render() ---------- */
+function render(){
+  clearTimers();
+  drawToolbar();
+  drawCode();
+  drawSide();
+  drawDesc();
+  drawStage();
+}
+
+/* ---------- 이벤트 ---------- */
+document.getElementById("prev").addEventListener("click", function(){
+  if (state.step > 1){ state.step--; render(); }
+});
+document.getElementById("next").addEventListener("click", function(){
+  if (state.step < STEPS.length){ state.step++; render(); }
+});
+document.getElementById("viewSeg").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if (!b) return;
+  state.view = b.getAttribute("data-view"); // step 유지
+  render();
+});
+document.getElementById("speedSeg").addEventListener("click", function(e){
+  var b = e.target.closest("button"); if (!b) return;
+  state.speed = parseFloat(b.getAttribute("data-speed")); // step 유지
+  render();
+});
+document.getElementById("reset").addEventListener("click", function(){
+  clearTimers();
+  state.step = 1; state.view = "concept"; state.speed = 1;
+  render();
+});
+document.addEventListener("keydown", function(e){
+  if (e.key === "ArrowRight" && state.step < STEPS.length){ state.step++; render(); }
+  else if (e.key === "ArrowLeft" && state.step > 1){ state.step--; render(); }
+});
+
+/* 최초 로드 */
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+{
+  "chapter": "ch01",
+  "overall_status": "present",
+  "visual_slides_covered": 11,
+  "visual_slides_total": 11,
+  "slides": [
+    {
+      "slide": 1,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide01.png",
+        "prompt_hash": "9a983b6b5ed5",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 2,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide02.png",
+        "prompt_hash": "e83421afb4f8",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 3,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide03.png",
+        "prompt_hash": "e7b2c9b1ebfb",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 4,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide04.png",
+        "prompt_hash": "4cd34299736e",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 5,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide05.png",
+        "prompt_hash": "5e2e1ccd5a8d",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 6,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide06.png",
+        "prompt_hash": "8b4b555f46eb",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 7,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide07.png",
+        "prompt_hash": "af6177d5b945",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 8
+    },
+    {
+      "slide": 9,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide09.png",
+        "prompt_hash": "061796370e36",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 10,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide10.png",
+        "prompt_hash": "f6e4be73b63d",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 11
+    },
+    {
+      "slide": 12
+    },
+    {
+      "slide": 13,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide13.png",
+        "prompt_hash": "b803aeb9c2ba",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 14,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch01/slide14.png",
+        "prompt_hash": "3aea45bb4c92",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 15
+    },
+    {
+      "slide": 16
+    },
+    {
+      "slide": 17
+    },
+    {
+      "slide": 18
+    }
+  ]
+}

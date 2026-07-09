@@ -11,7 +11,7 @@
 **시각자산 칸 전용 상태값** (하드 게이트 — 코드~책 단계는 이 칸이 `✅` 또는 `deferred`여야 진행):
 - `deferred` — 지금 생성하지 않고 placeholder를 유지하기로 명시적으로 선택함(사유·재개 조건은 보류/누락 섹션에 기록).
 - `partial` — 슬라이드 일부는 생성 완료(`present`)했지만 나머지가 아직 미확정(`missing`)이고 사용자가 그 나머지를 `deferred`로 확정 짓지 않은 상태(`visual-assets` §6). 전부 `present`가 되거나 남은 슬라이드를 명시적으로 `deferred`로 확정하면 `✅`로 갱신.
-- `stale` — 원고 Visual asset(프롬프트/D2)이 변경되어 기존 자산의 해시가 원고와 불일치 — 해당 슬라이드 자산만 재생성 필요(`outputs/03_시각자산/manifest.json` 참조).
+- `stale` — 원고 Visual asset(프롬프트/D2)이 변경되어 기존 자산의 해시가 원고와 불일치 — 해당 슬라이드 자산만 재생성 필요(`outputs/03_시각자산/manifest_chNN.json` 참조).
 
 다음 할 일: 과정개요서 작성
 

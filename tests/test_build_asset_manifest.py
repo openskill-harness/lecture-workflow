@@ -222,3 +222,73 @@ def test_user_file_path_matches_annotate_canonical_path(tmp_path):
     manifest, _ = bam.build_manifest(str(course), "ch01")
     canonical = f"assets/images/ch01/slide05.png"
     assert _slide5(manifest)["image"]["path"] == canonical
+
+
+# --- 다차시: manifest는 차시별 파일이며 서로 덮어쓰지 않는다 ---
+
+def _slide5_of(m):
+    return next(s for s in m["slides"] if s["slide"] == 5)
+
+
+def _add_chapter(course, ch, slide_md, *, img=False):
+    (course / "manuscripts" / f"{ch}.md").write_text(slide_md, encoding="utf-8")
+    d = course / "assets" / "images" / ch
+    d.mkdir(parents=True, exist_ok=True)
+    if img:
+        (d / "slide05.png").write_bytes(b"PNGDATA")
+
+
+_CH2 = (
+    "## Slide 5. OCP\n\n"
+    "**Visual asset**\n"
+    "- GPT image plompt placeholder\n"
+    "- 시각자료 프롬프트(영문): `A COMPLETELY DIFFERENT SCENE about open closed principle`\n\n"
+    "**Source**\n- x\n"
+)
+
+
+def test_second_chapter_build_does_not_clobber_first(tmp_path):
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)   # ch01
+    m1, p1 = bam.build_manifest(str(course), "ch01")
+    assert p1.name == "manifest_ch01.json"
+    _add_chapter(course, "ch02", _CH2, img=True)
+    m2, p2 = bam.build_manifest(str(course), "ch02")
+    assert p2.name == "manifest_ch02.json"
+    assert p1.exists() and p2.exists()          # 둘 다 살아 있다
+    import json
+    again = json.loads(p1.read_text(encoding="utf-8"))
+    assert again["chapter"] == "ch01" and again["overall_status"] == m1["overall_status"]
+
+
+def test_other_chapter_prompt_does_not_make_this_one_stale(tmp_path):
+    """ch01과 ch02가 같은 slide 번호를 쓰고 프롬프트가 달라도 ch02는 stale이 아니다."""
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    bam.build_manifest(str(course), "ch01")
+    _add_chapter(course, "ch02", _CH2, img=True)
+    m2, _ = bam.build_manifest(str(course), "ch02")
+    assert _slide5_of(m2)["image"]["status"] == "present"
+    assert m2["overall_status"] == "present"
+
+
+def test_same_chapter_stale_still_detected(tmp_path):
+    """차시 가드가 정상 stale 감지를 막지 않는다(false negative 방지)."""
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    bam.build_manifest(str(course), "ch01")
+    changed = _BOTH.replace("HTTP request flow", "TOTALLY OTHER SCENE")
+    (course / "manuscripts" / "ch01.md").write_text(changed, encoding="utf-8")
+    m, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5_of(m)["image"]["status"] == "stale"
+
+
+def test_prior_with_mismatched_chapter_is_ignored(tmp_path):
+    """manifest 내용의 chapter가 어긋나면 prior로 쓰지 않는다(경로가 깨져도 오탐 없음)."""
+    import json
+    course = _make_course(tmp_path, _BOTH, img=True, d2=True)
+    _, p = bam.build_manifest(str(course), "ch01")
+    poisoned = json.loads(p.read_text(encoding="utf-8"))
+    poisoned["chapter"] = "ch99"                       # 다른 차시 해시로 오염
+    p.write_text(json.dumps(poisoned, ensure_ascii=False), encoding="utf-8")
+    changed = _BOTH.replace("HTTP request flow", "TOTALLY OTHER SCENE")
+    (course / "manuscripts" / "ch01.md").write_text(changed, encoding="utf-8")
+    m, _ = bam.build_manifest(str(course), "ch01")
+    assert _slide5_of(m)["image"]["status"] == "present"   # prior 무시 → stale 아님

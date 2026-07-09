@@ -53,3 +53,13 @@ def rel(course_dir, key):
 def path(course_dir, key):
     """절대/실경로 Path (예: path(c, "manuscripts") / "ch01.md")."""
     return Path(course_dir) / rel(course_dir, key)
+
+
+def asset_manifest_path(course_dir, ch):
+    """차시별 시각자산 manifest 경로 (예: outputs/03_시각자산/manifest_ch01.json).
+
+    manifest는 차시마다 별도 파일이다 — 한 파일을 공유하면 뒤에 빌드한 차시가 앞 차시를
+    덮어쓰고, 이전 해시를 다른 차시 슬라이드와 비교해 stale을 오탐한다.
+    manifest 경로를 만드는 곳은 이 함수 하나뿐이다(빌더·annotate 공용).
+    """
+    return path(course_dir, "assets") / f"manifest_{ch}.json"

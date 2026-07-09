@@ -2,8 +2,8 @@
 
 원고(chNN.md)의 슬라이드별 Visual asset(이미지 프롬프트 / D2 소스)을 스캔하고,
 실제 생성된 자산 파일(images/chNN/, diagrams/)과 대조해 시각자산 폴더의
-manifest.json 을 만든다. 경로는 course_layout 이 배치(outputs/ 규약·루트 평면)를
-판별해 결정한다.
+manifest_{chNN}.json 을 만든다(차시마다 별도 파일 — 한 파일을 공유하면 뒤에 빌드한
+차시가 앞 차시를 덮어쓴다). 경로는 course_layout.asset_manifest_path 가 결정한다.
 
 주 시각자료(primary): 사용자가 직접 준 파일(`User image:`)이 최우선. 그다음 `주 시각자료: D2`
 마커, 그다음 GPT 이미지 프롬프트, 마지막으로 D2. image/d2 블록 모두 명시 `primary`(bool)를 갖는다.
@@ -24,14 +24,15 @@ manifest 스키마(슬라이드별):
   }
 status(이미지): 파일 present → present / primary 아니거나 `이미지 보류` 마커면 deferred / 그 외 missing.
 status(자산 단계 전체): primary 자산이 present·deferred인 슬라이드 수 / 예상 수 로 present|partial|missing 판정.
-prompt_hash/d2_hash = 원고 해당 소스 텍스트 SHA1 앞 12자. 재빌드 시 이전 manifest.json의
-해시와 비교해, 파일은 있으나 프롬프트가 바뀐 자산을 status="stale"로 표기한다(stale은 커버로
-인정하지 않으므로 하드 게이트가 재생성을 유도한다). origin=user-file은 이 비교를 건너뛴다 —
-prompt_hash가 None이라 이전 해시와 무조건 달라져 stale로 오판되기 때문이다.
+prompt_hash/d2_hash = 원고 해당 소스 텍스트 SHA1 앞 12자. 재빌드 시 같은 차시의 이전
+manifest 해시와 비교해, 파일은 있으나 프롬프트가 바뀐 자산을 status="stale"로 표기한다
+(stale은 커버로 인정하지 않으므로 하드 게이트가 재생성을 유도한다). 다른 차시의 manifest는
+prior로 쓰지 않는다(차시 가드). origin=user-file은 이 비교를 건너뛴다 — prompt_hash가
+None이라 이전 해시와 무조건 달라져 stale로 오판되기 때문이다.
 
 사용:
   python scripts/build_asset_manifest.py <course_dir> <chNN>
-  예: python scripts/build_asset_manifest.py courses/spring-boot-basic ch01
+  예: python scripts/build_asset_manifest.py courses/design-pattern ch01
 """
 import hashlib
 import json
@@ -49,14 +50,21 @@ def _hash(text):
     return hashlib.sha1(text.strip().encode("utf-8")).hexdigest()[:12] if text and text.strip() else None
 
 
-def _load_prior_hashes(course):
-    """이전 manifest.json에서 슬라이드별 (image/d2) 해시를 읽어온다. 없으면 빈 dict."""
-    p = course_layout.path(course, "assets") / "manifest.json"
+def _load_prior_hashes(course, ch):
+    """이전 manifest_{ch}.json에서 슬라이드별 (image/d2) 해시를 읽어온다. 없으면 빈 dict.
+
+    차시 가드: 읽은 manifest의 `chapter`가 대상 차시와 다르거나 없으면 prior 없음으로
+    간주한다. 다른 차시의 해시를 같은 번호 슬라이드와 비교하면 멀쩡한 자산이 stale로
+    오탐되기 때문이다(경로 분리로 이미 막히지만 방어적으로 한 번 더 확인한다).
+    """
+    p = course_layout.asset_manifest_path(course, ch)
     if not p.exists():
         return {}
     try:
         prev = json.loads(p.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
+        return {}
+    if prev.get("chapter") != ch:
         return {}
     out = {}
     for s in prev.get("slides", []):
@@ -126,7 +134,7 @@ def parse_visual_assets(md_text):
 
 def build_manifest(course_dir, ch):
     course = Path(course_dir)
-    prior = _load_prior_hashes(course)   # {slide: {"image": hash, "d2": hash}}
+    prior = _load_prior_hashes(course, ch)   # {slide: {"image": hash, "d2": hash}}
     md = (course_layout.path(course, "manuscripts") / f"{ch}.md").read_text(encoding="utf-8")
     va = parse_visual_assets(md)
     assets_rel = course_layout.rel(course, "assets")
@@ -231,7 +239,7 @@ def build_manifest(course_dir, ch):
         "visual_slides_total": total_visual_slides,
         "slides": slides,
     }
-    out_path = course / assets_rel / "manifest.json"
+    out_path = course_layout.asset_manifest_path(course, ch)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     return manifest, out_path

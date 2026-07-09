@@ -1,6 +1,6 @@
 ---
 name: book-build
-description: 확정 원고(`outputs/02_원고/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`outputs/10_책/chNN.pdf`)을 만든다. 과정 완주 시 합본(`outputs/10_책/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 11단계 — 캐릭터 설정 → 소설체 재집필(이미지는 `outputs/03_시각자산/manifest.json`의 확정 경로를 참조) → humanizer 문체 교정 → 편집 검토 5종(사실성·개념 누락·과도한 소설화·개념 앵커·문장문단 정합) → typst_builder(Typst/Pandoc)로 PDF 빌드. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 비유(Easy analogy)·실무사례(Practical case)·나레이션·실습·평가문항을 씨앗으로 소설처럼 이야기 형태로 재집필해 차시별 PDF 책(`outputs/10_책/chNN.pdf`)을 만든다. 과정 완주 시 합본(`outputs/10_책/합본.pdf`)도 만든다. "책 만들어줘", "PDF 책", "챕터 집필" 요청 시 사용. 파이프라인 11단계 — 캐릭터 설정 → 소설체 재집필(이미지는 `outputs/03_시각자산/manifest_chNN.json`의 확정 경로를 참조) → humanizer 문체 교정 → 편집 검토 5종(사실성·개념 누락·과도한 소설화·개념 앵커·문장문단 정합) → typst_builder(Typst/Pandoc)로 PDF 빌드. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트).
 ---
 
 # book-build
@@ -36,7 +36,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 비유(Easy analogy)�
 - 챕터는 이야기 파트(문제 등장 → 비유로 기술 소개 → Try/Fail 시행착오 → 결과)로 시작하고, 이후 기술 파트(정식 정의·심화 설명·실습 코드)로 이어진다. 두 파트를 가르는 라벨형 H2("## 이야기", "## 기술 설명" 등)는 달지 않는다 — 자연스러운 장 제목(예: `## 1장. 팔찌를 잃어버린 날`)만 쓴다.
 - 원고의 핵심 개념·실습·평가문항이 하나도 누락되지 않도록 챕터 전체에 분배한다(한 슬라이드 = 반드시 한 장면일 필요는 없다. 여러 슬라이드를 하나의 장면으로 압축하거나, 한 슬라이드를 여러 장면으로 늘려도 된다).
 - 캐릭터 등장 규칙(2개 챕터 연속 부재 금지)을 지킨다.
-- **자산 해석 규칙(필수)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`, (2) primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) 그 장면은 삽화 없이 텍스트만으로 쓴다 — **비-primary 자산으로 대체하지 않는다**(소비물마다 다른 그림이 들어가는 원인). primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료: D2` 마커 > 이미지 프롬프트 > D2). 실사용 경로는 `outputs/10_책/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
+- **자산 해석 규칙(필수)**: 이미지·D2 PNG 삽입은 원고 Visual asset의 프롬프트 텍스트가 아니라 `outputs/03_시각자산/manifest_chNN.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 결정한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다: (1) `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`, (2) primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) 그 장면은 삽화 없이 텍스트만으로 쓴다 — **비-primary 자산으로 대체하지 않는다**(소비물마다 다른 그림이 들어가는 원인). primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료: D2` 마커 > 이미지 프롬프트 > D2). 실사용 경로는 `outputs/10_책/chNN_원고.md` 기준 상대경로로 보정한다. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 
 
 ### 개념 앵커 (필수)
@@ -52,7 +52,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 비유(Easy analogy)�
 ```
 
 - **기술명**: 이야기 제목이 아니라 실제 기술 용어(HTTP, WAS, 내장 Tomcat 등).
-- **도식**: opt-in D2(`outputs/03_시각자산/manifest.json`의 `d2` 자산 또는 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-*.png`)를 쓴다. GPT 일러스트는 앵커에 쓰지 않는다(장면 전용). 고른 개념에 D2가 없으면 `pub-d2-diagram`으로 1개 생성, 그래도 도식화가 무의미하면 이미지 줄을 빼고 명+정의만 둔다.
+- **도식**: opt-in D2(`outputs/03_시각자산/manifest_chNN.json`의 `d2` 자산 또는 `outputs/03_시각자산/diagrams/{chNN}-slide{NN}-*.png`)를 쓴다. GPT 일러스트는 앵커에 쓰지 않는다(장면 전용). 고른 개념에 D2가 없으면 `pub-d2-diagram`으로 1개 생성, 그래도 도식화가 무의미하면 이미지 줄을 빼고 명+정의만 둔다.
 - **정의**: 앵커에만 둔다. 같은 정의를 프로즈 문단에 다시 풀어 쓰지 않는다(비유·설명은 앵커 뒤 프로즈에서 계속).
 - **밀도**: 장당 1–2개. 모든 용어에 앵커를 달지 않는다(소설 몰입 보호).
 - **제목 이원화**: 각 장 제목은 `이야기 제목 — 기술 부제`(예: `2장. 약속이 있어야 대화가 된다 — HTTP`).
@@ -174,6 +174,6 @@ typst_builder.build(config)
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (8개 필드: Screen, Easy analogy, Practical case, Visual asset, Source, Narration, Practice, Assessment)
 - Task 13 자산 이식 보고서: `.superpowers/sdd/task-13-report.md`, 드라이런 상세: `docs/history/2026-07-05_v2-redesign/typst-windows-dryrun.md`
 - status.md 형식: `templates/status_template.md` (마지막 열이 `책`)
-- 시각자산 SSOT: `outputs/03_시각자산/manifest.json`(`visual-assets` 스킬 소유) — §2 "자산 해석 규칙" 참조.
+- 시각자산 SSOT: `outputs/03_시각자산/manifest_chNN.json`(`visual-assets` 스킬 소유) — §2 "자산 해석 규칙" 참조.
 - 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §10(이 스킬의 설계 근거)
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

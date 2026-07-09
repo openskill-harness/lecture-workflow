@@ -18,7 +18,7 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 | 과정개요서 (표 위 별도 줄) | `course-outline` | `outputs/01_과정개요서.md` |
 | 원고초안 | `manuscript-draft` | `outputs/02_원고/chNN_draft.md` |
 | 원고확정 | `manuscript-final` | `outputs/02_원고/chNN.md` |
-| 시각자산 | `visual-assets` | `outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`, `outputs/03_시각자산/manifest.json` |
+| 시각자산 | `visual-assets` | `outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`, `outputs/03_시각자산/manifest_chNN.json` |
 | 코드 | `practice-code` | `outputs/04_코드/chNN/` + 검증 로그 |
 | 스토리보드 | `storyboard` | `outputs/05_스토리보드/chNN.html` |
 | PPT프리뷰 | `ppt-preview` | `outputs/06_PPT프리뷰/chNN.html` |
@@ -93,14 +93,14 @@ status.md 표의 열 이름(과정개요서는 표 위 별도 줄)과 실제 호
 
 status.md와 실제 파일이 어긋난 경우(예: 셀이 ✅인데 대응 산출물 파일이 실제로 없음, 또는 경로가 다름) — 오케스트라가 이를 발견하면 **그 단계를 조용히 다시 만들거나 스킵하지 않는다.**
 
-1. 해당 차시의 **표 전체를 인덱스 재검증**한다: ✅로 표시된 각 셀에 대해, 먼저 **status.md 산출물 인덱스에 기록된 경로**의 파일이 실제로 존재하는지 확인한다(인덱스 실경로가 1차 기준 — 배치가 다른 과정도 이 기준으로 동일하게 검증된다). 인덱스에 기재가 없는 ✅ 셀만 매핑 표의 현행 규약 경로(`courses/{course-id}/outputs/02_원고/chNN.md`, `outputs/03_시각자산/manifest.json`(+ `outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`), `outputs/05_스토리보드/chNN.html`, `outputs/06_PPT프리뷰/chNN.html`, `outputs/07_판서/chNN.html`, `outputs/08_시뮬/chNN_*.html`, `outputs/09_PPTX/chNN.pptx`, `outputs/10_책/chNN.pdf`, `outputs/04_코드/chNN/`)로 확인한다. `시각자산` 칸이 `deferred`/`partial`이면 해당 상태값이 그 과정 manifest.json의 실제 상태와 일치하는지도 확인한다.
+1. 해당 차시의 **표 전체를 인덱스 재검증**한다: ✅로 표시된 각 셀에 대해, 먼저 **status.md 산출물 인덱스에 기록된 경로**의 파일이 실제로 존재하는지 확인한다(인덱스 실경로가 1차 기준 — 배치가 다른 과정도 이 기준으로 동일하게 검증된다). 인덱스에 기재가 없는 ✅ 셀만 매핑 표의 현행 규약 경로(`courses/{course-id}/outputs/02_원고/chNN.md`, `outputs/03_시각자산/manifest_chNN.json`(+ `outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`), `outputs/05_스토리보드/chNN.html`, `outputs/06_PPT프리뷰/chNN.html`, `outputs/07_판서/chNN.html`, `outputs/08_시뮬/chNN_*.html`, `outputs/09_PPTX/chNN.pptx`, `outputs/10_책/chNN.pdf`, `outputs/04_코드/chNN/`)로 확인한다. `시각자산` 칸이 `deferred`/`partial`이면 해당 상태값이 그 차시 manifest_chNN.json의 실제 상태와 일치하는지도 확인한다.
 2. 불일치를 발견하면 **사용자에게 먼저 보고**한다 — 어느 차시·어느 단계가 ✅인데 파일이 없는지(또는 산출물 인덱스 경로가 실물과 다른지) 구체적으로 알린다. 오케스트라가 임의로 ⬜/🔄로 되돌리거나 그 단계를 재실행하지 않는다.
 3. 사용자의 지시에 따라: (a) 실제로 파일이 다른 경로에 있으면 산출물 인덱스만 경로 수정, (b) 정말 산출물이 없으면 해당 셀을 사용자 확인 하에 🔄 또는 ⬜로 되돌리고 그 단계 스킬을 다시 호출한다.
 4. 선행 단계 검사(§3)에서도 동일한 원칙을 적용한다 — 선행 단계가 ✅인데 그 산출물 파일이 없으면, 다음 단계를 호출하기 전에 먼저 이 repair 절차부터 수행한다.
 5. **역케이스(게이트 미완인데 하류가 ✅)**: `시각자산`이 ✅/`deferred`가 아닌데(⬜/🔄/`partial`/`stale`)
    그 차시의 코드~책 중 하나라도 ✅면 하드게이트가 이미 깨진 상태다. `python scripts/check_visual_gate.py
    courses/{course-id}/status.md`로 기계적으로 검출할 수 있다. 발견 시 조용히 되돌리지 말고 사용자에게
-   보고한다 — (a) `outputs/03_시각자산/manifest.json`의 `overall_status`가 `present`면 시각자산 생성은 끝났고 사람 검토만
+   보고한다 — (a) `outputs/03_시각자산/manifest_chNN.json`의 `overall_status`가 `present`면 시각자산 생성은 끝났고 사람 검토만
    남은 것이므로 사용자에게 시각자산을 ✅로 확정할지 확인하고, (b) manifest가 `partial`/`stale`/`missing`이면
    먼저 `visual-assets`로 나머지를 마무리한 뒤 하류 산출물의 재생성 필요 여부를 사용자와 정한다.
 

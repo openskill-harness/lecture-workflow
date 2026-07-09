@@ -30,7 +30,7 @@ description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반�
 
 ### 3. 시각 자산 — 다음 단계로 이관 (2026-07-06 개정)
 
-이 스킬은 Visual asset 필드의 프롬프트/D2 소스 **문구를 다듬는 것까지만** 책임진다. 실제 이미지/D2 렌더 생성, `→ 생성됨:`/`→ 렌더됨:` 병기, `outputs/03_시각자산/manifest.json` 갱신은 원고확정 **다음** 단계인 `visual-assets` 스킬(4단계, `.claude/skills/visual-assets/SKILL.md`)이 전담한다 — image-gen/pub-d2-diagram 브릿지 절차(태그 변환, 스크래치 파일, 경로 규약)도 그쪽으로 이관되었다.
+이 스킬은 Visual asset 필드의 프롬프트/D2 소스 **문구를 다듬는 것까지만** 책임진다. 실제 이미지/D2 렌더 생성, `→ 생성됨:`/`→ 렌더됨:` 병기, `outputs/03_시각자산/manifest_chNN.json` 갱신은 원고확정 **다음** 단계인 `visual-assets` 스킬(4단계, `.claude/skills/visual-assets/SKILL.md`)이 전담한다 — image-gen/pub-d2-diagram 브릿지 절차(태그 변환, 스크래치 파일, 경로 규약)도 그쪽으로 이관되었다.
 
 원고확정 시점에 시각 자산이 아직 없어도(프롬프트/D2 소스만 있어도) 확정할 수 있다 — 자산 생성 완료 여부는 §4 확정 체크리스트의 대상이 아니다.
 
@@ -60,5 +60,5 @@ description: 원고 초안(2단계 산출물)을 사용자와 티키타카(반�
 
 - 원고 스키마 상세: `.claude/skills/manuscript-draft/references/manuscript-schema.md`
 - 골든 예시: `templates/golden/manuscript_golden.md`
-- 시각 자산 생성: 다음 단계 `visual-assets` 스킬(`.claude/skills/visual-assets/SKILL.md`) 참조 — image-gen/pub-d2-diagram 호출·브릿지 절차·`outputs/03_시각자산/manifest.json` 갱신 전부 그 스킬이 담당한다(§3).
+- 시각 자산 생성: 다음 단계 `visual-assets` 스킬(`.claude/skills/visual-assets/SKILL.md`) 참조 — image-gen/pub-d2-diagram 호출·브릿지 절차·`outputs/03_시각자산/manifest_chNN.json` 갱신 전부 그 스킬이 담당한다(§3).
 - 이 스킬은 대화형 절차 문서이며 TDD 대상이 아니다. 구조 검증은 SKILL.md 필수 키워드 grep(개발 시점 1회성 검증)으로 확인되었고, 실사용 시 품질 검증은 본문 "확정 체크리스트"가 매 실행마다 담당한다.

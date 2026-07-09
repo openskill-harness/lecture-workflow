@@ -49,7 +49,7 @@
 씨앗은 **이미 확정 원고에 존재**하므로 manuscript는 수정하지 않는다:
 
 - **기술명·정의**: 원고 슬라이드 Screen 필드의 `핵심 정의` 라인을 근거로 한다.
-- **도식**: 원고 Visual asset의 D2 소스 / `outputs/03_시각자산/manifest.json`의 `d2` 자산.
+- **도식**: 원고 Visual asset의 D2 소스 / `outputs/03_시각자산/manifest_chNN.json`의 `d2` 자산.
 
 book-build는 각 장에 매핑되는 원고 슬라이드 중 `핵심 정의`가 있고(이상적으로 D2도 있는) 슬라이드를 골라 앵커 개념으로 삼는다.
 

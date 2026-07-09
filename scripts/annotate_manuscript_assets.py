@@ -1,6 +1,6 @@
 """원고 Visual asset 필드에 manifest의 확정 자산 경로를 병기(주석).
 
-visual-assets 스테이지의 일부. manifest.json에서 슬라이드별 주 시각자료(primary)를 읽어,
+visual-assets 스테이지의 일부. manifest_{chNN}.json에서 슬라이드별 주 시각자료(primary)를 읽어,
 원고(chNN.md — 경로는 course_layout이 판별)의 해당 `**Visual asset**` 블록에서 기존 병기 라인을 모두 제거한 뒤
 primary 자산 한 줄만 다시 넣는다: `→ 생성됨: <path>`(이미지 primary) / `→ 렌더됨: <path>`(D2 primary).
 - strip-and-replace: 재생성으로 primary가 바뀌어도 stale 병기가 남지 않고 항상 primary 하나만 유지된다.
@@ -21,7 +21,9 @@ from manuscript_grammar import SLIDE_RE, FIELD_RE
 def annotate(course_dir, ch):
     course = Path(course_dir)
     md_path = course_layout.path(course, "manuscripts") / f"{ch}.md"
-    manifest = json.loads((course_layout.path(course, "assets") / "manifest.json").read_text(encoding="utf-8"))
+    manifest = json.loads(course_layout.asset_manifest_path(course, ch).read_text(encoding="utf-8"))
+    if manifest.get("chapter") != ch:
+        raise SystemExit(f"manifest 차시 불일치: {manifest.get('chapter')} != {ch} — 다른 차시의 자산 경로를 원고에 병기할 뻔했습니다.")
     by_slide = {s["slide"]: s for s in manifest["slides"]}
 
     lines = md_path.read_text(encoding="utf-8").splitlines()

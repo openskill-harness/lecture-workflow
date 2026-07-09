@@ -11,7 +11,7 @@ def _make_course(tmp_path, md_text, manifest):
     (course / "manuscripts").mkdir(parents=True)
     (course / "assets").mkdir(parents=True)
     (course / "manuscripts" / "ch01.md").write_text(md_text, encoding="utf-8")
-    (course / "assets" / "manifest.json").write_text(
+    (course / "assets" / f"manifest_{manifest.get('chapter', 'ch01')}.json").write_text(
         json.dumps(manifest, ensure_ascii=False), encoding="utf-8")
     return course
 
@@ -80,3 +80,19 @@ def test_stale_annotation_replaced(tmp_path):
     assert "→ 렌더됨: assets/diagrams/ch01-slide05-http.png" not in txt
     assert "→ 생성됨: assets/images/ch01/slide05.png" in txt
     assert txt.count("→ 생성됨") == 1  # 중복 병기 없음
+
+
+def test_annotate_refuses_mismatched_chapter(tmp_path, monkeypatch):
+    """차시가 어긋난 manifest로는 원고를 병기하지 않는다 — 다른 차시 그림이 PPTX에 섞이는 것을 막는다."""
+    import pytest
+    m = _manifest(image={"path": "assets/images/ch99/slide05.png", "status": "present", "primary": True})
+    m["chapter"] = "ch99"
+    course = _make_course(tmp_path, _MD, m)              # manifest_ch99.json 로 저장됨
+    # ch01을 대상으로 부르면 manifest_ch01.json이 없어 FileNotFoundError
+    with pytest.raises((SystemExit, FileNotFoundError)):
+        ann.annotate(str(course), "ch01")
+    # manifest_ch01.json 자리에 ch99 내용을 두면 가드가 SystemExit로 막는다
+    (course / "assets" / "manifest_ch01.json").write_text(
+        (course / "assets" / "manifest_ch99.json").read_text(encoding="utf-8"), encoding="utf-8")
+    with pytest.raises(SystemExit):
+        ann.annotate(str(course), "ch01")

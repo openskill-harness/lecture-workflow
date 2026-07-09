@@ -1,6 +1,6 @@
 ---
 name: ppt-preview
-description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset 필드를 16:9 슬라이드 캔버스로 나열한 라이트 테마 PPT 미리보기 `outputs/06_PPT프리뷰/chNN.html`을 만든다. "PPT 프리뷰 만들어줘", "PPT 미리보기 만들어줘" 요청 시 사용. 캔버스당 제목+짧은 문구+이미지/D2/코드만 배치하고 긴 설명은 넣지 않는다(설명은 원고·스토리보드 담당). 이미지/D2는 원고 프롬프트가 아니라 `outputs/03_시각자산/manifest.json`의 확정 경로를 읽어 삽입한다. 디자인 규범은 `templates/golden/ppt_preview_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 슬라이드 DOM은 `<section class="ppt-slide" data-slide="N">` + 내부 `.ppt-canvas` + 캔버스 내 `h2` 제목으로 고정한다(panseo-slide 그대로 모드가 이 구조를 그대로 소비 — pptx-build는 이 HTML이 아니라 원고 outputs/02_원고/chNN.md를 직접 파싱하므로 이 계약에 의존하지 않는다는 서술은 pptx-build의 대안 네이티브 모드에서만 참이다. pptx-build의 기본 이미지 모드는 ppt_preview 렌더 PNG를 그대로 소비하므로 이 계약이 곧 pptx-build 이미지 모드의 입력 계약이다). 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md PPT프리뷰 칸을 ✅로 갱신한다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset 필드를 16:9 슬라이드 캔버스로 나열한 라이트 테마 PPT 미리보기 `outputs/06_PPT프리뷰/chNN.html`을 만든다. "PPT 프리뷰 만들어줘", "PPT 미리보기 만들어줘" 요청 시 사용. 캔버스당 제목+짧은 문구+이미지/D2/코드만 배치하고 긴 설명은 넣지 않는다(설명은 원고·스토리보드 담당). 이미지/D2는 원고 프롬프트가 아니라 `outputs/03_시각자산/manifest_chNN.json`의 확정 경로를 읽어 삽입한다. 디자인 규범은 `templates/golden/ppt_preview_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 슬라이드 DOM은 `<section class="ppt-slide" data-slide="N">` + 내부 `.ppt-canvas` + 캔버스 내 `h2` 제목으로 고정한다(panseo-slide 그대로 모드가 이 구조를 그대로 소비 — pptx-build는 이 HTML이 아니라 원고 outputs/02_원고/chNN.md를 직접 파싱하므로 이 계약에 의존하지 않는다는 서술은 pptx-build의 대안 네이티브 모드에서만 참이다. pptx-build의 기본 이미지 모드는 ppt_preview 렌더 PNG를 그대로 소비하므로 이 계약이 곧 pptx-build 이미지 모드의 입력 계약이다). 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md PPT프리뷰 칸을 ✅로 갱신한다.
 ---
 
 # ppt-preview
@@ -65,7 +65,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Screen/Visual asset �
 
 ### 3. Visual asset 실자산 연결 (manifest 기반, 2026-07-06 개정)
 
-**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
+**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest_chNN.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
 
 1. `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`를 임베드한다.
 2. primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) placeholder로 처리한다. **비-primary 자산으로 대체하지 않는다** — 소비물마다 다른 그림이 들어가는 원인이 된다.
@@ -136,7 +136,7 @@ primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료
 - 골든 템플릿: `templates/golden/ppt_preview_golden.html` (ch01 GPT 원본 — CSS 변수, 캔버스 규격, 위젯 패턴의 디자인 기준. DOM 속성은 출력 계약이 우선하며 위 "골든 DOM과의 차이" 참조)
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (Screen/Visual asset 등 8개 필드 정의·순서)
 - 순서 참고용 스토리보드: `outputs/05_스토리보드/chNN.html` (`storyboard` 스킬 산출물)
-- 시각자산 SSOT: `outputs/03_시각자산/manifest.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
+- 시각자산 SSOT: `outputs/03_시각자산/manifest_chNN.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 - status.md 형식: `templates/status_template.md`
 - 레이아웃 기계 검증: `scripts/check_preview_layout.py` (감지 전용 — 수정은 위 repair 규칙)
 - 자산 출처(`origin`)·역수정 원칙: `.claude/skills/manuscript-draft/references/manuscript-schema.md` §4, `.claude/skills/practice-code/SKILL.md` §4(같은 역수정 패턴의 원형)

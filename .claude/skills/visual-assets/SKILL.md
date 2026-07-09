@@ -1,11 +1,11 @@
 ---
 name: visual-assets
-description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(이미지 프롬프트·D2 소스)를 실자산(PNG/SVG)으로 생성해 `outputs/03_시각자산/manifest.json`(SSOT)을 확정하는 스킬. "시각자산 생성", "이미지·다이어그램 만들어줘", "자산 렌더", "visual-assets" 요청 시 사용. 파이프라인 4단계(원고확정 직후, 코드/스토리보드 등 소비 산출물보다 앞) — 이후 6~11단계(스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)가 재동기화 폭포 없이 처음부터 실자산을 임베드하도록 하는 것이 존재 이유. image-gen `[IMAGE PROMPT]` 태그 자동 변환 브릿지 내장, `원고확정 ✅`(또는 명시적 `deferred`) hard gate, 해시 기반 부분(stale) 재생성을 담당한다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(이미지 프롬프트·D2 소스)를 실자산(PNG/SVG)으로 생성해 `outputs/03_시각자산/manifest_chNN.json`(SSOT)을 확정하는 스킬. "시각자산 생성", "이미지·다이어그램 만들어줘", "자산 렌더", "visual-assets" 요청 시 사용. 파이프라인 4단계(원고확정 직후, 코드/스토리보드 등 소비 산출물보다 앞) — 이후 6~11단계(스토리보드/PPT프리뷰/판서/시뮬/PPTX/책)가 재동기화 폭포 없이 처음부터 실자산을 임베드하도록 하는 것이 존재 이유. image-gen `[IMAGE PROMPT]` 태그 자동 변환 브릿지 내장, `원고확정 ✅`(또는 명시적 `deferred`) hard gate, 해시 기반 부분(stale) 재생성을 담당한다.
 ---
 
 # visual-assets
 
-확정 원고 `outputs/02_원고/chNN.md`(`manuscript-final` 산출물)의 **Visual asset** 필드에 있는 이미지 프롬프트·D2 소스를 실제 자산 파일(`outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`)로 생성하고, 그 결과를 `outputs/03_시각자산/manifest.json`(SSOT)에 확정하는 스킬이다.
+확정 원고 `outputs/02_원고/chNN.md`(`manuscript-final` 산출물)의 **Visual asset** 필드에 있는 이미지 프롬프트·D2 소스를 실제 자산 파일(`outputs/03_시각자산/images/chNN/`, `outputs/03_시각자산/diagrams/`)로 생성하고, 그 결과를 `outputs/03_시각자산/manifest_chNN.json`(SSOT)에 확정하는 스킬이다.
 
 **파이프라인 위치**: `manuscript-final`(3단계, 원고확정) 바로 다음, `practice-code`(코드) 이전. 자산 생성이 소비 산출물(스토리보드·PPT프리뷰·판서·PPTX·책) 뒤로 밀리면, 나중에 이미지를 만들 때마다 그 4~5개 산출물을 전부 다시 만들어야 하는 재동기화 폭포가 생긴다(`docs/history/2026-07-06_visual-assets-stage-redesign/proposal.md` §1). 이 스킬을 원고확정 직후에 실행해 그 문제를 구조적으로 없앤다.
 
@@ -67,7 +67,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(�
 ### 4. manifest 생성 (SSOT)
 
 - `python scripts/build_asset_manifest.py courses/{course-id} chNN` 를 실행한다(레포 루트 스크립트, 수정하지 않고 그대로 호출).
-- 결과 `courses/{course-id}/outputs/03_시각자산/manifest.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`/`stale`)가 담긴다.
+- 결과 `courses/{course-id}/outputs/03_시각자산/manifest_chNN.json`이 이후 모든 소비 판단의 **단일 진실원(SSOT)**이다. 슬라이드별 `image`/`d2` 블록에 `path`/`prompt_hash`(또는 `d2_hash`)/`status`(`present`/`deferred`/`missing`/`stale`)가 담긴다.
 - **사용자 제공 파일이 최우선**: 원고에 `User image: <경로>`가 있으면 그 슬라이드는 `image.primary = true`, `origin = "user-file"`이 되고 `주 시각자료: D2` 마커보다 우선한다(사용자 확정이 원고를 이긴다).
 - **그 아래로는 이미지 primary**: 이미지 프롬프트가 있으면 `image.primary = true`, D2는 있어도 `d2.primary = false`(폴백 소스로 보존). `주 시각자료: D2` 마커가 있는 슬라이드만 `d2.primary = true`가 되고 이미지가 `deferred`로 강등된다. 이미지 프롬프트가 없는 D2-only 슬라이드는 D2가 primary다.
 - **자산 출처(`origin`)**: image 블록은 `agent`(`GPT image prompt:`) / `user-prompt`(`User image prompt:`) / `user-file`(`User image:`) 중 하나를 갖는다. 이 필드가 하네스의 덮어쓰기 권한을 정한다 — `user-prompt`의 문구를 임의로 다듬지 않고, `user-file`은 재생성하지 않는다. 스키마는 `manuscript-schema.md` §4의 출처 표가 SSOT다.
@@ -79,7 +79,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 Visual asset 필드(�
 ### 5. 원고 주석 (보조 — SSOT 아님)
 
 - 실제 생성/렌더가 완료된 슬라이드의 Visual asset 필드에 사람이 읽기 위한 병기를 남긴다: 이미지는 `→ 생성됨: outputs/03_시각자산/images/chNN/slideNN.png`, D2는 `→ 렌더됨: outputs/03_시각자산/diagrams/chNN-slideNN-*.png`(실제 파일명 그대로). 프롬프트/D2 원문은 지우지 않는다(재생성 근거).
-- 이 주석은 사람이 읽기 위한 보조 표기일 뿐이다 — **manifest.json이 SSOT**다. 소비 스킬의 "manifest 확정 경로 직독" 계약 전환은 이미 완료됐다(각 소비 SKILL.md에 반영). `pptx-build`만은 annotate 브릿지 경로를 읽는 예외로 계약화됐다(스펙 §3.0-A). 따라서 visual-assets는 생성 후 반드시 `annotate_manuscript_assets.py`를 돌려 원고에 primary 경로를 최신화한다 — 이 브릿지가 pptx-build의 유일한 자산 소스이기 때문이다.
+- 이 주석은 사람이 읽기 위한 보조 표기일 뿐이다 — **manifest_chNN.json이 SSOT**다. 소비 스킬의 "manifest 확정 경로 직독" 계약 전환은 이미 완료됐다(각 소비 SKILL.md에 반영). `pptx-build`만은 annotate 브릿지 경로를 읽는 예외로 계약화됐다(스펙 §3.0-A). 따라서 visual-assets는 생성 후 반드시 `annotate_manuscript_assets.py`를 돌려 원고에 primary 경로를 최신화한다 — 이 브릿지가 pptx-build의 유일한 자산 소스이기 때문이다.
 
 ### 6. 하드 게이트 (기본값 — placeholder로 조용히 넘어가지 않는다)
 
@@ -94,7 +94,7 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 
 원고 확정 후 프롬프트/D2가 수정되면(재개된 티키타카, "이 이미지 프롬프트 바꿔줘" 등) **전체 재생성 금지** — 바뀐 슬라이드만 재생성한다.
 
-`build_asset_manifest.py`는 재빌드 시 이전 manifest.json의 prompt_hash/d2_hash와 현재 원고 해시를
+`build_asset_manifest.py`는 재빌드 시 같은 차시의 이전 manifest_chNN.json의 prompt_hash/d2_hash와 현재 원고 해시를
 자동 비교해, 프롬프트가 바뀐 present 자산을 `status: "stale"`로 표기한다. stale 슬라이드는 커버로
 인정되지 않아 overall_status가 `partial`로 떨어지고, 하드 게이트가 해당 슬라이드의 재생성을 요구한다.
 스킬은 stale로 표기된 슬라이드만 골라 image-gen/pub-d2로 재생성하면 된다(전체 재생성 불필요).
@@ -109,7 +109,7 @@ manifest의 `overall_status`에 따라 `status.md`의 `시각자산` 칸(있는 
 
 ## 확정 체크리스트
 
-- [ ] **manifest 존재 및 판정 명시**: `outputs/03_시각자산/manifest.json`이 존재하고 `overall_status`가 `present`이거나, 사용자가 실제로 선택한 `deferred`/`partial`이다(임의로 `missing`을 방치한 채 넘어가지 않았다).
+- [ ] **manifest 존재 및 판정 명시**: `outputs/03_시각자산/manifest_chNN.json`이 존재하고 `overall_status`가 `present`이거나, 사용자가 실제로 선택한 `deferred`/`partial`이다(임의로 `missing`을 방치한 채 넘어가지 않았다).
 - [ ] **파일 실존·용량**: manifest에 `status: "present"`로 표시된 모든 자산(`image`/`d2`)이 실제로 파일로 존재하고 크기 > 0 바이트다.
 - [ ] **커버 안 된 시각 슬라이드 0**: Visual asset 필드가 있는 슬라이드 중 `present`도 `deferred`도 아닌(`missing`/`stale`) 슬라이드가 0개다. 남아 있다면 사용자에게 구체적으로(어느 슬라이드) 보고하고 생성/보류 여부를 재확인한다.
 - [ ] **브릿지 위생**: 스크래치 파일이 실행 후 삭제됐고, 원고 `chNN.md`에는 image-gen용 HTML 주석 블록이 남아 있지 않다.

@@ -7,7 +7,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)를 16:9 PPTX(`outputs/09
 
 확정 원고 `outputs/02_원고/chNN.md`(`manuscript-final` 산출물, manuscript-schema 문법)를 16:9 PPTX(`outputs/09_PPTX/chNN.pptx`)로 변환하는 스킬이다. 파이프라인 10단계이며, 빌더는 `scripts/build_pptx.py`(python-pptx 1.0.2, Task 11 스파이크로 notes_slide 동작 검증됨)다.
 
-**시각자산 SSOT와의 관계 — annotate 브릿지 계약**: `outputs/03_시각자산/manifest.json`이 시각자산 SSOT이고, `pptx-build`는
+**시각자산 SSOT와의 관계 — annotate 브릿지 계약**: `outputs/03_시각자산/manifest_chNN.json`이 시각자산 SSOT이고, `pptx-build`는
 그 SSOT를 **직접 읽지 않는다** — 대신 `visual-assets` 단계의 `annotate_manuscript_assets.py`가 manifest의
 primary 자산 경로를 원고 Visual asset 필드에 되써준 **공식 브릿지 표기**(`→ 생성됨:`/`→ 렌더됨:` 다음 줄의
 `outputs/03_시각자산/...` 경로)를 읽는다. `scripts/build_pptx.py`의 `IMG_PATH_RE`가 이 브릿지 라인을 매치한다.

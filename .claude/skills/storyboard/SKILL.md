@@ -1,6 +1,6 @@
 ---
 name: storyboard
-description: 확정 원고(`outputs/02_원고/chNN.md`)의 슬라이드를 1:1 카드로 펼친 라이트 테마 강사용 스토리보드 `outputs/05_스토리보드/chNN.html`을 만든다. "스토리보드 만들어줘" 요청 시 사용. 카드 상단에 슬라이드 화면 미리보기(Screen 필드 재현, `outputs/03_시각자산/manifest.json`에 실자산이 있으면 삽입/없으면 프롬프트 placeholder), 하단에 Easy analogy/Practical case/Visual asset/Source/Narration/Practice/Assessment를 라벨링된 패널로 배치한다. 디자인 규범은 `templates/golden/storyboard_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md 스토리보드 칸을 ✅로 갱신한다.
+description: 확정 원고(`outputs/02_원고/chNN.md`)의 슬라이드를 1:1 카드로 펼친 라이트 테마 강사용 스토리보드 `outputs/05_스토리보드/chNN.html`을 만든다. "스토리보드 만들어줘" 요청 시 사용. 카드 상단에 슬라이드 화면 미리보기(Screen 필드 재현, `outputs/03_시각자산/manifest_chNN.json`에 실자산이 있으면 삽입/없으면 프롬프트 placeholder), 하단에 Easy analogy/Practical case/Visual asset/Source/Narration/Practice/Assessment를 라벨링된 패널로 배치한다. 디자인 규범은 `templates/golden/storyboard_golden.html`이며 새 색상·다크 테마는 도입하지 않는다. 시각자산(4단계)이 ✅ 또는 `deferred`여야 시작한다(하드 게이트). 사용자 확인 후 status.md 스토리보드 칸을 ✅로 갱신한다.
 ---
 
 # storyboard
@@ -43,7 +43,7 @@ description: 확정 원고(`outputs/02_원고/chNN.md`)의 슬라이드를 1:1 �
 
 ### 3. 이미지/다이어그램 자산 연결 (manifest 기반)
 
-**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
+**자산 해석 규칙(필수)**: 이 스킬은 원고 Visual asset의 프롬프트/D2 텍스트가 아니라 `outputs/03_시각자산/manifest_chNN.json`(4단계 `visual-assets` 소유, SSOT)을 읽어 자산을 임베드한다. 대상 슬라이드의 manifest 항목을 다음 순서로 해석한다:
 
 1. `primary: true`인 자산(`image` 또는 `d2`)의 `status == "present"`면 그 `path`를 임베드한다.
 2. primary 자산이 `present`가 아니면(`deferred`/`missing`/`stale`) placeholder로 처리한다. **비-primary 자산으로 대체하지 않는다** — 소비물마다 다른 그림이 들어가는 원인이 된다.
@@ -91,7 +91,7 @@ primary 결정은 manifest가 이미 끝냈다(`User image:` > `주 시각자료
 
 - 골든 템플릿: `templates/golden/storyboard_golden.html` (ch01 GPT 원본 — CSS 변수, Malgun Gothic 폰트, `.slide-head`/`.slide-body`/`.slide-preview`/`.lecture-panel`/`.lecture-block` 구조와 위젯 패턴의 유일한 기준)
 - 원고 스키마: `.claude/skills/manuscript-draft/references/manuscript-schema.md` (8개 필드 정의·순서)
-- 시각자산 SSOT: `outputs/03_시각자산/manifest.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
+- 시각자산 SSOT: `outputs/03_시각자산/manifest_chNN.json`(`visual-assets` 스킬 소유) — §3 "자산 해석 규칙" 참조. 원고의 `→ 생성됨:`/`→ 렌더됨:` 병기는 보조 표기일 뿐 신뢰 소스가 아니다.
 - status.md 형식: `templates/status_template.md`
 - 파이프라인 표: `docs/superpowers/specs/2026-07-05-unified-lecture-pipeline-design.md` §3, §3.0-A(visual-assets), §4(디렉터리 구조 — `outputs/05_스토리보드/chNN.html` 경로 규약)
 - 이 스킬은 절차 문서이며 TDD 대상이 아니다. Step 2 grep(개발 시점 1회성 구조 검증)으로 SKILL.md 자체를 확인했고, 실사용 시 산출물 품질은 위 "확정 체크리스트"가 매 실행마다 담당한다.

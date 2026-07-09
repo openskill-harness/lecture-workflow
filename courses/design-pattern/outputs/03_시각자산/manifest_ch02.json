@@ -1,0 +1,218 @@
+{
+  "chapter": "ch02",
+  "overall_status": "present",
+  "visual_slides_covered": 18,
+  "visual_slides_total": 18,
+  "slides": [
+    {
+      "slide": 1,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide01.png",
+        "prompt_hash": "779518d38498",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 2,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide02.png",
+        "prompt_hash": "0ae944336f45",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 3,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide03.png",
+        "prompt_hash": "653face3d752",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 4,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide04.png",
+        "prompt_hash": "240597a42dbb",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 5,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide05.png",
+        "prompt_hash": "d59122972c59",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 6,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide06.png",
+        "prompt_hash": "994b499acce0",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 7,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide07.png",
+        "prompt_hash": "96b5975efed3",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 8,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide08.png",
+        "prompt_hash": "6af3315911c2",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 9,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide09.png",
+        "prompt_hash": "8dc0e29a06a2",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 10,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide10.png",
+        "prompt_hash": "b15253556071",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 11,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide11.png",
+        "prompt_hash": "4d7ab9c97871",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 12,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide12.png",
+        "prompt_hash": "c1362a242822",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 13
+    },
+    {
+      "slide": 14,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide14.png",
+        "prompt_hash": "d4a6a0b8fb72",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 15,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide15.png",
+        "prompt_hash": "0f867a4b5535",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 16,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide16.png",
+        "prompt_hash": "07f35591ecaf",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 17
+    },
+    {
+      "slide": 18
+    },
+    {
+      "slide": 19
+    },
+    {
+      "slide": 20
+    },
+    {
+      "slide": 21
+    },
+    {
+      "slide": 22,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide22.png",
+        "prompt_hash": "b322240ddd78",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 23,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide23.png",
+        "prompt_hash": "f1470338cd6b",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 24,
+      "image": {
+        "path": "outputs/03_시각자산/images/ch02/slide24.png",
+        "prompt_hash": "7f8ea838afe3",
+        "status": "present",
+        "primary": true,
+        "origin": "agent"
+      }
+    },
+    {
+      "slide": 25
+    },
+    {
+      "slide": 26
+    },
+    {
+      "slide": 27
+    },
+    {
+      "slide": 28
+    }
+  ]
+}

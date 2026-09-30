@@ -146,6 +146,13 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 - 톤·인용 규칙(비유 먼저, 하나의 이야기, 인용구는 실제 출처만)은 `reference/script_guide.md`를
   따른다.
 
+## 5-1. (선택) 미리 그린 판서 클릭 재생
+
+사용자가 강의 전에 이 HTML에서 판서를 그려 `💾`로 저장한 `.ink.json`/`.inkml`을 주면, 슬라이드마다
+`python .claude/skills/panseo-slide/scripts/embed_ink.py outputs/07_판서/chNN.html <파일> [--slide N] [--layer board]`
+로 HTML에 인라인 클립으로 박는다. 강의 때 그 슬라이드에서 클릭·`→`·`Space`마다 손 멈춘 시간(기본 1초)으로
+나뉜 한 구간씩 실제 속도로 그려지고 `←`로 되돌린다. 절차·포맷: `reference/ink-replay.md`.
+
 ## 6. 확정
 
 사용자에게 `outputs/07_판서/chNN.html`을 브라우저로 열어 보여주고(펜 기기 없으면 마우스로 최소 조작
@@ -168,6 +175,8 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
   연번이고 `outputs/07_판서/chNN.html`의 컷 수와 정확히 같다.
 - [ ] **`node --check`** — `outputs/07_판서/chNN.html`의 `<script>` 문법 통과(엔진을 그대로 복사했으면
   항상 통과 — 실패하면 복사 중 스크립트를 실수로 건드렸다는 뜻).
+- [ ] **(클립을 넣은 경우) 클릭 재생** — 클립 슬라이드에서 `▶ 재생 0/N` 표시, 클릭마다 구간이 늘고 `←`로 줄어드는지
+  브라우저로 확인했다.
 - [ ] **자립성** — 외부 CDN·웹폰트·스크립트 참조 없이 파일 하나로 브라우저에서 바로 열린다.
 
 ## repair 규칙
@@ -188,6 +197,7 @@ description: 판서 기능(펜·모눈·선택이동·지우개·빈 칠판 전�
 - 엔진 명세(기능 8종 + 이벤트 처리 방식 + 데이터 모델): `reference/engine.md`
 - 소유 템플릿: `template/board_template_light.html`(라이트) — 두 모드 공용. 다크 네이비 템플릿은 사용하지 않는다.
 - 요약 모드 컷 컴포넌트: `reference/components.md`
+- 판서 녹화·클릭 재생(포맷·임베드 스크립트): `reference/ink-replay.md`, `scripts/embed_ink.py`
 - 판서 대본 형식·톤·인용 규칙: `reference/script_guide.md`
 - 그대로 모드가 소비하는 출력 계약(작성 주체는 `ppt-preview` 스킬): `.claude/skills/ppt-preview/SKILL.md`
   "출력 계약" 절 — `<section class="ppt-slide" data-slide="N">` + 직계 자식 `.ppt-canvas` +

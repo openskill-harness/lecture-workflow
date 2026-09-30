@@ -37,7 +37,8 @@ DOM 구조·이벤트 로직(`<script>`)은 그대로 복사해 출발점으로 
 **8종에는 안 들어가지만 엔진에 포함된 부가 기능**(체크리스트 대상 아님, 존재만 확인):
 도형 스냅(◇ 버튼 / `s`, draw-and-hold 0.6초 정지 시 직선·사각형·원·삼각형으로 스냅), 되돌리기
 (`Ctrl`/`Cmd`+`Z`), 전체지움(`c`), 슬라이드 네비(←/→, `PageUp`/`PageDown`), 선택 후 삭제
-(`Delete`/`Backspace`).
+(`Delete`/`Backspace`), **판서 녹화·클릭 재생**(v4: 💾 `k`/`Shift+K` 저장, 좌상단 `▶` 재생 — 클릭·→·Space로 한 구간씩,
+← 되돌리기, `.ink-clip` 인라인 클립·파일 드롭 불러오기. 상세 `reference/ink-replay.md`).
 
 ## 터치/펜 이벤트 처리 방식
 
@@ -58,7 +59,7 @@ DOM 구조·이벤트 로직(`<script>`)은 그대로 복사해 출발점으로 
 
 ## 데이터 모델
 
-- 모든 판서는 스트로크 객체 `{color, size, erase, pts:[{x,y,p}]}`의 배열이다. 화면은 항상 전체
+- 모든 판서는 스트로크 객체 `{color, size, erase, hl, pts:[{x,y,p,t}]}`의 배열이다(`t` = 그린 시각 ms, 녹화·재생용). 화면은 항상 전체
   재드로(`render()`) 방식이라 창 크기가 바뀌어도 벡터로 다시 선명하게 그려진다.
 - 슬라이드별 레이어 `slideStrokes[i]`(컷 개수만큼)와 칠판 레이어 `boardStrokes`는 분리 배열 —
   `setLayer()`/`toggleBoard()`가 현재 활성 배열(`strokes`)을 바꿔 낀다.

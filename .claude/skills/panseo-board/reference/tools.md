@@ -6,7 +6,7 @@
 판서는 픽셀이 아니라 **획 객체 배열**로 저장된다.
 
 ```
-stroke = { color, size, erase:false, hl:false, pts:[{x, y, p}, ...] }   // p = 필압, hl = 형광펜 여부
+stroke = { color, size, erase:false, hl:false, pts:[{x, y, p, t}, ...] }   // p = 필압, t = 시각(ms), hl = 형광펜 여부
 ```
 
 - 손을 내릴 때(pointerdown)부터 뗄 때(pointerup)까지 = **한 획 = 객체 하나**.
@@ -33,10 +33,13 @@ stroke = { color, size, erase:false, hl:false, pts:[{x, y, p}, ...] }   // p = �
 - `doUndo()` = 스택에서 꺼내 레이어 교체 후 `render()`. 한 동작 = 한 번 되돌리기.
 
 ## 단축키
-`b` 판서모드 · `g` 모눈 · `e` 지우개 · `c` 전체지움 · `s` 도형스냅 on/off · `f` 전체화면 · `Esc` 이동조각 고정 · `Ctrl/Cmd+Z` 되돌리기 · `←→`/`PageUp/Down` 슬라이드.
+`→`/`Space`/클릭(재생 모드) 다음 구간 · `←` 구간 되돌리기 · `k` 판서 저장(.ink.json) · `Shift+K` InkML 저장 · `p` 재생 모드 · `b` 판서모드 · `g` 모눈 · `e` 지우개 · `c` 전체지움 · `s` 도형스냅 on/off · `f` 전체화면 · `Esc` 이동조각 고정 · `Ctrl/Cmd+Z` 되돌리기 · `←→`/`PageUp/Down` 슬라이드.
 
 ## 도형 스냅 (draw-and-hold, v2)
 `pointerdown/move/up`에 정지 타이머(`holdArm/holdTrack/holdCancel`)를 달아, 그리다 ~0.6초 멈추면 `trySnap`이 발동한다. 먼저 한 획을 `recognizeShape`(직선·사각형·원/타원·삼각형)로 보고, 실패하면 `clusterFrom`으로 가까이 이어진 획들을 모아 `cloudRect`/`cloudEllipse`(점구름 인식)로 합친다. 직선은 수평/수직 ±`SNAP_DEG`(10°)면 축으로 교정. 결과는 점 배열로 생성되어 선택·이동·지우개와 그대로 호환. 파라미터: `HOLD_MS=600`, `HOLD_MOVE=5`, `SNAP_DEG=10`, `GAP=28`.
 
 ## 태블릿
 좌상단 `⛶` 버튼이 `requestFullscreen()`(webkit 포함)을 토글한다. 갤럭시탭 등은 키보드를 꽂아도 F11이 안 되고, 사용자가 화면을 탭했을 때만 전체화면이 허용되기 때문. 펜 판서 중 오작동을 막으려 화면 전체가 아니라 **작은 코너 버튼에만** 건다.
+
+## 녹화 · 클릭 재생 (v4)
+모든 점에 `t`(ms)가 기록되어 💾로 `.ink.json`/InkML 저장, `<script class="ink-clip">` 인라인 클립 또는 파일 드롭으로 불러와 클릭마다 한 구간씩 재생한다. 포맷·절차·내부 함수는 `reference/ink-replay.md`.
